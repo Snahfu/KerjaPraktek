@@ -239,3 +239,16 @@ Route::get('/maps/leaflet', [ChartsController::class, 'maps_leaflet'])->name('ma
 
 // locale Route
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
+
+//tambahan hans
+Route::get('/inputCustomer', function () {
+    return view('use.InputCustomer');
+});
+
+Route::get('/inputOrder', function () {
+    return view('use.InputOrder');
+});
+
+Route::get('/login', function () {
+    return view('use.login');
+});
