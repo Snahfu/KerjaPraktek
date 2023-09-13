@@ -42,6 +42,12 @@ $(function () {
         'register-username': {
           required: true
         },
+        'register-nama': {
+          required: true
+        },
+        'register-telepon': {
+          required: true
+        },
         'register-email': {
           required: true,
           email: true
