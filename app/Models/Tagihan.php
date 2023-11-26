@@ -5,18 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Kategori extends Model
+class Tagihan extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    protected $table = "kategori_barang";
-
-    public function jenises()
-    {
-        return $this->hasMany(Jenis::class, 'kategori_barang_idkategori');
-    }
+    protected $table = "tagihan";
 
     protected $fillable = [
-        'idkategori','nama'
+        'id', 'events_id', 'termin_number', 'tanggal_input', 'tanggal_tagihan', 'nominal','status','bukti_pembayaran'
     ];
 }

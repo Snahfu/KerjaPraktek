@@ -19,4 +19,8 @@ class EventJenis extends Model
     {
         return $this->belongsTo(Event::class, 'events_id');
     }
+
+    protected $fillable = [
+        'jenis_barang_idjenis_barang', 'events_id', 'qty', 'harga_barang', 'subtotal'
+    ];
 }

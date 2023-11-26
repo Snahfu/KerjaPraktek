@@ -23,4 +23,8 @@ class Event extends Model
     {
         return $this->hasMany(EventJenis::class, 'events_id');
     }
+
+    protected $fillable = [
+        'id', 'PIC', 'customers_id', 'nama', 'status', 'lokasi', 'jabatan_client', 'waktu_loading','waktu_loading_out','jam_mulai_acara','jam_selesai_acara'
+    ];
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agenda;
+use App\Models\Event;
+use App\Models\Tagihan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -150,5 +152,10 @@ class KaryawanController extends Controller
             'status' => $status,
             'msg' => $msg,
         ), 200);
+    }
+
+    public function getTagihan(){
+        $tagihans = Tagihan::where('status', 'Not Paid')->get();
+        return view('karyawan.tagihan', ['tagihans' => $tagihans]);
     }
 }

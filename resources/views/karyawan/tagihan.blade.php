@@ -8,91 +8,68 @@
         <div class="col-12">
             <div class="card card-custom">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">Tabel Quotation</h4>
+                    <h4 class="card-title">Tabel Tagihan</h4>
                 </div>
                 <div class="card-body text-dark">
-                    <table class="table caption-top table-bordered table-striped table-hover table-responsive"
-                        id="listorder2">
+                    <table class="table caption-top table-bordered table-striped table-hover table-responsive">
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>No</th>
                                 <th>Nama Acara</th>
-                                <th>Jumlah Kontrak</th>
-                                <th>Sub Devisi</th>
+                                <th>Termin Number</th>
+                                <th>Termin Input</th>
+                                <th>Termin Tagihan</th>
+                                <th>Nominal</th>
                                 <th>Status</th>
-                                {{-- Draft, Menunggu Persetujuan, Diproses, Diterima, Event Berlangsung, Selesai --}}
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <td></td>
-                            <td>No</td>
-                            <td>Nama Acara</td>
-                            <td>Jumlah Kontrak</td>
-                            <td>Sub Devisi</td>
-                            <td>Status</td>
+                            <td>Sample Data</td>
+                            <td>Sample Data</td>
+                            <td>Sample Data</td>
+                            <td>Sample Data</td>
+                            <td>Sample Data</td>
+                            <td>Sample Data</td>
                             <td>
-                                {{-- Button --}}
-                                <div class="button">
-                                    {{-- <i class="ti ti-edit"></i> --}}
-                                    <p class="mb-0 fs-3">Tagih</p>
-                                </div>
-                                {{-- <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
+                                <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                                     <li class="nav-item dropdown">
-                                        <div class="nav-link nav-icon-hover" id="dropaction" data-bs-toggle="dropdown"
-                                            aria-expanded="false">
-                                            <i class="ti ti-dots-vertical"></i>
-                                        </div>
-                                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
-                                            aria-labelledby="dropaction">
+                                        <a class="nav-link nav-icon-hover" href="javascript:void(0)"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="ti ti-settings"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                             <div class="message-body">
-                                                Kalau mau redirect div class diganti jadi a href class
-                                                <div class="d-flex align-items-center gap-2 dropdown-item">
-                                                    <i class="ti ti-edit"></i>
-                                                    <p class="mb-0 fs-3">Detail</p>
-                                                </div>
-                                                <div class="d-flex align-items-center gap-2 dropdown-item">
-                                                    <i class="ti ti-file-text"></i>
+                                                <a href="javascript:void(0)" onclick="newtab()"
+                                                    class="d-flex align-items-center gap-2 dropdown-item">
+                                                    <i class="ti ti-message fs-6"></i>
+                                                    <p class="mb-0 fs-3">Tagih</p>
+                                                </a>
+                                                <a href="javascript:void(0)" onclick="cetak()"
+                                                    class="d-flex align-items-center gap-2 dropdown-item">
+                                                    <i class="ti ti-file-invoice fs-6"></i>
                                                     <p class="mb-0 fs-3">Cetak PDF</p>
-                                                </div>
-                                                <div class="d-flex align-items-center gap-2 dropdown-item">
-                                                    <i class="ti ti-refresh"></i>
-                                                    <p class="mb-0 fs-3">Change Status</p>
-                                                </div>
+                                                </a>
                                             </div>
                                         </div>
                                     </li>
-                                </ul> --}}
+                                </ul>
                             </td>
                         </tbody>
                         <tfoot>
                             <tr>
                                 <th></th>
-                                <th>No</th>
                                 <th>Nama Acara</th>
-                                <th>Jumlah Kontrak</th>
-                                <th>Sub Devisi</th>
+                                <th>Termin Number</th>
+                                <th>Termin Input</th>
+                                <th>Termin Tagihan</th>
+                                <th>Nominal</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
                     </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Template Mengirimkan Tagihan ke Client</h4>
-            </div>
-            <div class="card-body">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="template"name="template"
-                        placeholder="Template Tagihan ke Client" />
-                    <button class="btn btn-outline-success" type="button" id="button-copy">Copy</button>
                 </div>
             </div>
         </div>

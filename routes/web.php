@@ -31,12 +31,9 @@ Route::get('/data-transaksi', function () {
 Route::get('/detail', function () {
     return view('common.detailorder');
 });
-Route::get('/tagihan', function () {
-    return view('karyawan.tagihan');
-});
-
 // KARYAWAN CONTROLLER
 Route::get('/reminder', [App\Http\Controllers\KaryawanController::class, 'jadwalreminder'])->name('karyawan.reminder');
+Route::get('/tagihan', [App\Http\Controllers\KaryawanController::class, 'getTagihan'])->name('karyawan.tagihan');
 Route::post('/detail-agenda', [App\Http\Controllers\KaryawanController::class, 'getData'])->name('karyawan.detailagenda');
 Route::post('/delete-agenda', [App\Http\Controllers\KaryawanController::class, 'destroy'])->name('karyawan.deleteagenda');
 Route::post('/update-agenda', [App\Http\Controllers\KaryawanController::class, 'update'])->name('karyawan.updateagenda');
@@ -50,6 +47,16 @@ Route::post('/tambah-pelanggan', [App\Http\Controllers\AdminController::class, '
 Route::post('/delete-pelanggan', [App\Http\Controllers\AdminController::class, 'destroy'])->name('admin.deletepelanggan');
 Route::post('/update-pelanggan', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.updatepelanggan');
 
+// EVENT CONTORLLER
+Route::get('/event-list', [App\Http\Controllers\EventController::class, 'index'])->name('common.listevent');
+Route::get('/tambah-event', [App\Http\Controllers\EventController::class, 'create'])->name('common.index.tambahevent');
+Route::post('/detail-event', [App\Http\Controllers\EventController::class, 'show'])->name('common.detailevent');
+Route::post('/get-barang', [App\Http\Controllers\EventController::class, 'get_barang'])->name('common.getbarang');
+Route::post('/tambah-event', [App\Http\Controllers\EventController::class, 'store'])->name('common.tambahevent');
+Route::post('/delete-event', [App\Http\Controllers\EventController::class, 'destroy'])->name('common.deleteevent');
+Route::post('/update-event', [App\Http\Controllers\EventController::class, 'update'])->name('common.updateevent');
+
+// AUTH CONTROLLER
 Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('loginPage');
 Route::post('/loginAkun', [App\Http\Controllers\AuthController::class, 'login'])->name('masuk');
 Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegistrationForm'])->name('registerPage');
