@@ -27,12 +27,12 @@ class AuthController extends Controller
             } elseif ($userlevel === 'sales') {
                 return redirect('/dashboard');
             } else {
-                return redirect()->route('login')->with('error', 'Login gagal. Userlevel tidak valid.');
+                return redirect()->route('loginPage')->with('error', 'Login gagal. Userlevel tidak valid.');
             }
         }
 
         // Jika autentikasi gagal
-        return redirect()->route('login')->with('error', 'Login gagal. Periksa kembali email dan password.');
+        return redirect()->route('loginPage')->with('error', 'Login gagal. Periksa kembali email dan password.');
     }
 
     public function showRegistrationForm()

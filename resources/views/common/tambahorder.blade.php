@@ -46,8 +46,11 @@
                                     <label class="col-form-label" for="client-name">Nama Client</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <input type="text" id="client-name" class="form-control" name="client-name"
-                                        placeholder="Nama Client" />
+                                    <select class="form-select" id="client-name">
+                                        @foreach ($semua_customer as $customer)
+                                            <option value="{{$customer->id}}">{{$customer->nama_pelanggan}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -262,8 +265,8 @@
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary me-1">Submit</button>
-    <button type="reset" class="btn btn-outline-secondary">Reset</button>
+    <button type="submit" class="btn btn-primary me-1" onclick="insertDatabase()">Submit</button>
+    <button type="reset" class="btn btn-outline-secondary" onclick="resetAll()">Reset</button>
 
     {{-- Modal Alert Begin --}}
     <div class="modal fade" id="alertModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -341,7 +344,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="btnPerbaruhi" onclick="perbaruhiDataTabel()">Perbaruhi</button>
+                    <button type="button" class="btn btn-success" id="btnPerbaruhi"
+                        onclick="perbaruhiDataTabel()">Perbaruhi</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
                 </div>
             </div>
@@ -445,6 +449,7 @@
             var selectedIndex = selectElement.selectedIndex;
             var id = selectElement.options[selectedIndex].value;
             var hargaSewa = harga_sewa_map[id];
+            document.getElementById('jumlah_barang').value = 1;
             document.getElementById('harga_per_barang').value = hargaSewa;
             document.getElementById('harga_total').value = hargaSewa * 1;
         }
@@ -594,12 +599,62 @@
 
         // Event trigger untuk melakukan perubahan pada spesifikasi order
         function perbaruhiDataTabel(id) {
-            var quantity = parseFloat(document.getElementById('edit_jumlah_barang').value);
+            var quantity = parcustomer-nameseFloat(document.getElementById('edit_jumlah_barang').value);
             var price = parseFloat(document.getElementById('edit_harga_per_barang').value);
             var subtotal = parseFloat(document.getElementById('edit_harga_total').value);
             updateArraySpesifikasiBarang(id, quantity, price, subtotal);
             updateTabel();
             $('#editModal').modal('hide');
+        }
+
+        // Function untuk simpan ke database
+        function insertDatabase() {
+            var userData = @json(auth()->user());
+            var selectElement = document.getElementById('client-name');
+            var selectedIndex = selectElement.selectedIndex;
+            var id_client = selectElement.options[selectedIndex].value;
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('common.tambahevent') }}",
+                type: 'POST',
+                data: {
+                    'PIC': userData.id,
+                    'customers_id': id_client,
+                    'nama': document.getElementById('event-name').value,
+                    'status': "Draft",
+                    'lokasi': document.getElementById('event-location').value,
+                    'jabatan_client': document.getElementById('client-position').value,
+                    'waktu_loading_out': document.getElementById('loading-out-date').value,
+                    'waktu_loading': document.getElementById('loading-in-date').value,
+                    'jam_mulai_acara': document.getElementById('event-start-date').value,
+                    'jam_selesai_acara': document.getElementById('event-end-date').value,
+                    'listbarang': arraySpesifikasiJson,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    // Kalau success clear data
+                    alertUpdate(response.msg, response.status)
+                    if(response.msg == "success"){
+                        resetAll();
+                    }
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
+        // Function untuk reset semua input
+        function resetAll(){
+            $(':input').val('');
+            $('#kategori_barang option[disabled]').prop('selected', true)
+            $('#nama_barang').empty();
+            arraySpesifikasiJson = Object.values(@json($array_kategori));
+            updateTabel();
         }
     </script>
 @endsection
