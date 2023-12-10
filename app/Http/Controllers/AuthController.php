@@ -20,18 +20,14 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             
-            $userlevel = Auth::user()->userlevel;
-
-            if ($userlevel === 'admin') {
+            $userlevel = Auth::user()->divisi_id;
+            if ($userlevel === 5) {
                 return redirect('/dashboard-admin');
-            } elseif ($userlevel === 'sales') {
+            } elseif ($userlevel !== 5) {
                 return redirect('/dashboard');
-            } else {
-                return redirect()->route('loginPage')->with('error', 'Login gagal. Userlevel tidak valid.');
             }
         }
 
-        // Jika autentikasi gagal
         return redirect()->route('loginPage')->with('error', 'Login gagal. Periksa kembali email dan password.');
     }
 
@@ -58,7 +54,7 @@ class AuthController extends Controller
 
         $karyawan = \App\Models\Karyawan::create([
             'userlevel' => 'sales',
-            'divisi_id' => 2,
+            'divisi_id' => 4,
             'nama' => $request->input('nama'),
             'username' => $request->input('username'),
             'email' => $request->input('email'),

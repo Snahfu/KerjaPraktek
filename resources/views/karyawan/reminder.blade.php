@@ -129,7 +129,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
             var semua_agenda = @json($semua_agenda);
-            console.log(semua_agenda);
             calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 selectable: true,

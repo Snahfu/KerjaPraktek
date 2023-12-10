@@ -8,6 +8,7 @@ use App\Models\EventJenis;
 use App\Models\Jenis;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,11 +17,20 @@ class EventController extends Controller
     public function index()
     {
         //
+        $userRole = Auth::user()->divisi_id;
+        if($userRole){
+            abort(403);
+        }
         return view('karyawan.reminder', []);
     }
 
     public function create()
     {
+        $userRole = Auth::user()->divisi_id;
+        if(!$userRole){
+            abort(403);
+        }
+
         $semua_kategori = Kategori::all();
         $semua_customer = Customer::all();
         foreach ($semua_kategori as $kategori) {
@@ -109,15 +119,16 @@ class EventController extends Controller
                 'jam_selesai_acara' => $request->input('jam_selesai_acara'),
             ]);
             $dataId = $event->id;
-
-            foreach ($request['listbarang'] as $barang) {
-                $detailBarang = new EventJenis();
-                $detailBarang->events_id = $dataId;
-                $detailBarang->jenis_barang_idjenis_barang = $barang['idbarang'];
-                $detailBarang->qty = $barang['jumlah'];
-                $detailBarang->harga_barang = $barang['harga'];
-                $detailBarang->subtotal = $barang['subtotal'];
-                $detailBarang->save();
+            foreach ($request['listbarang'] as $kategori) {
+                foreach($kategori as $barang){
+                    $detailBarang = new EventJenis();
+                    $detailBarang->events_id = $dataId;
+                    $detailBarang->jenis_barang_idjenis_barang = $barang['idbarang'];
+                    $detailBarang->qty = $barang['jumlah'];
+                    $detailBarang->harga_barang = $barang['harga'];
+                    $detailBarang->subtotal = $barang['subtotal'];
+                    $detailBarang->save();
+                }
             }
 
             DB::commit();

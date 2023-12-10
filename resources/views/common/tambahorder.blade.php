@@ -220,45 +220,8 @@
                             </tr>
                         </thead>
                         <tbody id="data_table">
-                            <tr>
-                                <td colspan="6">Sound System</td>
-                            </tr>
-                            <tr id="barang_1">
-                                <td></td>
-                                <td>Sound</td>
-                                <td>1</td>
-                                <td>1000000</td>
-                                <td>1000000</td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-primary" onclick="editDataTabel(1)">
-                                        <i class="ti ti-edit"></i>
-                                    </button>
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-danger" onclick="hapusDataTabel(1)">
-                                        <i class="ti ti-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr id="barang_2">
-                                <td></td>
-                                <td>Sound 2</td>
-                                <td>3</td>
-                                <td>1000000</td>
-                                <td>1000000</td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-primary" onclick="editDataTabel(2)">
-                                        <i class="ti ti-edit"></i>
-                                    </button>
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-danger" onclick="hapusDataTabel(2)">
-                                        <i class="ti ti-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                            
                         </tbody>
-
                     </table>
                 </div>
             </div>
@@ -638,7 +601,7 @@
                 success: function(response) {
                     // Kalau success clear data
                     alertUpdate(response.msg, response.status)
-                    if(response.msg == "success"){
+                    if(response.status == "success"){
                         resetAll();
                     }
                 },
