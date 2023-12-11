@@ -29,7 +29,7 @@
             <span class="hide-menu">Admin Menu</span>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link" href="./ui-buttons.html" aria-expanded="false">
+            <a class="sidebar-link" href="/data-pelanggan" aria-expanded="false">
               <span>
                 <i class="ti ti-users"></i>
               </span>
@@ -37,7 +37,15 @@
             </a>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link" href="./ui-buttons.html" aria-expanded="false">
+            <a class="sidebar-link" href="/data-gudang" aria-expanded="false">
+              <span>
+                <i class="ti ti-building-warehouse"></i>
+              </span>
+              <span class="hide-menu">Data Gudang</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a class="sidebar-link" href="/data-transaksi" aria-expanded="false">
               <span>
                 <i class="ti ti-timeline"></i>
               </span>
@@ -53,7 +61,7 @@
             </a>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link" href="./ui-buttons.html" aria-expanded="false">
+            <a class="sidebar-link" href="{{ route('common.tambahorder') }}" aria-expanded="false">
               <span>
                 <i class="ti ti-circle-plus"></i>
               </span>

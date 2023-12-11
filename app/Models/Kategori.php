@@ -13,7 +13,7 @@ class Kategori extends Model
 
     public function jenises()
     {
-        return $this->hasMany(Jenis::class, 'kategori_barang_idkategori');
+        return $this->hasMany(Jenis::class, 'kategori_barang_id');
     }
 
     protected $fillable = [

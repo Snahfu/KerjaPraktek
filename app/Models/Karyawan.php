@@ -18,6 +18,16 @@ class Karyawan extends Model implements Authenticatable
         return $this->belongsTo(Divisi::class, 'divisi_id');
     }
 
+    public function agenda()
+    {
+        return $this->hasMany(Agenda::class, 'karyawans_id');
+    }
+
+    // public function taskAssignedTo()
+    // {
+    //     return $this->hasMany(Agenda::class, 'untuk');
+    // }
+
     protected $hidden = [
         'password'
     ];
@@ -55,5 +65,13 @@ class Karyawan extends Model implements Authenticatable
     public function getRememberTokenName()
     {
         return null; // Tidak mendukung fitur "remember me"
+    }
+
+    public function hasRole($role)
+    {
+        if ($role == $this->divisi_id) {
+          return true;
+        }
+        return false;
     }
 }

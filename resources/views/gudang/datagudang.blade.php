@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Data Pelanggan Page
+    Data Gudang Page
 @endsection
 
 @section('content')
@@ -9,28 +9,32 @@
         <div class="col-12">
             <div class="card card-custom">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">Data Pelanggan</h4>
+                    <h4 class="card-title">Data Gudang</h4>
                 </div>
                 <div class="card-body h5 text-dark">
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
-                        id="listpelanggan">
+                        id="listbarang">
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Name</th>
-                                <th>Nomor Telepon</th>
-                                <th>Alamat</th>
+                                <th>Nama Barang</th>
+                                <th>QTY</th>
+                                <th>Satuan</th>
+                                <th>Tanggal Beli</th>
+                                <th>Harga Beli</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($all_customer as $customer)
+                            @foreach ($all_barang as $barang)
                                 @csrf
-                                <tr id="tr_{{ $customer->id }}">
+                                <tr id="tr_{{ $barang->id }}">
                                     <td></td>
-                                    <td id="td_nama_{{ $customer->id }}">{{ $customer->nama_pelanggan }}</td>
-                                    <td id="td_nohp_{{ $customer->id }}">{{ $customer->nohp_pelanggan }}</td>
-                                    <td id="td_alamat_{{ $customer->id }}">{{ $customer->alamat_pelanggan }}</td>
+                                    <td id="td_nama_{{ $barang->id }}">{{ $barang->jenis_barang->nama }}</td>
+                                    <td id="td_qty_{{ $barang->id }}">{{ $barang->qty }}</td>
+                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->satuan }}</td>
+                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->tanggalBeli }}</td>
+                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->hargaBeli }}</td>
                                     <td>
                                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                                             <li class="nav-item dropdown">
@@ -40,12 +44,12 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $customer->id }})"
+                                                        <a href="javascript:void(0)" onclick="ubah({{ $barang->id }})"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
                                                         </a>
-                                                        <a href="javascript:void(0)" onclick="hapus({{ $customer->id }})"
+                                                        <a href="javascript:void(0)" onclick="hapus({{ $barang->id }})"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-trash fs-6"></i>
                                                             <p class="mb-0 fs-3">Hapus</p>
@@ -62,9 +66,11 @@
                         <tfoot>
                             <tr>
                                 <th></th>
-                                <th>Name</th>
-                                <th>Nomor Telepon</th>
-                                <th>Alamat</th>
+                                <th>Nama Barang</th>
+                                <th>QTY</th>
+                                <th>Satuan</th>
+                                <th>Tanggal Beli</th>
+                                <th>Harga Beli</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
@@ -80,7 +86,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-warning">
-                    <h5 class="modal-title" id="updateModalLabel">Detail Pelanggan</h5>
+                    <h5 class="modal-title" id="updateModalLabel">Detail Gudang</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -88,13 +94,13 @@
                         <div class="col-12">
                             <div class="mb-1 row">
                                 <div class="col-sm-3">
-                                    <label class="col-form-label" for="editNamaPelanggan">Nama Pelanggan</label>
+                                    <label class="col-form-label" for="editQtyBarang">QTY</label>
                                 </div>
                                 <div class="col-sm-9">
                                     <div class="input-group input-group-merge">
                                         <span class="input-group-text"><i class="ti ti-user"></i></span>
-                                        <input type="text" id="editNamaPelanggan" class="form-control"
-                                            placeholder="Nama Pelanggan" />
+                                        <input type="text" id="editQtyBarang" class="form-control"
+                                            placeholder="QTY" />
                                     </div>
                                 </div>
                             </div>
@@ -102,7 +108,7 @@
                         <div class="col-12">
                             <div class="mb-1 row">
                                 <div class="col-sm-3">
-                                    <label class="col-form-label" for="editNoHpPelanggan">No Telpon</label>
+                                    <label class="col-form-label" for="editSatuanBarang">No Telpon</label>
                                 </div>
                                 <div class="col-sm-9">
                                     <div class="input-group input-group-merge">
@@ -185,14 +191,14 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            // $('#listpelanggan').DataTable();
-            var table = $('#listpelanggan').DataTable( {
+            // $('#listbarang').DataTable();
+            var table = $('#listbarang').DataTable( {
             lengthChange: false,
             buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
             } );
     
             table.buttons().container()
-                .appendTo( '#listpelanggan_wrapper .col-md-6:eq(0)' );
+                .appendTo( '#listbarang_wrapper .col-md-6:eq(0)' );
             });
 
         function alertUpdate(msg, status) {
@@ -272,14 +278,14 @@
             });
         }
 
-        function deletePelanggan(id) {
+        function deleteBarang(id) {
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
             $.ajax({
-                url: "{{ route('admin.deletepelanggan') }}",
+                url: "{{ route('admin.deletebarang') }}",
                 type: 'POST',
                 data: {
                     'id': id,
@@ -288,7 +294,7 @@
                 success: function(response) {
                     $('#deleteModal').modal('hide');
                     alertUpdate(response.msg, response.status);
-                    var table = $('#listpelanggan').DataTable();
+                    var table = $('#listbarang').DataTable();
                     table.row('#tr_'+id).remove().draw();
                 },
                 error: function(error) {
@@ -299,7 +305,7 @@
 
         function hapus(id) {
             $('#deleteModal').modal('show');
-            $('#buttonHapus').attr('onclick', 'deletePelanggan(' + id + ')');
+            $('#buttonHapus').attr('onclick', 'deleteBarang(' + id + ')');
         }
     </script>
 @endsection
