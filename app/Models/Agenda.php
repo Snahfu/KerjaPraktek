@@ -14,4 +14,14 @@ class Agenda extends Model
     protected $fillable = [
         'judul', 'deskripsi', 'mulai', 'selesai', 'id', 'warna'
     ];
+
+    public function karyawan()
+    {
+        return $this->belongsTo(Karyawan::class, 'karyawans_id');
+    }
+
+    // public function untukKaryawan()
+    // {
+    //     return $this->belongsTo(Karyawan::class, 'untuk');
+    // }
 }

@@ -13,10 +13,14 @@ class Jenis extends Model
 
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class, 'kategori_barang_idkategori');
+        return $this->belongsTo(Kategori::class, 'kategori_barang_id');
     }
     public function eventjenis()
     {
-        return $this->hasMany(EventJenis::class, 'jenis_barang_idjenis_barang');
+        return $this->hasMany(EventJenis::class, 'jenis_barang_id');
+    }
+    public function barang()
+    {
+        return $this->hasMany(Barang::class, 'jenis_barang_id');
     }
 }
