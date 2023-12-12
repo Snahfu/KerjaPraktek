@@ -62,3 +62,5 @@ Route::post('/loginAkun', [App\Http\Controllers\AuthController::class, 'login'])
 Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegistrationForm'])->name('registerPage');
 Route::post('/registerAkun', [App\Http\Controllers\AuthController::class, 'register'])->name('daftar');
 Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+Route::get('/get-pdf', [App\Http\Controllers\PdfController::class, 'pdfPage']);
