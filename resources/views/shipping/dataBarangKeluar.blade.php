@@ -30,36 +30,12 @@
                             @foreach ($datas as $data)
                                 @csrf
                                 <tr>
-                                    <td></td>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $data->nama }}</td>
                                     <td>{{ $data->driver }}</td>
                                     <td>{{ $data->event->nama }}</td>
                                     <td>{{ $data->tglInput }}</td>
                                     <td>{{ $data->tglJalan }}</td>
-                                    <td>
-                                        <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
-                                            <li class="nav-item dropdown">
-                                                <a class="nav-link nav-icon-hover" href="javascript:void(0)"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="ti ti-settings"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
-                                                    <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $data->id }})"
-                                                            class="d-flex align-items-center gap-2 dropdown-item">
-                                                            <i class="ti ti-edit fs-6"></i>
-                                                            <p class="mb-0 fs-3">Perbaruhi</p>
-                                                        </a>
-                                                        <a href="javascript:void(0)" onclick="hapus({{ $data->id }})"
-                                                            class="d-flex align-items-center gap-2 dropdown-item">
-                                                            <i class="ti ti-trash fs-6"></i>
-                                                            <p class="mb-0 fs-3">Hapus</p>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </td>
 
                                 </tr>
                             @endforeach

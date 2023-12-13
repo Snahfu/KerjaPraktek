@@ -70,8 +70,8 @@ class AdminController extends Controller
 
     public function edit(Request $request)
     {
-        // $customer = Customer::find($request->input('id'));
-        $customer = Customer::find(1);
+        $customer = Customer::find($request->input('id'));
+        // $customer = Customer::find(1);
 
         return view('admin.editpelanggan', ['customer' => $customer]);
     }

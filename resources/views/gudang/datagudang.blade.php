@@ -29,12 +29,12 @@
                             @foreach ($all_barang as $barang)
                                 @csrf
                                 <tr id="tr_{{ $barang->id }}">
-                                    <td></td>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td id="td_nama_{{ $barang->id }}">{{ $barang->jenis->nama }}</td>
                                     <td id="td_qty_{{ $barang->id }}">{{ $barang->qty }}</td>
                                     <td id="td_satuan_{{ $barang->id }}">{{ $barang->satuan }}</td>
                                     <td id="td_satuan_{{ $barang->id }}">{{ $barang->tanggalBeli }}</td>
-                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->hargaBeli }}</td>
+                                    <td id="td_satuan_{{ $barang->id }}">@currency($barang->hargaBeli)</td>
                                     <td>
                                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                                             <li class="nav-item dropdown">
@@ -44,7 +44,7 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="{{ route('editgudang', $barang->id) }}"
+                                                        <a href="{{ route('editgudang', ['id' => $barang->id]) }}"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
@@ -193,8 +193,23 @@
         $(document).ready(function() {
             // $('#listbarang').DataTable();
             var table = $('#listbarang').DataTable( {
-            lengthChange: false,
-            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+              lengthChange: false,
+              buttons: [ 
+                'copy', 
+                {
+                  extend: 'excel',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3, 4, 5 ]
+                  },
+                },
+                {
+                  extend: 'pdf',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3, 4, 5 ]
+                  },
+                },
+                'colvis' 
+              ],
             } );
     
             table.buttons().container()
@@ -278,7 +293,7 @@
             });
         }
 
-        function deleteBarang(id) {
+        function deleteGudang(id) {
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -305,7 +320,7 @@
 
         function hapus(id) {
             $('#deleteModal').modal('show');
-            $('#buttonHapus').attr('onclick', 'deleteBarang(' + id + ')');
+            $('#buttonHapus').attr('onclick', 'deleteGudang(' + id + ')');
         }
     </script>
 @endsection

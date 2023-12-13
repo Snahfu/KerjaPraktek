@@ -35,7 +35,7 @@
                               @if ($data->repair_date == null)
                                 @csrf
                                 <tr>
-                                    <td></td>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $data->damage_date }}</td>
                                     <td>{{ $data->damage_type }}</td>
                                     <td>{{ $data->damage_details }}</td>
@@ -55,7 +55,7 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $data->id }})"
+                                                        <a href="{{ route('editdamage', ['id' => $data->id]) }}" 
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
@@ -116,7 +116,7 @@
                                 <th>User Pelapor</th>
                                 <th>Barang</th>
                                 <th>User Teknisi</th>
-                                <th>Action</th>
+                                <th>Act</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,7 +124,7 @@
                               @if ($data->repair_date != null)
                                 @csrf
                                 <tr>
-                                    <td></td>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $data->damage_date }}</td>
                                     <td>{{ $data->damage_type }}</td>
                                     <td>{{ $data->damage_details }}</td>
@@ -144,7 +144,7 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $data->id }})"
+                                                        <a href="{{ route('editdamage', $data->id) }}" 
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
@@ -177,7 +177,7 @@
                                 <th>User Pelapor</th>
                                 <th>Barang</th>
                                 <th>User Teknisi</th>
-                                <th>Action</th>
+                                <th>Act</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -298,9 +298,23 @@
     <script>
         $(document).ready(function() {
             var tableBelum = $('#listbarangbelum').DataTable( {
-            lengthChange: false,
-            scrollX: true,
-            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+              lengthChange: false,
+              buttons: [ 
+                'copy', 
+                {
+                  extend: 'excel',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+                  },
+                },
+                {
+                  extend: 'pdf',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+                  },
+                },
+                'colvis' 
+              ],
             } );
     
             tableBelum.buttons().container()
@@ -394,7 +408,7 @@
             });
         }
 
-        function deleteBarang(id) {
+        function deleteDamage(id) {
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -421,7 +435,7 @@
 
         function hapus(id) {
             $('#deleteModal').modal('show');
-            $('#buttonHapus').attr('onclick', 'deleteBarang(' + id + ')');
+            $('#buttonHapus').attr('onclick', 'deleteDamage(' + id + ')');
         }
     </script>
 @endsection
