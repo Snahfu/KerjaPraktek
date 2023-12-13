@@ -14,14 +14,14 @@
               </div>
               <div class="card-body">
                   <div class="row">
-                      <!-- Tanggal Beli -->
+                      <!-- Tanggal Laporan -->
                       <div class="col-12">
                           <div class="mb-1 row">
                               <div class="col-sm-3">
-                                  <label class="col-form-label" for="tanggal-beli">Tanggal</label>
+                                  <label class="col-form-label" for="tanggal-laporan">Tanggal</label>
                               </div>
                               <div class="col-sm-3">
-                                  <input type="month" id="tanggal" class="form-control" name="tanggal-beli" value="" onchange="changeDate()" />
+                                  <input type="month" id="tanggal" class="form-control" name="tanggal-beli" value="" />
                               </div>
                           </div>
                       </div>
@@ -41,14 +41,14 @@
                                   <label class="col-form-label" for="tanggal-beli">Omzet Bulan Ini</label>
                               </div>
                               <div class="col-sm-3">
-                                  <p class="col-form-label" id="omzet">{{ $data['omzet'] }}</p>
+                                  <p class="col-form-label" id="omzet">@currency($data['omzet'])</p>
                               </div>
                           </div>
                       </div>
                       <div class="col-12">
                           <div class="mb-1 row">
                               <div class="col-sm-3">
-                                  <label class="col-form-label" for="tanggal-beli">Jumlah Event Selesai/Batal</label>
+                                  <label class="col-form-label" for="tanggal-beli">Status Event Bulan Ini</label>
                               </div>
                           </div>
                           <div class="mb-1 row">
@@ -138,53 +138,91 @@
 
 @section('javascript')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    {{-- <script>
-      // function updatePie() {
-      //   let datas = {!! json_encode($data->selesai_batal); !!};
-      //   var xValues = [];
-      //   var yValues = [];
-      //   var barColors = [];
-      //   datas.forEach(data => {
-      //     xValues.push(data['berhasil_tidak']);
-      //     yValues.push(data['jumlah']);
-      //     if (data['berhasil_tidak'] == 'berhasil') {
-      //       barColors.push('#03258C')
-      //     } else {
-      //       barColors.push('#ff9cee')
-      //     }
-      //   });
+    <script>
+      function updatePie(data) {
+        let datas = data;
+        // alert(datas);
+        var xValues = [];
+        var yValues = [];
+        var barColors = [];
+        // alert(datas[1]);
+        datas.forEach(data => {
+          xValues.push(data['status']);
+          yValues.push(data['total']);
           
-      //   new Chart("myChart", {
-      //     type: "pie",
-      //     data: {
-      //       labels: xValues,
-      //       datasets: [{
-      //         backgroundColor: barColors,
-      //         data: yValues
-      //       }]
-      //     },
-      //     options: {
-      //       title: {
-      //         display: true,
-      //         text: "Jumlah Event Selesai/Batal"
-      //       }
-      //     }
-      //   });
-      // }
-      // updatePie();
-    </script> --}}
+          // var color = '#';
+          // for (let i = 0; i < 6; i++) {
+          //   const listChar = '0123456789abcdef'
+          //   const angka = Math.floor(Math.random() * 16);
+          //   const char = listChar[angka];
+          //   color += char;
+          // }
+
+          var color = "";
+          switch (data['status']) {
+            case "Diproses":
+              color = "#000000";
+              break;
+            case "Diterima":
+              color = "#222222";
+              break;
+            case "Draft":
+              color = "#444444";
+              break;
+            case "Event Berlangsung":
+              color = "#666666";
+              break;
+            case "Menunggu Persetujuan":
+              color = "#888888";
+              break;
+            case "Selesai":
+              color = "#aaaaaa";
+              break;
+            case "Tagihan":
+              color = "#cccccc";
+              break;
+          }
+            
+          barColors.push(color);
+        });
+          
+        new Chart("myChart", {
+          type: "bar",
+          data: {
+            labels: xValues,
+            datasets: [{
+              backgroundColor: barColors,
+              data: yValues
+            }]
+          },
+          options: {
+            legend: {display: false},
+            title: {
+              display: true,
+              text: "Status Event Bulan Ini"
+            },
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true
+                }
+              }]
+            }
+          }
+        });
+      }
+      updatePie({!! json_encode($data['status_events']); !!});
+    </script>
     <script>
       document.getElementById('tanggal').valueAsDate = new Date();
-      $(document).ready(function() {
-          var table = $('#listevent').DataTable( {
-          lengthChange: false,
-          buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
-          } );
-  
-          table.buttons().container()
-              .appendTo( '#listevent_wrapper .col-md-6:eq(0)' );
-          });
-      function changeDate() {
+      var table = $('#listevent').DataTable( {
+      lengthChange: false,
+      buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+      } );
+
+      table.buttons().container()
+          .appendTo( '#listevent_wrapper .col-md-6:eq(0)' );
+      $('#tanggal').on('change', function() {
         table.clear();
         dateValue = document.getElementById('tanggal').value;
         $.ajaxSetup({
@@ -202,9 +240,10 @@
             success: function(response) {
                 document.getElementById('jumlahEvent').innerHTML = response.data.jumlah_event;
                 document.getElementById('omzet').innerHTML = response.data.omzet;
-                // updatePie();
+                updatePie(response.data.status_events);
                 response.data.list_events.forEach(event => {
                   table.row.add([
+                    "",
                     event.tanggal,
                     event.nama,
                     event.status,
@@ -218,6 +257,6 @@
                 console.log('Error:', error);
             }
         });
-      }
+      });
     </script>
 @endsection

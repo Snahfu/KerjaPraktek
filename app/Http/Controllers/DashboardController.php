@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -21,6 +22,12 @@ class DashboardController extends Controller
         ->whereYear('events.tanggal', '=', now('Y'))
         ->whereMonth('events.tanggal', '=', now('m'))
         ->sum('invoices.total_harga');
+
+        $status_events = Event::select('status', DB::raw('count(*) as total'))
+        ->whereYear('events.tanggal', '=', now('Y'))
+        ->whereMonth('events.tanggal', '=', now('m'))
+        ->groupBy('status')
+        ->get();
 
         $list_event = [];
         foreach ($events as $event) {
@@ -58,6 +65,7 @@ class DashboardController extends Controller
         $data = [
           'jumlah_event' => $jumlah_event,
           'omzet' => $omzet,
+          'status_events' => $status_events,
           'list_events' => $list_event
         ];
         return view('admin.index', ['data' => $data]);
@@ -79,6 +87,12 @@ class DashboardController extends Controller
         ->whereYear('events.tanggal', '=', $year)
         ->whereMonth('events.tanggal', '=', $month)
         ->sum('invoices.total_harga');
+
+        $status_events = Event::select('status', DB::raw('count(*) as total'))
+        ->whereYear('events.tanggal', '=', $year)
+        ->whereMonth('events.tanggal', '=', $month)
+        ->groupBy('status')
+        ->get();
 
         $list_event = [];
         foreach ($events as $event) {
@@ -114,6 +128,7 @@ class DashboardController extends Controller
         $data = [
           'jumlah_event' => $jumlah_event,
           'omzet' => $omzet,
+          'status_events' => $status_events,
           'list_events' => $list_event
         ];
         $status = "success";

@@ -44,7 +44,7 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $barang->id }})"
+                                                        <a href="javascript:void(0)" onclick="{{ route('editgudang', $barang->id) }}"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
