@@ -12,7 +12,20 @@ class JenisBarang extends Model
     protected $table = "jenis_barang";
     protected $guarded = [];
 
-    public function publikasis(){
+    public function itemBarangs(){
         return $this->hasMany(Barang::class,'jenis_barang_id');
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'kategori_barang_id');
+    }
+    public function eventjenis()
+    {
+        return $this->hasMany(EventJenis::class, 'jenis_barang_id');
+    }
+    public function barang()
+    {
+        return $this->hasMany(Barang::class, 'jenis_barang_id');
     }
 }

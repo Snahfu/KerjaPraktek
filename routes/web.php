@@ -20,9 +20,11 @@ Route::middleware('role:5')->group(function () {
   Route::get('/dashboard', function () {
       return view('karyawan.index');
   });
-  Route::get('/dashboard-admin', function () {
-      return view('admin.index');
-  });
+  Route::get('/dashboard-admin', [App\Http\Controllers\DashboardController::class, 'index']);
+  Route::post('/dashboard-admin-param', [App\Http\Controllers\DashboardController::class, 'indexParameter'])->name('admin.indexParameter');
+  // Route::get('/dashboard-admin', function () {
+  //     return view('admin.index');
+  // });
   Route::get('/tambah', function () {
       return view('common.tambahorder');
   });
@@ -58,7 +60,7 @@ Route::middleware('role:5')->group(function () {
   Route::post('/delete-event', [App\Http\Controllers\EventController::class, 'destroy'])->name('common.deleteevent');
   Route::post('/update-event', [App\Http\Controllers\EventController::class, 'update'])->name('common.updateevent');
 
-  // GUDANG CONTORLLER
+  // GUDANG CONTROLLER
   Route::get('/data-gudang', [App\Http\Controllers\BarangController::class, 'index'])->name('gudang.datagudang');
   Route::get('/gudang', [App\Http\Controllers\BarangController::class, 'task'])->name('gudang');
   Route::get('/tambah-gudang', [App\Http\Controllers\BarangController::class, 'create'])->name('tambahgudang');
@@ -66,8 +68,38 @@ Route::middleware('role:5')->group(function () {
   Route::post('/check-task', [App\Http\Controllers\BarangController::class, 'doneTask'])->name('checktask');
   Route::get('/edit-gudang', [App\Http\Controllers\BarangController::class, 'edit'])->name('editgudang');
   Route::post('/update-gudang', [App\Http\Controllers\BarangController::class, 'update'])->name('updategudang');
+  Route::post('/delete-gudang', [App\Http\Controllers\BarangController::class, 'destroy'])->name('deletegudang');
 
+  // JENIS CONTROLLER
+  Route::get('/data-jenis', [App\Http\Controllers\JenisBarangController::class, 'index'])->name('jenis.datajenis');
+  Route::get('/tambah-jenis', [App\Http\Controllers\JenisBarangController::class, 'create'])->name('tambahjenis');
+  Route::post('/tambah-jenis', [App\Http\Controllers\JenisBarangController::class, 'store'])->name('storejenis');
+  Route::get('/edit-jenis', [App\Http\Controllers\JenisBarangController::class, 'edit'])->name('editjenis');
+  Route::post('/update-jenis', [App\Http\Controllers\JenisBarangController::class, 'update'])->name('updatejenis');
+  Route::post('/delete-jenis', [App\Http\Controllers\JenisBarangController::class, 'destroy'])->name('deletejenis');
+
+  // ITEM DAMAGE CONTROLLER
+  Route::get('/data-damage', [App\Http\Controllers\ItemDamageController::class, 'index'])->name('damage.datadamage');
+  Route::get('/data-damage-servicer', [App\Http\Controllers\ItemDamageController::class, 'indexServicer'])->name('damage.datadamage-servicer');
+  Route::get('/tambah-damage', [App\Http\Controllers\ItemDamageController::class, 'create'])->name('tambahdamage');
+  Route::post('/tambah-damage', [App\Http\Controllers\ItemDamageController::class, 'store'])->name('storedamage');
+  Route::get('/edit-damage', [App\Http\Controllers\ItemDamageController::class, 'edit'])->name('editdamage');
+  Route::post('/update-damage', [App\Http\Controllers\ItemDamageController::class, 'update'])->name('updatedamage');
+  Route::get('/edit-service-damage', [App\Http\Controllers\ItemDamageController::class, 'editService'])->name('editservicedamage');
+  Route::post('/service-damage', [App\Http\Controllers\ItemDamageController::class, 'service'])->name('servicedamage');
+  Route::post('/delete-damage', [App\Http\Controllers\ItemDamageController::class, 'destroy'])->name('deletedamage');
+
+  // SHIPPING CONTROLLER
+  Route::get('/data-shipping', [App\Http\Controllers\ShippingController::class, 'index'])->name('shipping.datashipping');
+  Route::get('/tambah-shipping', [App\Http\Controllers\ShippingController::class, 'create'])->name('tambahshipping');
+  Route::post('/get-barang-shipping', [App\Http\Controllers\ShippingController::class, 'getBarang'])->name('getbarangshipping');
+  Route::post('/tambah-shipping', [App\Http\Controllers\ShippingController::class, 'store'])->name('storeshipping');
+  Route::get('/edit-shipping', [App\Http\Controllers\ShippingController::class, 'edit'])->name('editshipping');
+  Route::post('/update-shipping', [App\Http\Controllers\ShippingController::class, 'update'])->name('updateshipping');
+  Route::post('/delete-shipping', [App\Http\Controllers\ShippingController::class, 'destroy'])->name('deleteshipping');
 });
+
+
 
 // Route::get('/', function () {
 //     return view('admin.index');

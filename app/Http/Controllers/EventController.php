@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Event;
 use App\Models\EventJenis;
-use App\Models\Jenis;
+use App\Models\JenisBarang;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,8 +34,8 @@ class EventController extends Controller
         $semua_kategori = Kategori::all();
         $semua_customer = Customer::all();
         foreach ($semua_kategori as $kategori) {
-            $kategori_array[$kategori->idkategori] = [];
-            $kategori_map[$kategori->idkategori] = $kategori->nama;
+            $kategori_array[$kategori->id] = [];
+            $kategori_map[$kategori->id] = $kategori->nama;
         }
         // dd($kategori_map);
         return view('common.tambahorder', ['array_kategori' => $kategori_array, 'kategori_map' => $kategori_map, 'semua_customer' => $semua_customer]);
@@ -43,7 +43,6 @@ class EventController extends Controller
 
     public function get_barang(Request $request)
     {
-        $datas = "";
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -57,8 +56,7 @@ class EventController extends Controller
             ], 200);
         }
 
-        $barang = Jenis::where('kategori_barang_idkategori', $request['id'])->get();
-        // dd($barang);
+        $barang = JenisBarang::where('kategori_barang_id', $request['id'])->get();
 
         if (!$barang) {
             $status = "failed";

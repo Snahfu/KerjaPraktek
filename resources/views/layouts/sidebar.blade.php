@@ -45,6 +45,34 @@
             </a>
           </li>
           <li class="sidebar-item">
+            <a class="sidebar-link" href="{{ route('jenis.datajenis') }}" aria-expanded="false">
+              <span>
+                <i class="ti ti-box"></i>
+              </span>
+              <span class="hide-menu">Jenis Barang</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+              @if (Auth::user()->divisi_id == 3)
+                  <a class="sidebar-link" href="{{ route('damage.datadamage-servicer') }}" aria-expanded="false">
+              @else
+                  <a class="sidebar-link" href="{{ route('damage.datadamage') }}" aria-expanded="false">
+              @endif
+              <span>
+                <i class="ti ti-egg-cracked"></i>
+              </span>
+              <span class="hide-menu">Barang Rusak</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a class="sidebar-link" href="{{ route('shipping.datashipping') }}" aria-expanded="false">
+              <span>
+                <i class="ti ti-truck-delivery"></i>
+              </span>
+              <span class="hide-menu">Shipping</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
             <a class="sidebar-link" href="/data-transaksi" aria-expanded="false">
               <span>
                 <i class="ti ti-timeline"></i>
@@ -52,14 +80,14 @@
               <span class="hide-menu">Transaksi Penjualan</span>
             </a>
           </li>
-          <li class="sidebar-item">
+          {{-- <li class="sidebar-item">
             <a class="sidebar-link" href="./ui-buttons.html" aria-expanded="false">
               <span>
                 <i class="ti ti-report-analytics"></i>
               </span>
               <span class="hide-menu">Laporan Penjualan</span>
             </a>
-          </li>
+          </li> --}}
           <li class="sidebar-item">
             <a class="sidebar-link" href="{{ route('common.tambahorder') }}" aria-expanded="false">
               <span>

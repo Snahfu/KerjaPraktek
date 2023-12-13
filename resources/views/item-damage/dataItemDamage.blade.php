@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Data Gudang Page
+    Data Barang Rusak Page
 @endsection
 
 @section('content')
@@ -9,32 +9,43 @@
         <div class="col-12">
             <div class="card card-custom">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">Data Gudang</h4>
+                    <h4 class="card-title">Data Barang Rusak Belum Diperbaiki</h4>
                 </div>
                 <div class="card-body h5 text-dark">
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
-                        id="listbarang">
+                        id="listbarangbelum">
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Nama Barang</th>
-                                <th>QTY</th>
-                                <th>Satuan</th>
-                                <th>Tanggal Beli</th>
-                                <th>Harga Beli</th>
+                                <th>Tanggal Damage</th>
+                                <th>Tipe Damage</th>
+                                <th>Detail Damage</th>
+                                <th>Repair Status</th>
+                                <th>Repair Date</th>
+                                <th>Catatan Repair</th>
+                                <th>Estimasi Selesai</th>
+                                <th>User Pelapor</th>
+                                <th>Barang ID</th>
+                                <th>User Teknisi</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($all_barang as $barang)
+                            @foreach ($datas as $data)
+                              @if ($data->repair_date == null)
                                 @csrf
-                                <tr id="tr_{{ $barang->id }}">
+                                <tr>
                                     <td></td>
-                                    <td id="td_nama_{{ $barang->id }}">{{ $barang->jenis->nama }}</td>
-                                    <td id="td_qty_{{ $barang->id }}">{{ $barang->qty }}</td>
-                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->satuan }}</td>
-                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->tanggalBeli }}</td>
-                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->hargaBeli }}</td>
+                                    <td>{{ $data->damage_date }}</td>
+                                    <td>{{ $data->damage_type }}</td>
+                                    <td>{{ $data->damage_details }}</td>
+                                    <td>{{ $data->repair_status }}</td>
+                                    <td>{{ $data->repair_date }}</td>
+                                    <td>{{ $data->repair_notes }}</td>
+                                    <td>{{ $data->estimated_completion }}</td>
+                                    <td>{{ $data->userReporter->nama }}</td>
+                                    <td>{{ $data->item_barang_id }}</td>
+                                    <td>{{ $data->userServicer->nama }}</td>
                                     <td>
                                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                                             <li class="nav-item dropdown">
@@ -44,12 +55,12 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $barang->id }})"
+                                                        <a href="javascript:void(0)" onclick="ubah({{ $data->id }})"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
                                                         </a>
-                                                        <a href="javascript:void(0)" onclick="hapus({{ $barang->id }})"
+                                                        <a href="javascript:void(0)" onclick="hapus({{ $data->id }})"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-trash fs-6"></i>
                                                             <p class="mb-0 fs-3">Hapus</p>
@@ -61,16 +72,111 @@
                                     </td>
 
                                 </tr>
+                              @endif
                             @endforeach
                         </tbody>
                         <tfoot>
                             <tr>
                                 <th></th>
-                                <th>Nama Barang</th>
-                                <th>QTY</th>
-                                <th>Satuan</th>
-                                <th>Tanggal Beli</th>
-                                <th>Harga Beli</th>
+                                <th>Tanggal Damage</th>
+                                <th>Tipe Damage</th>
+                                <th>Detail Damage</th>
+                                <th>Repair Status</th>
+                                <th>Repair Date</th>
+                                <th>Catatan Repair</th>
+                                <th>Estimasi Selesai</th>
+                                <th>User Pelapor</th>
+                                <th>Barang</th>
+                                <th>User Teknisi</th>
+                                <th>Action</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card card-custom">
+                <div class="card-header border-bottom">
+                    <h4 class="card-title">Data Barang Rusak Sudah Diperbaiki</h4>
+                </div>
+                <div class="card-body h5 text-dark">
+                    <table class="table caption-top table-bordered table-striped table-hover table-responsive"
+                        id="listbarangsudah">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Tanggal Damage</th>
+                                <th>Tipe Damage</th>
+                                <th>Detail Damage</th>
+                                <th>Repair Status</th>
+                                <th>Repair Date</th>
+                                <th>Catatan Repair</th>
+                                <th>Estimasi Selesai</th>
+                                <th>User Pelapor</th>
+                                <th>Barang</th>
+                                <th>User Teknisi</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($datas as $data)
+                              @if ($data->repair_date != null)
+                                @csrf
+                                <tr>
+                                    <td></td>
+                                    <td>{{ $data->damage_date }}</td>
+                                    <td>{{ $data->damage_type }}</td>
+                                    <td>{{ $data->damage_details }}</td>
+                                    <td>{{ $data->repair_status }}</td>
+                                    <td>{{ $data->repair_date }}</td>
+                                    <td>{{ $data->repair_notes }}</td>
+                                    <td>{{ $data->estimated_completion }}</td>
+                                    <td>{{ $data->userReporter->nama }}</td>
+                                    <td>{{ $data->item_barang_id }}</td>
+                                    <td>{{ $data->userServicer->nama }}</td>
+                                    <td>
+                                        <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
+                                            <li class="nav-item dropdown">
+                                                <a class="nav-link nav-icon-hover" href="javascript:void(0)"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="ti ti-settings"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
+                                                    <div class="message-body">
+                                                        <a href="javascript:void(0)" onclick="ubah({{ $data->id }})"
+                                                            class="d-flex align-items-center gap-2 dropdown-item">
+                                                            <i class="ti ti-edit fs-6"></i>
+                                                            <p class="mb-0 fs-3">Perbaruhi</p>
+                                                        </a>
+                                                        <a href="javascript:void(0)" onclick="hapus({{ $data->id }})"
+                                                            class="d-flex align-items-center gap-2 dropdown-item">
+                                                            <i class="ti ti-trash fs-6"></i>
+                                                            <p class="mb-0 fs-3">Hapus</p>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </td>
+
+                                </tr>
+                              @endif
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th>Tanggal Damage</th>
+                                <th>Tipe Damage</th>
+                                <th>Detail Damage</th>
+                                <th>Repair Status</th>
+                                <th>Repair Date</th>
+                                <th>Catatan Repair</th>
+                                <th>Estimasi Selesai</th>
+                                <th>User Pelapor</th>
+                                <th>Barang</th>
+                                <th>User Teknisi</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
@@ -191,15 +297,25 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            // $('#listbarang').DataTable();
-            var table = $('#listbarang').DataTable( {
+            var tableBelum = $('#listbarangbelum').DataTable( {
             lengthChange: false,
+            scrollX: true,
             buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
             } );
     
-            table.buttons().container()
-                .appendTo( '#listbarang_wrapper .col-md-6:eq(0)' );
-            });
+            tableBelum.buttons().container()
+                .appendTo( '#listbarangbelum_wrapper .col-md-6:eq(0)' );
+
+
+            var tableSudah = $('#listbarangsudah').DataTable( {
+            lengthChange: false,
+            scrollX: true,
+            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+            } );
+    
+            tableSudah.buttons().container()
+                .appendTo( '#listbarangsudah_wrapper .col-md-6:eq(0)' );
+        });
 
         function alertUpdate(msg, status) {
             var alertModalTitle = document.getElementById('alertModalTitle');
@@ -285,7 +401,7 @@
                 }
             });
             $.ajax({
-                url: "{{ route('deletegudang') }}",
+                url: "{{ route('deletedamage') }}",
                 type: 'POST',
                 data: {
                     'id': id,

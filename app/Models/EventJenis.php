@@ -13,7 +13,7 @@ class EventJenis extends Model
 
     public function jenis()
     {
-        return $this->belongsTo(Jenis::class, 'jenis_barang_idjenis_barang');
+        return $this->belongsTo(JenisBarang::class, 'jenis_barang_id');
     }
     public function event()
     {
@@ -21,6 +21,6 @@ class EventJenis extends Model
     }
 
     protected $fillable = [
-        'jenis_barang_idjenis_barang', 'events_id', 'qty', 'harga_barang', 'subtotal'
+        'jenis_barang_id', 'events_id', 'qty', 'harga_barang', 'subtotal'
     ];
 }
