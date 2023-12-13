@@ -26,4 +26,8 @@ class Barang extends Model
     {
         return $this->hasMany(ShippingBarang::class, 'item_barang_id');
     }
+
+    public function invoiceBarang(){
+        return $this->hasMany(InvoiceBarang::class,'item_barang_id');
+    }
 }

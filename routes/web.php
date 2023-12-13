@@ -95,6 +95,7 @@ Route::middleware('role:5')->group(function () {
   Route::post('/get-barang-shipping', [App\Http\Controllers\ShippingController::class, 'getBarang'])->name('getbarangshipping');
   Route::post('/tambah-shipping', [App\Http\Controllers\ShippingController::class, 'store'])->name('storeshipping');
   Route::get('/edit-shipping', [App\Http\Controllers\ShippingController::class, 'edit'])->name('editshipping');
+  Route::post('/get-barang-edit-shipping', [App\Http\Controllers\ShippingController::class, 'getBarangEdit'])->name('getbarangeditshipping');
   Route::post('/update-shipping', [App\Http\Controllers\ShippingController::class, 'update'])->name('updateshipping');
   Route::post('/delete-shipping', [App\Http\Controllers\ShippingController::class, 'destroy'])->name('deleteshipping');
 });

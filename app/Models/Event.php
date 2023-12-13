@@ -29,6 +29,11 @@ class Event extends Model
         return $this->hasMany(Shipping::class, 'events_id');
     }
 
+    public function event()
+    {
+        return $this->hasMany(Invoice::class, 'events_id');
+    }
+
     protected $fillable = [
         'id', 'PIC', 'customers_id', 'nama', 'status', 'lokasi', 'jabatan_client', 'waktu_loading','waktu_loading_out','jam_mulai_acara','jam_selesai_acara'
     ];

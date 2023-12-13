@@ -45,8 +45,12 @@ class ShippingController extends Controller
                     ->join('divisi', 'karyawans.divisi_id', '=', 'divisi.id')
                     ->where('divisi.nama', '=', 'Driver')
                     ->get();
-        $event = Event::all();
+        $event = Event::select('events.id', 'events.nama')
+                 ->distinct()
+                 ->join('invoices', 'events.id', '=', 'invoices.events_id')
+                 ->get();
         $jenis = JenisBarang::all();
+
         foreach ($jenis as $j) {
             $array_jenis[$j->id] = [];
             $jenis_map[$j->id] = $j->nama;
@@ -65,6 +69,7 @@ class ShippingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
+            'jenis' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -76,15 +81,50 @@ class ShippingController extends Controller
             ], 200);
         }
 
-        $barang = Barang::where('jenis_barang_id', $request['id'])->get();
+        $kirim = [];
+        $resultInvoices = DB::table('item_barang_has_invoices')
+                ->join('invoices', 'invoices.id', '=', 'item_barang_has_invoices.invoices_id')
+                ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_invoices.item_barang_id')
+                ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
+                ->select(
+                    'item_barang_has_invoices.item_barang_id as barang_invoices',
+                    DB::raw('SUM(item_barang_has_invoices.qty) as total_qty_invoices'),
+                    'jenis_barang.nama as nama_jenis',
+                    'item_barang.jenis_barang_id as id_jenis'
+                )
+                ->where('invoices.events_id',  $request['id']) // Specify the desired events_id here
+                ->groupBy('item_barang_has_invoices.item_barang_id', 'jenis_barang.nama', 'item_barang.jenis_barang_id')
+                ->get();
 
-        if (!$barang) {
-            $status = "failed";
-            $msg = "Data tidak ditemukan";
-            return response()->json([
-                'status' => $status,
-                'msg' => $msg,
-            ], 200);
+        $resultShipping = DB::table('item_barang_has_item_shipping')
+                ->join('item_shipping', 'item_barang_has_item_shipping.item_shipping_id', '=', 'item_shipping.id')
+                ->join('item_barang', 'item_barang_has_item_shipping.item_barang_id', '=', 'item_barang.id')
+                ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
+                ->select(
+                    'item_barang_has_item_shipping.item_barang_id as barang_shipping',
+                    DB::raw('SUM(item_barang_has_item_shipping.qty) as total_qty_shipping'),
+                    'jenis_barang.nama as nama_jenis',
+                    'item_barang.jenis_barang_id as id_jenis'
+                )
+                ->where('item_shipping.events_id', $request['id']) // Specify the desired events_id here
+                ->where('item_shipping.jenis', $request['jenis'])
+                ->groupBy('item_barang_has_item_shipping.item_barang_id', 'jenis_barang.nama', 'item_barang.jenis_barang_id')
+                ->get();
+
+        foreach($resultInvoices as $ri){
+            $found = false;
+            foreach($resultShipping as $rs){
+                if($ri->barang_invoices == $rs->barang_shipping) {
+                    $found = true;
+                    $diff = $ri->total_qty_invoices - $rs->total_qty_shipping;
+                    if($diff != 0) {
+                        $kirim[] = ["qty"=> $diff, "id" => $ri->barang_invoices, "idjenis" => $ri->id_jenis, "jenis" => $ri->nama_jenis];
+                    }
+                }
+            }
+            if(!$found) {
+                $kirim[] = ["qty"=> $ri->total_qty_invoices, "id" => $ri->barang_invoices, "idjenis" => $ri->id_jenis, "jenis" => $ri->nama_jenis];
+            }
         }
 
         $status = "success";
@@ -92,7 +132,7 @@ class ShippingController extends Controller
         return response()->json(array(
             'status' => $status,
             'msg' => $msg,
-            'datas' => $barang,
+            'datas' => $kirim,
         ), 200);
     }
 
@@ -137,29 +177,6 @@ class ShippingController extends Controller
 
             foreach ($request['listbarang'] as $jenis) {
                 foreach($jenis as $barang){
-                    // Update item_barang
-                    $item_barang = Barang::find($barang['idbarang']);
-
-                    if ($request->input('jenis') == "Jemput") {
-                        $item_barang->update([
-                            'qty' => $item_barang['qty'] + $barang['quantity'],
-                        ]);
-                    } else {
-                        if($item_barang['qty'] < $barang['quantity']) {
-                            DB::rollback();
-            
-                            $status = "failed";
-                            return response()->json(array(
-                                'status' => $status,
-                                'msg' => 'Stok barang dengan ID '. $item_barang['id']. ' tidak mencukupi!',
-                            ), 200);
-                        }
-                        $item_barang->update([
-                            'qty' => $item_barang['qty'] - $barang['quantity'],
-                        ]);
-                    }
-                    // end Update item_barang
-
                     $shippingBarang = new ShippingBarang();
                     $shippingBarang->item_shipping_id = $dataId;
                     $shippingBarang->item_barang_id = $barang['idbarang'];
@@ -207,20 +224,61 @@ class ShippingController extends Controller
     public function edit(Request $request)
     {
         $shipping = Shipping::find($request->input('id'));
-        $shippingBarang = ShippingBarang::with('barang')->where('item_shipping_id', '=', $request->input('id'))->get();
-        // $shipping = Shipping::find(1);
-        // $shippingBarang = ShippingBarang::with('barang')->where('item_shipping_id', '=', 1)->get();
+        // $shipping = Shipping::find(6);
         $karyawan = Karyawan::select('karyawans.id', 'karyawans.nama')
                     ->join('divisi', 'karyawans.divisi_id', '=', 'divisi.id')
                     ->where('divisi.nama', '=', 'Driver')
                     ->get();
-        $event = Event::all();
+        $event = Event::select('events.id', 'events.nama')
+            ->distinct()
+            ->join('invoices', 'events.id', '=', 'invoices.events_id')
+            ->get();
         $jenis = JenisBarang::all();
         foreach ($jenis as $j) {
             $array_jenis[$j->id] = [];
             $jenis_map[$j->id] = $j->nama;
         }
-        return view('shipping.editshipping', ['shipping' => $shipping, 'shippingBarang' => $shippingBarang, 'karyawan' => $karyawan, 'event' => $event, 'jenis_map' => $jenis_map, 'array_jenis' => $array_jenis]);
+        return view('shipping.editshipping', ['shipping' => $shipping, 'karyawan' => $karyawan, 'event' => $event, 'jenis_map' => $jenis_map, 'array_jenis' => $array_jenis]);
+    }
+
+    public function getBarangEdit(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'jenis' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $status = "failed";
+            $msg = "Terdapat kesalahan pada sistem";
+            return response()->json([
+                'status' => $status,
+                'msg' => $msg,
+            ], 200);
+        }
+
+        $resultShipping = DB::table('item_barang_has_item_shipping')
+                ->join('item_shipping', 'item_barang_has_item_shipping.item_shipping_id', '=', 'item_shipping.id')
+                ->join('item_barang', 'item_barang_has_item_shipping.item_barang_id', '=', 'item_barang.id')
+                ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
+                ->select(
+                    'item_barang_has_item_shipping.item_barang_id as id',
+                    DB::raw('SUM(item_barang_has_item_shipping.qty) as qty'),
+                    'jenis_barang.nama as jenis',
+                    'item_barang.jenis_barang_id as idjenis'
+                )
+                ->where('item_shipping.events_id', $request['id']) // Specify the desired events_id here
+                ->where('item_shipping.jenis', $request['jenis'])
+                ->groupBy('item_barang_has_item_shipping.item_barang_id', 'jenis_barang.nama', 'item_barang.jenis_barang_id')
+                ->get();
+
+        $status = "success";
+        $msg = "Data berhasil diambil";
+        return response()->json(array(
+            'status' => $status,
+            'msg' => $msg,
+            'datas' => $resultShipping,
+        ), 200);
     }
 
     /**
@@ -271,57 +329,10 @@ class ShippingController extends Controller
                 'tglJalan' => $request->input('tglJalan'),
             ]);
 
-            $shippingBarang = ShippingBarang::where('item_shipping_id', $request->input('id'))->get();
-            // Update item_barang
-            foreach ($shippingBarang as $sb) {
-                $item_barang = Barang::find($sb['item_barang_id']);
-                if ($jenis == "Jemput") {
-                    if($item_barang['qty'] < $sb['qty']) {
-                        DB::rollback();
-            
-                        $status = "failed";
-                        return response()->json(array(
-                            'status' => $status,
-                            'msg' => 'Stok barang dengan ID '. $item_barang['id']. ' tidak mencukupi!',
-                        ), 200);
-                    }
-                    $item_barang->update([
-                        'qty' => $item_barang['qty'] - $sb['qty'],
-                    ]);
-                } else {
-                    $item_barang->update([
-                        'qty' => $item_barang['qty'] + $sb['qty'],
-                    ]);
-                }
-            }
-            // end Update item_barang
             ShippingBarang::where('item_shipping_id', $request->input('id'))->delete();
 
             foreach ($request['listbarang'] as $jenis) {
                 foreach($jenis as $barang){
-                    // Update item_barang
-                    $item_barang = Barang::find($barang['idbarang']);
-
-                    if ($request->input('jenis') == "Jemput") {
-                        $item_barang->update([
-                            'qty' => $item_barang['qty'] + $barang['quantity'],
-                        ]);
-                    } else {
-                        if($item_barang['qty'] < $barang['quantity']) {
-                            DB::rollback();
-            
-                            $status = "failed";
-                            return response()->json(array(
-                                'status' => $status,
-                                'msg' => 'Stok barang dengan ID '. $item_barang['id']. ' tidak mencukupi!',
-                            ), 200);
-                        }
-
-                        $item_barang->update([
-                            'qty' => $item_barang['qty'] - $barang['quantity'],
-                        ]);
-                    }
-                    // end Update item_barang
                     $shippingBarang = new ShippingBarang();
                     $shippingBarang->item_shipping_id = $request->input('id');
                     $shippingBarang->item_barang_id = $barang['idbarang'];
@@ -362,31 +373,6 @@ class ShippingController extends Controller
 
         try {
             if ($shipping) {
-                $shippingBarang = ShippingBarang::where('item_shipping_id', $request->input('id'))->get();
-                // Update item_barang
-                foreach ($shippingBarang as $sb) {
-                    $item_barang = Barang::find($sb['item_barang_id']);
-                    if ($shipping['jenis'] == "Jemput") {
-                        if($item_barang['qty'] < $sb['quantity']) {
-                            DB::rollback();
-            
-                            $status = "failed";
-                            return response()->json(array(
-                                'status' => $status,
-                                'msg' => 'Stok barang dengan ID '. $item_barang['id']. ' tidak mencukupi!',
-                            ), 200);
-                        }
-
-                        $item_barang->update([
-                            'qty' => $item_barang['qty'] - $sb['qty'],
-                        ]);
-                    } else {
-                        $item_barang->update([
-                            'qty' => $item_barang['qty'] + $sb['qty'],
-                        ]);
-                    }
-                }
-                // end Update item_barang
                 $deletedSB = ShippingBarang::where('item_shipping_id', $request->input('id'))->delete();
                 $deleted = $shipping->delete();
     
