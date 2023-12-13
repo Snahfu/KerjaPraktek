@@ -21,7 +21,7 @@
                                     <label class="col-form-label" for="event">Event</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <select class="form-select" id="event">
+                                    <select class="form-select" id="event" disabled>
                                         @foreach ($event as $e)
                                             @if ($shipping->events_id == $e->id)
                                                 <option value="{{$e->id}}" selected>{{$e->nama}}</option>
@@ -41,7 +41,7 @@
                                     <label class="col-form-label" for="jenis">Jenis</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <select class="form-select" id="jenis">
+                                    <select class="form-select" id="jenis" onchange="updateBarang()">
                                         @if ($shipping->jenis == "Kirim")
                                             <option value="Kirim" selected>Kirim</option>
                                             <option value="Jemput">Jemput</option>
@@ -100,62 +100,12 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">Spesifikasi Barang Shipping</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="mb-1 row">
-                                <div class="col-sm-3">
-                                    <label class="col-form-label" for="jenis_barang">Jenis Barang</label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <select class="form-select" id="jenis_barang" onchange="updateJenis()">
-                                        <option value="none" disabled selected> -- Pilih Jenis Barang -- </option>
-                                        @foreach ($jenis_map as $key => $nama)
-                                            <option value="{{ $key }}">{{ $nama }}</option>
-                                        @endforeach
-                                    </select>
-                                    {{-- Combo Box --}}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="mb-1 row">
-                                <div class="col-sm-3">
-                                    <label class="col-form-label" for="barang">ID Barang</label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <select class="form-select" id="barang" disabled>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="mb-1 row">
-                                <div class="col-sm-3">
-                                    <label class="col-form-label" for="quantity">Quantity</label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="number" value="1" min="1" id="quantity"
-                                        class="form-control"/>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary me-1" onclick="tambahSpesifikasi()">Add</button>
-                    </div>
-                </div>
-            </div>
+            <h2 id="forNothing"></h2>
         </div>
     </section>
     <!-- Basic Horizontal form layout section end -->
 
-    <div class="row">
+    <div class="row detail-barang">
         <div class="col-12">
             <div class="card card-custom">
                 <div class="card-header border-bottom">
@@ -181,8 +131,8 @@
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary me-1" onclick="updateDatabase()">Submit</button>
-    <button type="reset" class="btn btn-outline-secondary" onclick="resetAll()">Reset</button>
+    <button type="submit" class="btn btn-primary me-1 detail-barang" onclick="updateDatabase()">Submit</button>
+    <button type="reset" class="btn btn-outline-secondary detail-barang" onclick="resetAll()">Reset</button>
 
     {{-- Modal Alert Begin --}}
     <div class="modal fade" id="alertModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -257,21 +207,10 @@
         var arraySpesifikasiJson = Object.values(@json($array_jenis));
         // Maping untuk menampilkan nama jenis pada comboboxnya
         var jenis_map = @json($jenis_map);
-        // Maping untuk menyimpan harga dari setiap barang
-        var harga_sewa_map = [];
         
-        let shippingBarang = Object.values(@json($shippingBarang))
-        for(let idx in shippingBarang) {
-            let jenis = shippingBarang[idx].barang.jenis_barang_id
-            let spesifikasi = {
-                idbarang: shippingBarang[idx].item_barang_id,
-                jenis: jenis,
-                quantity: shippingBarang[idx].qty,
-            };
-
-            arraySpesifikasiJson[jenis].push(spesifikasi);
-        }
-        updateTabel();
+        $(document).ready(function() {
+            updateBarang();
+        });
 
         // Function untuk alert Message
         function alertUpdate(msg, status) {
@@ -297,20 +236,22 @@
         }
 
         // Melakukan update barang pada comboBox nama-barang
-        function updateJenis() {
-            var selectElement = document.getElementById('jenis_barang');
-            var selectedIndex = selectElement.selectedIndex;
-            var id = selectElement.options[selectedIndex].value;
+        function updateBarang() {
+            arraySpesifikasiJson = Object.values(@json($array_jenis));
+            var idEvent = document.getElementById('event').value;
+            var jenis = document.getElementById('jenis').value;
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
             $.ajax({
-                url: "{{ route('getbarangshipping') }}",
+                url: "{{ route('getbarangeditshipping') }}",
                 type: 'POST',
                 data: {
-                    'id': id,
+                    'id': idEvent,
+                    'jenis':jenis,
                 },
                 dataType: 'json',
                 success: function(response) {
@@ -320,23 +261,66 @@
                         $('#responseController').html(response.msg);
                         $('#alertModal').modal('show');
                     } else {
-                        namaBarangElement = document.getElementById("barang")
-                        namaBarangElement.disabled = false;
+                        let elementShow = document.getElementsByClassName('detail-barang');
 
-                        hapusOptionPadaSelect(namaBarangElement);
+                        if(jenis === "Kirim") {
+                            if(Object.keys(response.datas).length === 0) {
+                                for (var i = 0; i < elementShow.length; i ++) {
+                                    elementShow[i].style.display = 'none';
+                                }
 
-                        var optionSelected = document.createElement('option');
-                        optionSelected.value = -1;
-                        optionSelected.text = "-- Pilih ID Barang --";
-                        optionSelected.disabled = true;
-                        optionSelected.selected = true;
-                        namaBarangElement.add(optionSelected);
+                                var h2 = document.getElementById('forNothing');
+                                h2.textContent = "Tidak ada barang yang dikirim";
+                            } else {
+                                var h2 = document.getElementById('forNothing');
+                                h2.textContent = "";
 
-                        for (var data in response.datas) {
-                            var option = document.createElement('option');
-                            option.value = response.datas[data].id;
-                            option.text = response.datas[data].id;
-                            namaBarangElement.add(option);
+                                for (var i = 0; i < elementShow.length; i ++) {
+                                    elementShow[i].style.display = '';
+                                }
+        
+                                for (var data in response.datas) {
+                                    // Isi tabel detail barang
+                                    var spesifikasiBarang = {
+                                        idbarang: response.datas[data].id,
+                                        idjenis: response.datas[data].idjenis,
+                                        jenis: response.datas[data].jenis,
+                                        quantity: response.datas[data].qty,
+                                    }
+
+                                    arraySpesifikasiJson[response.datas[data].idjenis].push(spesifikasiBarang);
+                                }
+                                updateTabel();
+                            }
+                        } else {
+                            if(Object.keys(response.datas).length === 0) {
+                                for (var i = 0; i < elementShow.length; i ++) {
+                                    elementShow[i].style.display = 'none';
+                                }
+
+                                var h2 = document.getElementById('forNothing');
+                                h2.textContent = "Tidak ada barang yang dijemput";
+                            } else {
+                                for (var i = 1; i < elementShow.length; i ++) {
+                                    elementShow[i].style.display = '';
+                                }
+
+                                var h2 = document.getElementById('forNothing');
+                                h2.textContent = "";
+
+                                for (var data in response.datas) {
+                                    // Isi tabel detail barang
+                                    var spesifikasiBarang = {
+                                        idbarang: response.datas[data].id,
+                                        idjenis: response.datas[data].idjenis,
+                                        jenis: response.datas[data].jenis,
+                                        quantity: response.datas[data].qty,
+                                    }
+    
+                                        arraySpesifikasiJson[response.datas[data].idjenis].push(spesifikasiBarang);
+                                }
+                                updateTabel();
+                            }
                         }
                     }
                 },
@@ -344,45 +328,6 @@
                     console.log('Error:', error);
                 }
             });
-        }
-
-        // Menambahkan data spesifikasi barang ke dalam tabel
-        function tambahSpesifikasi() {
-            var barangElement = document.getElementById('barang');
-            var barangIndex = barangElement.selectedIndex;
-            var id = barangElement.options[barangIndex].value;
-            if(id == -1) {
-                $('#alertModal').modal('show');
-                alertModalTitle.classList.remove('bg-success');
-                alertModalTitle.classList.add('bg-danger');
-                $('#responseController').text("Pilih ID barang terlebih dahulu!");
-
-                return
-            }
-
-            var jenisElement = document.getElementById('jenis_barang');
-            var selectedIndex = jenisElement.selectedIndex;
-            var jenis = jenisElement.options[selectedIndex].value;
-            if(jenis === 'none') {
-                $('#alertModal').modal('show');
-                alertModalTitle.classList.remove('bg-success');
-                alertModalTitle.classList.add('bg-danger');
-                $('#responseController').text("Pilih jenis barang terlebih dahulu!");
-
-                return
-            }
-
-            var quantity = parseInt(document.getElementById('quantity').value);
-
-            var spesifikasiBarang = {
-                idbarang: id,
-                jenis: jenis,
-                quantity: quantity,
-            }
-
-            arraySpesifikasiJson[jenis].push(spesifikasiBarang);
-            console.log(arraySpesifikasiJson);
-            updateTabel();
         }
 
         // Melakukan update UI pada tabel agar sesuai dengan tampilannya
@@ -435,6 +380,10 @@
             var idBarang = tdList[1].textContent;
             var quantity = tdList[2].textContent;
             document.getElementById('edit_quantity_barang').value = quantity
+            $("#edit_quantity_barang").attr({
+                "max" : quantity,
+                "min" : 1
+            });
             document.getElementById('edit_id_barang').value = idBarang
             $('#btnPerbaruhi').attr('onclick', 'perbaruhiDataTabel(' + id + ')');
             $('#editModal').modal('show');
@@ -455,7 +404,15 @@
 
         // Event trigger untuk melakukan perubahan pada spesifikasi order
         function perbaruhiDataTabel(id) {
+            var tdList = $('#barang_' + id).find('td');
             var quantity = parseInt(document.getElementById('edit_quantity_barang').value);
+            
+            if(quantity > tdList[2].textContent) {
+                quantity = tdList[2].textContent;
+            } else if(quantity < tdList[2].textContent) {
+                quantity = 1;
+            }
+
             updateArraySpesifikasiBarang(id, quantity);
             updateTabel();
             $('#editModal').modal('hide');
@@ -499,6 +456,7 @@
             $("#quantity").val(1);
             $('#jenis_barang option[disabled]').prop('selected', true)
             $('#barang').empty();
+            updateBarang();
             arraySpesifikasiJson = Object.values(@json($array_jenis));
             updateTabel();
         }
