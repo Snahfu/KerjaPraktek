@@ -31,7 +31,7 @@
                                 <tr>
                                     <td></td>
                                     <td>{{ $data->jenis }}</td>
-                                    <td>{{ $data->driver }}</td>
+                                    <td>{{ $data->karyawan->nama }}</td>
                                     <td>{{ $data->event->nama }}</td>
                                     <td>{{ $data->tglInput }}</td>
                                     <td>{{ $data->tglJalan }}</td>
@@ -285,7 +285,7 @@
                 }
             });
             $.ajax({
-                url: "{{ route('admin.deletebarang') }}",
+                url: "{{ route('deleteshipping') }}",
                 type: 'POST',
                 data: {
                     'id': id,
