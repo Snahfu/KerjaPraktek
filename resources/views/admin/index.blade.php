@@ -139,12 +139,13 @@
 @section('javascript')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <script>
+      let myChart;
       function updatePie(data) {
         let datas = data;
         // alert(datas);
-        var xValues = [];
-        var yValues = [];
-        var barColors = [];
+        let xValues = [];
+        let yValues = [];
+        let barColors = [];
         // alert(datas[1]);
         datas.forEach(data => {
           xValues.push(data['status']);
@@ -158,7 +159,7 @@
           //   color += char;
           // }
 
-          var color = "";
+          let color = "";
           switch (data['status']) {
             case "Diproses":
               color = "#000000";
@@ -186,7 +187,7 @@
           barColors.push(color);
         });
           
-        new Chart("myChart", {
+        myChart = new Chart("myChart", {
           type: "bar",
           data: {
             labels: xValues,
@@ -215,7 +216,7 @@
     </script>
     <script>
       document.getElementById('tanggal').valueAsDate = new Date();
-      var table = $('#listevent').DataTable( {
+      let table = $('#listevent').DataTable( {
       lengthChange: false,
       buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
       } );
@@ -223,7 +224,8 @@
       table.buttons().container()
           .appendTo( '#listevent_wrapper .col-md-6:eq(0)' );
       $('#tanggal').on('change', function() {
-        table.clear();
+        myChart.destroy();
+        table.clear().draw();
         dateValue = document.getElementById('tanggal').value;
         $.ajaxSetup({
             headers: {

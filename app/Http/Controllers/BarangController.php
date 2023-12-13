@@ -137,8 +137,8 @@ class BarangController extends Controller
      */
     public function edit(Request $request)
     {
-        // $barang = Barang::find($request->input('id'));
-        $barang = Barang::find(1);
+        $barang = Barang::find($request->input('id'));
+        // $barang = Barang::find(1);
 
         return view('gudang.editgudang', [
             'barang' => $barang,

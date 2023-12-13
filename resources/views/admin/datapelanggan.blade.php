@@ -27,9 +27,9 @@
                             @foreach ($all_customer as $customer)
                                 @csrf
                                 <tr id="tr_{{ $customer->id }}">
-                                    <td></td>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td id="td_nama_{{ $customer->id }}">{{ $customer->nama_pelanggan }}</td>
-                                    <td id="td_nohp_{{ $customer->id }}">{{ $customer->nohp_pelanggan }}</td>
+                                    <td id="td_nohp_{{ $customer->id }}"><a href="http://wa.me/{{ $customer->nohp_pelanggan }}">{{ $customer->nohp_pelanggan }}</a></td>
                                     <td id="td_alamat_{{ $customer->id }}">{{ $customer->alamat_pelanggan }}</td>
                                     <td>
                                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
@@ -40,7 +40,7 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $customer->id }})"
+                                                        <a href="{{ route('admin.editpelanggan', ['id' => $customer->id]) }}"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
@@ -187,8 +187,23 @@
         $(document).ready(function() {
             // $('#listpelanggan').DataTable();
             var table = $('#listpelanggan').DataTable( {
-            lengthChange: false,
-            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+              lengthChange: false,
+              buttons: [ 
+                'copy', 
+                {
+                  extend: 'excel',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3 ]
+                  },
+                },
+                {
+                  extend: 'pdf',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3 ],
+                  },
+                },
+                'colvis' 
+              ],
             } );
     
             table.buttons().container()

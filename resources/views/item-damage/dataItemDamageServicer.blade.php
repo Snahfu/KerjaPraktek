@@ -13,7 +13,7 @@
                 </div>
                 <div class="card-body h5 text-dark">
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
-                        id="listbarang">
+                        id="listitemdamage">
                         <thead>
                             <tr>
                                 <th></th>
@@ -54,7 +54,7 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $data->id }})"
+                                                        <a href="{{ route('editservicedamage', ['id' => $data->id]) }}" 
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
@@ -206,15 +206,28 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            // $('#listbarang').DataTable();
-            var table = $('#listbarang').DataTable( {
-            lengthChange: false,
-            scrollX: true,
-            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+            var table = $('#listitemdamage').DataTable( {
+              lengthChange: false,
+              buttons: [ 
+                'copy', 
+                {
+                  extend: 'excel',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+                  },
+                },
+                {
+                  extend: 'pdf',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+                  },
+                },
+                'colvis' 
+              ],
             } );
     
             table.buttons().container()
-                .appendTo( '#listbarang_wrapper .col-md-6:eq(0)' );
+                .appendTo( '#listitemdamage_wrapper .col-md-6:eq(0)' );
             });
 
         function alertUpdate(msg, status) {
@@ -310,7 +323,7 @@
                 success: function(response) {
                     $('#deleteModal').modal('hide');
                     alertUpdate(response.msg, response.status);
-                    var table = $('#listbarang').DataTable();
+                    var table = $('#listitemdamage').DataTable();
                     table.row('#tr_'+id).remove().draw();
                 },
                 error: function(error) {

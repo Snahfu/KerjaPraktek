@@ -13,7 +13,7 @@
                 </div>
                 <div class="card-body h5 text-dark">
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
-                        id="listbarang">
+                        id="listshipping">
                         <thead>
                             <tr>
                                 <th></th>
@@ -29,7 +29,7 @@
                             @foreach ($datas as $data)
                                 @csrf
                                 <tr>
-                                    <td></td>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $data->jenis }}</td>
                                     <td>{{ $data->karyawan->nama }}</td>
                                     <td>{{ $data->event->nama }}</td>
@@ -44,7 +44,7 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $data->id }})"
+                                                        <a href="{{ route('editshipping', ['id' => $data->id]) }}"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
@@ -191,14 +191,28 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            // $('#listbarang').DataTable();
-            var table = $('#listbarang').DataTable( {
-            lengthChange: false,
-            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+            var table = $('#listshipping').DataTable( {
+              lengthChange: false,
+              buttons: [ 
+                'copy', 
+                {
+                  extend: 'excel',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3, 4, 5 ]
+                  },
+                },
+                {
+                  extend: 'pdf',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3, 4, 5 ]
+                  },
+                },
+                'colvis' 
+              ],
             } );
     
             table.buttons().container()
-                .appendTo( '#listbarang_wrapper .col-md-6:eq(0)' );
+                .appendTo( '#listshipping_wrapper .col-md-6:eq(0)' );
             });
 
         function alertUpdate(msg, status) {
@@ -278,7 +292,7 @@
             });
         }
 
-        function deleteBarang(id) {
+        function deleteShipping(id) {
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -294,7 +308,7 @@
                 success: function(response) {
                     $('#deleteModal').modal('hide');
                     alertUpdate(response.msg, response.status);
-                    var table = $('#listbarang').DataTable();
+                    var table = $('#listshipping').DataTable();
                     table.row('#tr_'+id).remove().draw();
                 },
                 error: function(error) {
@@ -305,7 +319,7 @@
 
         function hapus(id) {
             $('#deleteModal').modal('show');
-            $('#buttonHapus').attr('onclick', 'deleteBarang(' + id + ')');
+            $('#buttonHapus').attr('onclick', 'deleteShipping(' + id + ')');
         }
     </script>
 @endsection

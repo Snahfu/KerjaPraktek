@@ -13,10 +13,11 @@
                 </div>
                 <div class="card-body h5 text-dark">
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
-                        id="listbarang">
+                        id="listjenisbarang">
                         <thead>
                             <tr>
                                 <th></th>
+                                <th>ID</th>
                                 <th>Nama</th>
                                 <th>Harga Sewa</th>
                                 <th>Kategori Barang</th>
@@ -28,9 +29,10 @@
                             @foreach ($datas as $data)
                                 @csrf
                                 <tr>
-                                    <td></td>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $data->id }}</td>
                                     <td>{{ $data->nama }}</td>
-                                    <td>{{ $data->harga_sewa }}</td>
+                                    <td>@currency($data->harga_sewa)</td>
                                     <td>{{ $data->kategori->nama }}</td>
                                     <td>{{ $data->spesifikasi }}</td>
                                     <td>
@@ -42,7 +44,7 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $data->id }})"
+                                                        <a href="{{ route('editjenis', ['id' => $data->id]) }}" 
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
@@ -64,6 +66,7 @@
                         <tfoot>
                             <tr>
                                 <th></th>
+                                <th>ID</th>
                                 <th>Nama</th>
                                 <th>Harga Sewa</th>
                                 <th>Kategori Barang</th>
@@ -188,14 +191,28 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            // $('#listbarang').DataTable();
-            var table = $('#listbarang').DataTable( {
-            lengthChange: false,
-            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+            var table = $('#listjenisbarang').DataTable( {
+              lengthChange: false,
+              buttons: [ 
+                'copy', 
+                {
+                  extend: 'excel',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3, 4, 5 ]
+                  },
+                },
+                {
+                  extend: 'pdf',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3, 4, 5 ]
+                  },
+                },
+                'colvis' 
+              ],
             } );
     
             table.buttons().container()
-                .appendTo( '#listbarang_wrapper .col-md-6:eq(0)' );
+                .appendTo( '#listjenisbarang_wrapper .col-md-6:eq(0)' );
             });
 
         function alertUpdate(msg, status) {
@@ -275,7 +292,7 @@
             });
         }
 
-        function deleteBarang(id) {
+        function deleteJenis(id) {
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -291,7 +308,7 @@
                 success: function(response) {
                     $('#deleteModal').modal('hide');
                     alertUpdate(response.msg, response.status);
-                    var table = $('#listbarang').DataTable();
+                    var table = $('#listjenisbarang').DataTable();
                     table.row('#tr_'+id).remove().draw();
                 },
                 error: function(error) {
@@ -302,7 +319,7 @@
 
         function hapus(id) {
             $('#deleteModal').modal('show');
-            $('#buttonHapus').attr('onclick', 'deleteBarang(' + id + ')');
+            $('#buttonHapus').attr('onclick', 'deleteJenis(' + id + ')');
         }
     </script>
 @endsection
