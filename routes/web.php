@@ -49,6 +49,7 @@ Route::middleware('role:5')->group(function () {
   Route::post('/detail-pelanggan', [App\Http\Controllers\AdminController::class, 'detail'])->name('admin.detailpelanggan');
   Route::post('/tambah-pelanggan', [App\Http\Controllers\AdminController::class, 'store'])->name('admin.tambahpelanggan');
   Route::post('/delete-pelanggan', [App\Http\Controllers\AdminController::class, 'destroy'])->name('admin.deletepelanggan');
+  Route::get('/edit-pelanggan', [App\Http\Controllers\AdminController::class, 'edit'])->name('admin.editpelanggan');
   Route::post('/update-pelanggan', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.updatepelanggan');
 
   // EVENT CONTORLLER

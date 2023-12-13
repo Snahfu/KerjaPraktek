@@ -68,6 +68,14 @@ class AdminController extends Controller
         ), 200);
     }
 
+    public function edit(Request $request)
+    {
+        // $customer = Customer::find($request->input('id'));
+        $customer = Customer::find(1);
+
+        return view('admin.editpelanggan', ['customer' => $customer]);
+    }
+
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
