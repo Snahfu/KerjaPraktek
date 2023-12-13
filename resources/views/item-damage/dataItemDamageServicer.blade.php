@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Data Gudang Page
+    Data Barang Rusak Page
 @endsection
 
 @section('content')
@@ -9,7 +9,7 @@
         <div class="col-12">
             <div class="card card-custom">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">Data Gudang</h4>
+                    <h4 class="card-title">Data Barang Rusak Perlu Diperbaiki</h4>
                 </div>
                 <div class="card-body h5 text-dark">
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
@@ -17,24 +17,34 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Nama Barang</th>
-                                <th>QTY</th>
-                                <th>Satuan</th>
-                                <th>Tanggal Beli</th>
-                                <th>Harga Beli</th>
+                                <th>Tanggal Damage</th>
+                                <th>Tipe Damage</th>
+                                <th>Detail Damage</th>
+                                <th>Repair Status</th>
+                                <th>Repair Date</th>
+                                <th>Catatan Repair</th>
+                                <th>Estimasi Selesai</th>
+                                <th>User Pelapor</th>
+                                <th>Barang</th>
+                                <th>User Teknisi</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($all_barang as $barang)
+                            @foreach ($datas as $data)
                                 @csrf
-                                <tr id="tr_{{ $barang->id }}">
+                                <tr>
                                     <td></td>
-                                    <td id="td_nama_{{ $barang->id }}">{{ $barang->jenis->nama }}</td>
-                                    <td id="td_qty_{{ $barang->id }}">{{ $barang->qty }}</td>
-                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->satuan }}</td>
-                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->tanggalBeli }}</td>
-                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->hargaBeli }}</td>
+                                    <td>{{ $data->damage_date }}</td>
+                                    <td>{{ $data->damage_type }}</td>
+                                    <td>{{ $data->damage_details }}</td>
+                                    <td>{{ $data->repair_status }}</td>
+                                    <td>{{ $data->repair_date }}</td>
+                                    <td>{{ $data->repair_notes }}</td>
+                                    <td>{{ $data->estimated_completion }}</td>
+                                    <td>{{ $data->userReporter->nama }}</td>
+                                    <td>{{ $data->item_barang_id }}</td>
+                                    <td>{{ $data->userServicer->nama }}</td>
                                     <td>
                                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                                             <li class="nav-item dropdown">
@@ -44,12 +54,12 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $barang->id }})"
+                                                        <a href="javascript:void(0)" onclick="ubah({{ $data->id }})"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
                                                         </a>
-                                                        <a href="javascript:void(0)" onclick="hapus({{ $barang->id }})"
+                                                        <a href="javascript:void(0)" onclick="hapus({{ $data->id }})"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-trash fs-6"></i>
                                                             <p class="mb-0 fs-3">Hapus</p>
@@ -66,11 +76,16 @@
                         <tfoot>
                             <tr>
                                 <th></th>
-                                <th>Nama Barang</th>
-                                <th>QTY</th>
-                                <th>Satuan</th>
-                                <th>Tanggal Beli</th>
-                                <th>Harga Beli</th>
+                                <th>Tanggal Damage</th>
+                                <th>Tipe Damage</th>
+                                <th>Detail Damage</th>
+                                <th>Repair Status</th>
+                                <th>Repair Date</th>
+                                <th>Catatan Repair</th>
+                                <th>Estimasi Selesai</th>
+                                <th>User Pelapor</th>
+                                <th>Barang</th>
+                                <th>User Teknisi</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
@@ -194,6 +209,7 @@
             // $('#listbarang').DataTable();
             var table = $('#listbarang').DataTable( {
             lengthChange: false,
+            scrollX: true,
             buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
             } );
     
@@ -285,7 +301,7 @@
                 }
             });
             $.ajax({
-                url: "{{ route('deletegudang') }}",
+                url: "{{ route('deletedamage') }}",
                 type: 'POST',
                 data: {
                     'id': id,

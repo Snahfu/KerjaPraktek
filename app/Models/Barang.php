@@ -14,6 +14,16 @@ class Barang extends Model
 
     public function jenis()
     {
-        return $this->belongsTo(Jenis::class, 'jenis_barang_id');
+        return $this->belongsTo(JenisBarang::class, 'jenis_barang_id');
+    }
+
+    public function itemDamage()
+    {
+        return $this->hasMany(ItemDamage::class, 'item_barang_id');
+    }
+
+    public function shippingBarang()
+    {
+        return $this->hasMany(ShippingBarang::class, 'item_barang_id');
     }
 }

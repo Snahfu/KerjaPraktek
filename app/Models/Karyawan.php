@@ -28,6 +28,21 @@ class Karyawan extends Model implements Authenticatable
     //     return $this->hasMany(Agenda::class, 'untuk');
     // }
 
+    public function barangReporter()
+    {
+        return $this->hasMany(ItemDamage::class, 'user_reporter');
+    }
+
+    public function barangServicer()
+    {
+        return $this->hasMany(ItemDamage::class, 'user_servicer');
+    }
+
+    public function shipping()
+    {
+        return $this->hasMany(Shipping::class, 'driver');
+    }
+
     protected $hidden = [
         'password'
     ];

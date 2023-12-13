@@ -9,7 +9,7 @@
         <div class="col-12">
             <div class="card card-custom">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">Data Gudang</h4>
+                    <h4 class="card-title">Data Shipping</h4>
                 </div>
                 <div class="card-body h5 text-dark">
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
@@ -17,24 +17,24 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Nama Barang</th>
-                                <th>QTY</th>
-                                <th>Satuan</th>
-                                <th>Tanggal Beli</th>
-                                <th>Harga Beli</th>
+                                <th>Jenis</th>
+                                <th>Driver</th>
+                                <th>Nama Event</th>
+                                <th>Tanggal Input</th>
+                                <th>Tanggal Jalan</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($all_barang as $barang)
+                            @foreach ($datas as $data)
                                 @csrf
-                                <tr id="tr_{{ $barang->id }}">
+                                <tr>
                                     <td></td>
-                                    <td id="td_nama_{{ $barang->id }}">{{ $barang->jenis->nama }}</td>
-                                    <td id="td_qty_{{ $barang->id }}">{{ $barang->qty }}</td>
-                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->satuan }}</td>
-                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->tanggalBeli }}</td>
-                                    <td id="td_satuan_{{ $barang->id }}">{{ $barang->hargaBeli }}</td>
+                                    <td>{{ $data->jenis }}</td>
+                                    <td>{{ $data->driver }}</td>
+                                    <td>{{ $data->event->nama }}</td>
+                                    <td>{{ $data->tglInput }}</td>
+                                    <td>{{ $data->tglJalan }}</td>
                                     <td>
                                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                                             <li class="nav-item dropdown">
@@ -44,12 +44,12 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="javascript:void(0)" onclick="ubah({{ $barang->id }})"
+                                                        <a href="javascript:void(0)" onclick="ubah({{ $data->id }})"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
                                                         </a>
-                                                        <a href="javascript:void(0)" onclick="hapus({{ $barang->id }})"
+                                                        <a href="javascript:void(0)" onclick="hapus({{ $data->id }})"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-trash fs-6"></i>
                                                             <p class="mb-0 fs-3">Hapus</p>
@@ -66,11 +66,11 @@
                         <tfoot>
                             <tr>
                                 <th></th>
-                                <th>Nama Barang</th>
-                                <th>QTY</th>
-                                <th>Satuan</th>
-                                <th>Tanggal Beli</th>
-                                <th>Harga Beli</th>
+                                <th>Jenis</th>
+                                <th>Driver</th>
+                                <th>Nama Event</th>
+                                <th>Tanggal Input</th>
+                                <th>Tanggal Jalan</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
@@ -285,7 +285,7 @@
                 }
             });
             $.ajax({
-                url: "{{ route('deletegudang') }}",
+                url: "{{ route('admin.deletebarang') }}",
                 type: 'POST',
                 data: {
                     'id': id,

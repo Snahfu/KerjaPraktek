@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Agenda;
-use App\Models\Barang;
 use App\Models\JenisBarang;
-use Carbon\Carbon;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class BarangController extends Controller
+class JenisBarangController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,54 +16,9 @@ class BarangController extends Controller
      */
     public function index()
     {
-        $barang = Barang::all();
+        $jenisBarang = JenisBarang::all();
 
-        return view('gudang.datagudang', ['all_barang' => $barang]);
-      }
-
-    public function task()
-    {
-        $userId = Auth::user()->id;
-        $tasks = Agenda::where('karyawans_id', '=', $userId)->whereNull("selesai")->get();
-        
-        return view('gudang.index', ["tasks" => $tasks]);
-    }
-
-    public function doneTask(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            $status = "failed";
-            $msg = $validator->errors()->first();
-            return response()->json([
-                'status' => $status,
-                'msg' => $msg,
-            ], 200);
-        }
-
-        $agenda = Agenda::find($request->input('id'));
-
-        if (!$agenda) {
-            $status = "failed";
-            $msg = "Data tidak ditemukan";
-            return response()->json([
-                'status' => $status,
-                'msg' => $msg,
-            ], 200);
-        }
-
-        $agenda->update([
-            'selesai' => Carbon::today(),
-        ]);
-
-        $status = "success";
-        $msg = "Berhasil menghapus task";
-        return response()->json(array(
-            'status' => $status,
-            'msg' => $msg,
-        ), 200);
+        return view('jenis-barang.dataJenisBarang', ['datas' =>$jenisBarang]);
     }
 
     /**
@@ -76,9 +28,9 @@ class BarangController extends Controller
      */
     public function create()
     {
-        $semua_jenis = JenisBarang::all();
+        $kategori = Kategori::all();
 
-        return view('gudang.tambahgudang', ['jenis_barang' => $semua_jenis]);
+        return view('jenis-barang.tambahjenis', ['kategori' => $kategori]);
     }
 
     /**
@@ -90,11 +42,10 @@ class BarangController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'jenis_barang_id' => 'required',
-            'qty' => 'required',
-            'satuan' => 'required',
-            'tanggalBeli' => 'required|date',
-            'hargaBeli' => 'required',
+            'nama' => 'required',
+            'harga_sewa' => 'required',
+            'kategori_barang_id' => 'required',
+            'spesifikasi' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -106,8 +57,8 @@ class BarangController extends Controller
             ], 200);
         }
         
-        $barang = Barang::create($request->all());
-        $dataId = $barang->id;
+        $jenis = JenisBarang::create($request->all());
+        $dataId = $jenis->id;
 
         $status = "success";
         $msg = "Berhasil menambahkan data";
@@ -121,10 +72,10 @@ class BarangController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Barang  $barang
+     * @param  \App\Models\Jenis  $jenis
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(JenisBarang $jenis)
     {
         //
     }
@@ -132,17 +83,17 @@ class BarangController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Barang  $barang
+     * @param  \App\Models\Jenis  $jenis
      * @return \Illuminate\Http\Response
      */
     public function edit(Request $request)
     {
-        $barang = Barang::find($request->input('id'));
-        // $barang = Barang::find(1);
+        $jenis = JenisBarang::find($request->input('id'));
+        // $jenis = JenisBarang::find(1);
 
-        return view('gudang.editgudang', [
-            'barang' => $barang,
-            'jenis' => JenisBarang::all()
+        return view('jenis-barang.editjenis', [
+            'jenis' => $jenis,
+            'kategori' => Kategori::all()
         ]);
     }
 
@@ -150,17 +101,16 @@ class BarangController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Barang  $barang
+     * @param  \App\Models\JenisBarang  $jenis
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Barang $barang)
+    public function update(Request $request, JenisBarang $jenis)
     {
         $validator = Validator::make($request->all(), [
-            'jenis_barang_id' => 'required',
-            'qty' => 'required',
-            'satuan' => 'required',
-            'tanggalBeli' => 'required|date',
-            'hargaBeli' => 'required',
+            'nama' => 'required',
+            'harga_sewa' => 'required',
+            'kategori_barang_id' => 'required',
+            'spesifikasi' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -172,9 +122,9 @@ class BarangController extends Controller
             ], 200);
         }
 
-        $barang = Barang::find($request->input('id'));
+        $jenis = JenisBarang::find($request->input('id'));
 
-        if (!$barang) {
+        if (!$jenis) {
             $status = "failed";
             $msg = "Data tidak ditemukan";
             return response()->json([
@@ -183,12 +133,11 @@ class BarangController extends Controller
             ], 200);
         }
 
-        $barang->update([
-            'jenis_barang_id' => $request->input('jenis_barang_id'),
-            'qty' => $request->input('qty'),
-            'satuan' => $request->input('satuan'),
-            'tanggalBeli' => $request->input('tanggalBeli'),
-            'hargaBeli' => $request->input('hargaBeli'),
+        $jenis->update([
+            'nama' => $request->input('nama'),
+            'harga_sewa' => $request->input('harga_sewa'),
+            'kategori_barang_id' => $request->input('kategori_barang_id'),
+            'spesifikasi' => $request->input('spesifikasi'),
         ]);
 
         $status = "success";
@@ -202,15 +151,15 @@ class BarangController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Barang  $barang
+     * @param  \App\Models\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request)
     {
-        $barang = Barang::find($request['id']);
+        $jenis = JenisBarang::find($request['id']);
         
-        if ($barang) {
-            $deleted = $barang->delete();
+        if ($jenis) {
+            $deleted = $jenis->delete();
 
             if ($deleted) {
                 $status = "success";
