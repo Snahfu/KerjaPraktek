@@ -206,6 +206,13 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth()+1;
+            const date = currentDate.getDate();
+            const hour = currentDate.getHours();
+            const minute = currentDate.getMinutes();
+            const second = currentDate.getSeconds();
             var table = $('#listitemdamage').DataTable( {
               lengthChange: false,
               buttons: [ 
@@ -215,12 +222,14 @@
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
                   },
+                  title: `Data Barang Rusak ${year}-${month}-${date}-${hour}.${minute}.${second}`,
                 },
                 {
                   extend: 'pdf',
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
                   },
+                  title: `Data Barang Rusak ${year}-${month}-${date}-${hour}.${minute}.${second}`,
                 },
                 'colvis' 
               ],

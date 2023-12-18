@@ -21,11 +21,12 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             
             $userlevel = Auth::user()->divisi_id;
-            if ($userlevel === 5) {
-                return redirect('/dashboard-admin');
-            } elseif ($userlevel !== 5) {
-                return redirect('/dashboard');
-            }
+            // if ($userlevel === 5) {
+            //     return redirect('/dashboard-admin');
+            // } elseif ($userlevel !== 5) {
+            //     return redirect('/dashboard');
+            // }
+            return redirect('/dashboard-admin');
         }
 
         return redirect()->route('loginPage')->with('error', 'Login gagal. Periksa kembali email dan password.');

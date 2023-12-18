@@ -12,12 +12,14 @@
                     <h4 class="card-title">Data Gudang</h4>
                 </div>
                 <div class="card-body h5 text-dark">
+                    <a href="/tambah-gudang" class="btn btn-primary mb-3"><i class="ti ti-plus"></i> Create New Data</a>
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
                         id="listbarang">
                         <thead>
                             <tr>
                                 <th></th>
                                 <th>Nama Barang</th>
+                                <th>Tipe</th>
                                 <th>QTY</th>
                                 <th>Satuan</th>
                                 <th>Tanggal Beli</th>
@@ -30,7 +32,8 @@
                                 @csrf
                                 <tr id="tr_{{ $barang->id }}">
                                     <td>{{ $loop->iteration }}</td>
-                                    <td id="td_nama_{{ $barang->id }}">{{ $barang->jenis->nama }}</td>
+                                    <td id="td_nama_{{ $barang->id }}">{{ $barang->nama }}</td>
+                                    <td id="td_type_{{ $barang->id }}">{{ $barang->type }}</td>
                                     <td id="td_qty_{{ $barang->id }}">{{ $barang->qty }}</td>
                                     <td id="td_satuan_{{ $barang->id }}">{{ $barang->satuan }}</td>
                                     <td id="td_satuan_{{ $barang->id }}">{{ $barang->tanggalBeli }}</td>
@@ -67,6 +70,7 @@
                             <tr>
                                 <th></th>
                                 <th>Nama Barang</th>
+                                <th>Tipe</th>
                                 <th>QTY</th>
                                 <th>Satuan</th>
                                 <th>Tanggal Beli</th>
@@ -192,6 +196,13 @@
     <script>
         $(document).ready(function() {
             // $('#listbarang').DataTable();
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth()+1;
+            const date = currentDate.getDate();
+            const hour = currentDate.getHours();
+            const minute = currentDate.getMinutes();
+            const second = currentDate.getSeconds();
             var table = $('#listbarang').DataTable( {
               lengthChange: false,
               buttons: [ 
@@ -201,12 +212,14 @@
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5 ]
                   },
+                  title: `Data Gudang ${year}-${month}-${date}-${hour}.${minute}.${second}`,
                 },
                 {
                   extend: 'pdf',
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5 ]
                   },
+                  title: `Data Gudang ${year}-${month}-${date}-${hour}.${minute}.${second}`,
                 },
                 'colvis' 
               ],

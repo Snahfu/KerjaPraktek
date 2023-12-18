@@ -41,7 +41,7 @@
               <span>
                 <i class="ti ti-building-warehouse"></i>
               </span>
-              <span class="hide-menu">Data Gudang</span>
+              <span class="hide-menu">Data Barang</span>
             </a>
           </li>
           <li class="sidebar-item">
@@ -70,6 +70,14 @@
                 <i class="ti ti-truck-delivery"></i>
               </span>
               <span class="hide-menu">Shipping</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a class="sidebar-link" href="{{ route('getbarangoutget') }}" aria-expanded="false">
+              <span>
+                <i class="ti ti-truck-delivery"></i>
+              </span>
+              <span class="hide-menu">Barang Keluar</span>
             </a>
           </li>
           <li class="sidebar-item">

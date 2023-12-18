@@ -20,10 +20,37 @@
                                     <label class="col-form-label" for="jenis-barang">Jenis Barang</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <select class="form-select" id="jenis-barang">
+                                    <select class="form-select" id="jenis-barang" onchange="updateNama()">
                                         @foreach ($jenis_barang as $jb)
                                             <option value="{{$jb->id}}">{{$jb->nama}}</option>
                                         @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nama Barang -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="nama-barang">Nama Barang</label>
+                                </div>
+                                <div class="col-sm-9">
+                                  <input type="text" id="nama-barang" class="form-control" disabled name="nama-barang" />
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- Type Barang -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="type-barang">Type Barang</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <select class="form-select" id="type-barang">
+                                      <option value="serial">Serial</option>
+                                      <option value="batch">Batch</option>
                                     </select>
                                 </div>
                             </div>
@@ -127,6 +154,9 @@
 
 @section('javascript')
     <script>
+        $(document).ready(function() {
+            updateNama();
+        });
         // Function untuk alert Message
         function alertUpdate(msg, status) {
             var alertModalTitle = document.getElementById('alertModalTitle');
@@ -141,6 +171,31 @@
                 $('#responseController').html(msg);
                 $('#alertModal').modal('show');
             }
+        }
+
+        // Melakukan update nama barang sesuai jenis barang yang dipilih jika terjadi perubahan pada jenis barang
+        function updateNama() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('getnama') }}",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'jenis_barang_id': parseInt(document.getElementById('jenis-barang').value),
+                },
+                success: function(response) {
+                    if(response.status == "success"){
+                        document.getElementById('nama-barang').value = response.data;
+                    }
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
         }
 
         // Melakukan update harga maupun subtotal jika terjadi perubahan pada input jumlah/harga/subtotal
@@ -178,6 +233,8 @@
                     'qty':parseInt(document.getElementById('quantity').value),
                     'satuan': document.getElementById('satuan').value,
                     'tanggalBeli': document.getElementById('tanggal-beli').value,
+                    'nama': document.getElementById('nama-barang').value,
+                    'type': document.getElementById('type-barang').value,
                     'hargaBeli': parseFloat(document.getElementById('harga_total').value),
                 },
                 success: function(response) {

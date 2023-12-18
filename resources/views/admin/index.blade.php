@@ -102,7 +102,7 @@
       </div>
     </section>
 
-    <div class="square">
+    {{-- <div class="square">
         <div class="menu-container">
             <div class="menu-row">
                 <a class="menu-item" href="./ui-buttons.html" aria-expanded="false">
@@ -133,7 +133,7 @@
                 </a>
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection
 
 @section('javascript')

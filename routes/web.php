@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('role:5')->group(function () {
+Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/', function () {
       return view('admin.index');
   });
@@ -66,6 +66,7 @@ Route::middleware('role:5')->group(function () {
   Route::get('/gudang', [App\Http\Controllers\BarangController::class, 'task'])->name('gudang');
   Route::get('/tambah-gudang', [App\Http\Controllers\BarangController::class, 'create'])->name('tambahgudang');
   Route::post('/tambah-gudang', [App\Http\Controllers\BarangController::class, 'store'])->name('storegudang');
+  Route::post('/get-nama', [App\Http\Controllers\BarangController::class, 'getNama'])->name('getnama');
   Route::post('/check-task', [App\Http\Controllers\BarangController::class, 'doneTask'])->name('checktask');
   Route::get('/edit-gudang', [App\Http\Controllers\BarangController::class, 'edit'])->name('editgudang');
   Route::post('/update-gudang', [App\Http\Controllers\BarangController::class, 'update'])->name('updategudang');
@@ -94,11 +95,14 @@ Route::middleware('role:5')->group(function () {
   Route::get('/data-shipping', [App\Http\Controllers\ShippingController::class, 'index'])->name('shipping.datashipping');
   Route::get('/tambah-shipping', [App\Http\Controllers\ShippingController::class, 'create'])->name('tambahshipping');
   Route::post('/get-barang-shipping', [App\Http\Controllers\ShippingController::class, 'getBarang'])->name('getbarangshipping');
+  Route::get('/get-barang-keluar-get', [App\Http\Controllers\ShippingController::class, 'getBarangOut'])->name('getbarangoutget');
+  Route::post('/get-barang-keluar-post', [App\Http\Controllers\ShippingController::class, 'getBarangOut'])->name('getbarangoutpost');
   Route::post('/tambah-shipping', [App\Http\Controllers\ShippingController::class, 'store'])->name('storeshipping');
   Route::get('/edit-shipping', [App\Http\Controllers\ShippingController::class, 'edit'])->name('editshipping');
   Route::post('/get-barang-edit-shipping', [App\Http\Controllers\ShippingController::class, 'getBarangEdit'])->name('getbarangeditshipping');
   Route::post('/update-shipping', [App\Http\Controllers\ShippingController::class, 'update'])->name('updateshipping');
   Route::post('/delete-shipping', [App\Http\Controllers\ShippingController::class, 'destroy'])->name('deleteshipping');
+  Route::get('/surat-jalan', [App\Http\Controllers\ShippingController::class, 'cetakSuratjalan'])->name('suratjalan');
 });
 
 
@@ -152,7 +156,7 @@ Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm
 Route::post('/loginAkun', [App\Http\Controllers\AuthController::class, 'login'])->name('masuk');
 Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegistrationForm'])->name('registerPage');
 Route::post('/registerAkun', [App\Http\Controllers\AuthController::class, 'register'])->name('daftar');
-Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
 
 // Route::get('/data-gudang', [App\Http\Controllers\GudangController::class, 'index'])->name('gudang.datagudang');

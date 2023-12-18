@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\Event;
+use App\Models\InvoiceBarang;
 use App\Models\JenisBarang;
 use App\Models\Karyawan;
 use App\Models\Shipping;
 use App\Models\ShippingBarang;
 use Carbon\Carbon;
+use Codedge\Fpdf\Fpdf\Fpdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +31,172 @@ class ShippingController extends Controller
         return view('shipping.dataShipping', ['datas' => $shipping]);
     }
 
+    public function cetakSuratjalan(Request $request)
+    {
+      $shipping_id = $request->id;
+      $shipping = Shipping::with('event', 'event.customer')
+      ->where('id', '=', $shipping_id)
+      ->first();
+      $shipping_jenis = $shipping->jenis;
+      $kloter = DB::table(DB::raw('(SELECT 
+      item_shipping.id, item_shipping.events_id, ROW_NUMBER() OVER(ORDER BY item_shipping.id ASC) as kloter
+      FROM 
+      item_barang_has_item_shipping
+      INNER JOIN item_shipping ON item_barang_has_item_shipping.item_shipping_id = item_shipping.id
+      WHERE 
+      item_shipping.events_id = 1 AND item_shipping.jenis = "'. $shipping_jenis . '"
+      GROUP BY 
+      item_barang_has_item_shipping.item_barang_id) as sub'))
+      ->select('sub.id', 'sub.events_id', 'sub.kloter')
+      ->where('sub.id', $shipping_id) // Specify the desired shipping_id here
+      ->first();
+
+      $no_invoice = $shipping->id;
+      $lokasi = $shipping->event->lokasi;
+      $nama = $shipping->event->customer->nama_pelanggan;
+      $tanggal = $shipping->tglJalan;
+      $nohp_pelanggan = $shipping->event->customer->nohp_pelanggan;
+
+      $barang_shipping = ShippingBarang::where('item_shipping_id', '=', $shipping_id)
+      ->get();
+
+      $jenis = substr($shipping->jenis, 0, 1);
+
+      $result_no_surat = "SJ-" . $no_invoice . "-" . $jenis . "-" . $kloter->kloter;
+
+      //Create A4 Page with Portrait 
+      $pdf=new Fpdf("P","mm","A4");
+      $pdf->AddPage();
+      // HEADER
+      //Display Surat Jalan text
+      $pdf->SetY(15);
+      $pdf->SetX(-40);
+      $pdf->SetFont('Arial','B',18);
+      $pdf->Cell(72,10,"",0,0);
+      $pdf->Cell(59,5,"SURAT JALAN",0,0);
+      $pdf->Cell(59,10,"",0,1);
+
+      //Display Company Info
+      $pdf->SetFont('Arial','B',14);
+      $pdf->Cell(50,10,"ABC Alat",0,1);
+      $pdf->SetFont('Arial','',14);
+      $pdf->Cell(50,7,"Rental Alat Surabaya",0,1);
+      $pdf->Cell(50,7,"Jalan Salem No. 1, Surabaya.",0,1);
+      $pdf->Cell(50,7,"Telp : 8778731770",0,1);
+      
+      //Display Horizontal line
+      $pdf->Line(0,60,210,60);
+
+
+      // BODY
+      //Billing Details
+      $pdf->SetY(65);
+      $pdf->SetX(10);
+      $pdf->SetFont('Arial','',12);
+      $pdf->Cell(50,7,'No Dokumen: ' . $result_no_surat,0,1);
+      $pdf->SetFont('Arial','',12);
+      $pdf->Cell(50,7,'Customer: ' . $nama,0,1);
+      $pdf->Cell(50,7,'Alamat Pengiriman: ' . $lokasi,0,1);
+      
+      // Display Tanggal Pengiriman
+      $pdf->SetY(65);
+      $pdf->SetX(-100);
+      $pdf->Cell(50,7,'Tanggal Pengiriman: ' . $tanggal);
+
+      // Dsiplay No Telp Customer
+      $pdf->SetY(73);
+      $pdf->SetX(-100);
+      $pdf->Cell(50,7,'No Telp Customer: ' . $nohp_pelanggan);
+
+      // Display Jenis Pengiriman
+      $pdf->SetY(81);
+      $pdf->SetX(-100);
+      $pdf->Cell(50,7,'Jenis Pengiriman: ' . $shipping->jenis);
+      
+      //Display Invoice date
+      // $pdf->SetY(63);
+      // $pdf->SetX(-60);
+      // $pdf->Cell(50,7,"Invoice Date : ".$info["invoice_date"]);
+      
+      //Display Table headings
+      $pdf->SetY(95);
+      $pdf->SetX(10);
+      $pdf->SetFont('Arial','B',12);
+      $pdf->Cell(10,9,"No",1,0,"C");
+      $pdf->Cell(80,9,"Nama Barang",1,0);
+      $pdf->Cell(70,9,"Desktipsi Barang",1,0,"C");
+      $pdf->Cell(30,9,"Kuantitas",1,1,"C");
+      $pdf->SetFont('Arial','',12);
+      
+      //Display table product rows
+      $i = 1;
+      foreach($barang_shipping as $barang){
+        $pdf->Cell(10,9,$i,"LR",0,"C");
+        $pdf->Cell(90,9,$barang->barang->nama,"R",0);
+        $pdf->Cell(30,9,$barang->barang->qty,"R",0,"C");
+        $pdf->Cell(60,9,$barang->barang->satuan,"R",1, "C");
+        $i += 1;
+      }
+      //Display table empty rows
+      for($i=0;$i<12-count($barang_shipping);$i++)
+      {
+        if ($i != 12-count($barang_shipping)-1) {
+          $pdf->Cell(10,9,"","LR",0);
+          $pdf->Cell(90,9,"","R",0,"R");
+          $pdf->Cell(30,9,"","R",0,"C");
+          $pdf->Cell(60,9,"","R",1,"C");
+        } 
+        else {
+          $pdf->Cell(10,9,"","LRB",0);
+          $pdf->Cell(90,9,"","RB",0,"R");
+          $pdf->Cell(30,9,"","RB",0,"C");
+          $pdf->Cell(60,9,"","RB",1,"C");
+        }
+      }
+
+      $pdf->SetX(10);
+      $pdf->Cell(170,9,"Notes: " . $shipping->notes,1,0);
+
+      //Display table total row
+      // $pdf->SetFont('Arial','B',12);
+      // $pdf->Cell(150,9,"TOTAL",1,0,"R");
+      // $pdf->Cell(40,9,$info["total_amt"],1,1,"R");
+      
+      //Display amount in words
+      // $pdf->SetY(225);
+      // $pdf->SetX(10);
+      // $pdf->SetFont('Arial','B',12);
+      // $pdf->Cell(0,9,"Amount in Words ",0,1);
+      // $pdf->SetFont('Arial','',12);
+      // $pdf->Cell(0,9,$info["words"],0,1);
+
+
+      // FOOTER
+      //set footer position
+      $pdf->SetY(-70);
+      $pdf->SetFont('Arial','B',12);
+      $pdf->Cell(0,10,"Customer",0,1,"R");
+      $pdf->Ln(15);
+      $pdf->SetFont('Arial','',12);
+      $pdf->Cell(0,10,$nama,0,1,"R");
+      $pdf->SetFont('Arial','',10);
+
+      $pdf->SetY(-70);
+      $pdf->SetFont('Arial','B',12);
+      $pdf->Cell(0,10,"Driver",0,1,"L");
+      $pdf->Ln(15);
+      $pdf->SetFont('Arial','',12);
+      $pdf->Cell(0,10,$shipping->karyawan->nama,0,1,"L");
+      $pdf->SetFont('Arial','',10);
+      
+      //Display Footer Text
+      $pdf->Cell(0,10,"This is a computer generated invoice",0,1,"C");
+
+      $pdf->Output('D', $result_no_surat . ".pdf");
+
+      exit;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -45,7 +213,7 @@ class ShippingController extends Controller
                     ->join('divisi', 'karyawans.divisi_id', '=', 'divisi.id')
                     ->where('divisi.nama', '=', 'Driver')
                     ->get();
-        $event = Event::select('events.id', 'events.nama')
+        $event = Event::select('events.id', 'events.nama', 'events.tanggal', 'events.lokasi')
                  ->distinct()
                  ->join('invoices', 'events.id', '=', 'invoices.events_id')
                  ->get();
@@ -58,11 +226,34 @@ class ShippingController extends Controller
         return view('shipping.tambahshipping', ['karyawan' => $karyawan, 'event' => $event, 'jenis_map' => $jenis_map, 'array_jenis' => $array_jenis]);
     }
 
-    public function barangOut(Request $request)
-    {
-        $date = $request->date;
+    
 
-        ShippingBarang::where('datr');
+    public function getBarangOut(Request $request)
+    {
+        $date = date("Y-m-d");
+        $originalDate = "2023-12-12";
+        $date = date("Y-m-d", strtotime($originalDate));
+        if (isset($request->date)) {
+          $date = $request->date;
+          $barang_out = InvoiceBarang::with(['invoice.event', 'barang.jenis'])
+          ->whereDate('status_in', $date)
+          ->get();
+
+          $status = "success";
+          $msg = "Berhasil mengubah tanggal data";
+          return response()->json(array(
+              'status' => $status,
+              'msg' => $msg,
+              'datas' => $barang_out,
+          ), 200);
+          
+        }
+        else {
+          $barang_out = InvoiceBarang::whereDate('status_in', $date)
+          ->get();
+
+          return view('shipping.databarangkeluar', ['datas' => $barang_out]);
+        }
     }
 
     public function getBarang(Request $request)
@@ -149,7 +340,7 @@ class ShippingController extends Controller
             'jenis' => 'required|string',
             'driver' => 'required',
             'tglJalan' => 'required|date',
-            'listbarang' => 'required'
+            'listbarang' => 'required',
         ]);
 
         if ($validator->fails()) {

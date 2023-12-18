@@ -11,7 +11,13 @@ class AdminController extends Controller
     function index_datapelanggan()
     {
         $all_customer = Customer::all();
-        // dd($all_customer);
+        foreach ($all_customer as $customer) {
+          $angka_depan = substr($customer->nohp_pelanggan, 0,1);
+          if ($angka_depan == 0){
+            $result_no_telp = "62" . substr($customer->nohp_pelanggan, 1, strlen($customer->nohp_pelanggan)-1);
+            $customer->nohp_pelanggan = $result_no_telp;
+          }
+        }
         return view('admin.datapelanggan', ['all_customer' => $all_customer]);
     }
 
@@ -46,6 +52,11 @@ class AdminController extends Controller
             'nohp_pelanggan' => 'required|max:99',
             'alamat_pelanggan' => 'required',
         ]);
+
+        if (substr($validator->nohp_pelanggan, 0,1) == "0") {
+          $result_no_telp = "62" + substr($validator->nohp_pelanggan, 1, strlen($validator->nohp_pelanggan)-1);
+          $validator->nohp_pelanggan = $result_no_telp;
+        }
 
         if ($validator->fails()) {
             $status = "failed";
@@ -84,6 +95,11 @@ class AdminController extends Controller
             'nohp_pelanggan' => 'required|max:99',
             'alamat_pelanggan' => 'required',
         ]);
+
+        if (substr($validator->nohp_pelanggan, 0,1) == "0") {
+          $result_no_telp = "62" + substr($validator->nohp_pelanggan, 1, strlen($validator->nohp_pelanggan)-1);
+          $validator->nohp_pelanggan = $result_no_telp;
+        }
 
         if ($validator->fails()) {
             $status = "failed";

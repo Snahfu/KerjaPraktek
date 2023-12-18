@@ -27,7 +27,8 @@ class ItemDamageController extends Controller
     {
         $user_id = Auth::user()->id;
         $item_damage = ItemDamage::where('user_servicer', '=', $user_id)
-        ->whereNull('repair_date');
+        ->whereNull('repair_date')
+        ->get();
 
         return view('item-damage.dataItemDamageServicer', ['datas' => $item_damage]);
     }
@@ -39,7 +40,8 @@ class ItemDamageController extends Controller
      */
     public function create()
     {
-        $barang = Barang::all();
+        $barang = Barang::where('type', '=', 'serial')
+        ->get();
         $karyawan = Karyawan::select('karyawans.id', 'karyawans.nama')
                     ->join('divisi', 'karyawans.divisi_id', '=', 'divisi.id')
                     ->where('divisi.nama', '=', 'Teknisi')

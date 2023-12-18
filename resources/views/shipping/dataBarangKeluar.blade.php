@@ -12,7 +12,7 @@
                     <h4 class="card-title">Data Barang Keluar</h4>
                 </div>
                 <div class="col-sm-9">
-                    <input type="datetime-local" id="tanggal" class="form-control"
+                    <input type="date" id="tanggal" class="form-control"
                         name="tanggal" />
                 </div>
                 <div class="card-body h5 text-dark">
@@ -31,12 +31,9 @@
                                 @csrf
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $data->nama }}</td>
-                                    <td>{{ $data->driver }}</td>
-                                    <td>{{ $data->event->nama }}</td>
-                                    <td>{{ $data->tglInput }}</td>
-                                    <td>{{ $data->tglJalan }}</td>
-
+                                    <td>{{ $data->invoice->event->nama }}</td>
+                                    <td>{{ $data->barang->jenis->nama }}</td>
+                                    <td>{{ $data->qty }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -44,7 +41,8 @@
                             <tr>
                                 <th></th>
                                 <th>Nama Event</th>
-                                <th>Barang Keluar</th>
+                                <th>Barang keluar</th>
+                                <th>Quantity</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -163,15 +161,71 @@
 
 @section('javascript')
     <script>
-        $(document).ready(function() {
-            // $('#listbarang').DataTable();
+            document.getElementById('tanggal').valueAsDate = new Date();
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth()+1;
+            const date = currentDate.getDate();
+            const hour = currentDate.getHours();
+            const minute = currentDate.getMinutes();
+            const second = currentDate.getSeconds();
             var table = $('#listbarang').DataTable( {
-            lengthChange: false,
-            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+              "aaSorting": [[1,'asc']],
+              lengthChange: false,
+              buttons: [ 
+                'copy', 
+                {
+                  extend: 'excel',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3 ]
+                  },
+                  title: `Data Shipping ${year}-${month}-${date}-${hour}.${minute}.${second}`,
+                },
+                {
+                  extend: 'pdf',
+                  exportOptions: {
+                    columns: [ 0, 1, 2, 3 ]
+                  },
+                  title: `Data Shipping ${year}-${month}-${date}-${hour}.${minute}.${second}`,
+                },
+                'colvis' 
+              ],
             } );
     
             table.buttons().container()
                 .appendTo( '#listbarang_wrapper .col-md-6:eq(0)' );
+
+            $('#tanggal').on('change', function() {
+              table.clear().draw();
+              dateValue = document.getElementById('tanggal').value;
+              $.ajaxSetup({
+                  headers: {
+                      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                  }
+              });
+              $.ajax({
+                  url: "{{ route('getbarangoutpost') }}",
+                  type: 'POST',
+                  data: {
+                      'date': dateValue,
+                  },
+                  dataType: 'json',
+                  success: function(response) {
+                    let i = 1;
+                      response.datas.forEach(data => {
+                        table.row.add([
+                          i,
+                          data.invoice.event.nama,
+                          data.barang.jenis.nama,
+                          data.qty
+                        ]).draw();
+                        i += 1;
+                      });
+                  },
+                  error: function(error) {
+                      console.log('Error:', error);
+                  }
+              });
             });
 
         function alertUpdate(msg, status) {
@@ -244,31 +298,6 @@
                     $('#td_nohp_'+id).html(nohp);
                     $('#td_alamat_'+id).html(alamat);
                     alertUpdate(response.msg, response.status);
-                },
-                error: function(error) {
-                    console.log('Error:', error);
-                }
-            });
-        }
-
-        function deleteBarang(id) {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $.ajax({
-                url: "{{ route('admin.deletebarang') }}",
-                type: 'POST',
-                data: {
-                    'id': id,
-                },
-                dataType: 'json',
-                success: function(response) {
-                    $('#deleteModal').modal('hide');
-                    alertUpdate(response.msg, response.status);
-                    var table = $('#listbarang').DataTable();
-                    table.row('#tr_'+id).remove().draw();
                 },
                 error: function(error) {
                     console.log('Error:', error);
