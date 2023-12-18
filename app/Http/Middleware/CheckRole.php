@@ -15,9 +15,18 @@ class CheckRole
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-      if (Auth::check() && $request->user()->hasRole($role)) {
+      // if (Auth::check() && $request->user()->hasRole($roles)) {
+      //   return $next($request);
+      // }
+      // return redirect('/login');
+      if (!Auth::check()) {
+        return redirect('/login');
+      }
+
+      foreach ($roles as $role) {
+        if ($request->user()->hasRole($role))
         return $next($request);
       }
       return redirect('/login');

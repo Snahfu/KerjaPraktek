@@ -29,6 +29,30 @@
                             </div>
                         </div>
 
+                        <!-- Tanggal Event -->
+                        <div class="col-12">
+                          <div class="mb-1 row">
+                              <div class="col-sm-3">
+                                  <label class="col-form-label" for="event">Tanggal Event</label>
+                              </div>
+                              <div class="col-sm-9">
+                                <input type="datetime-local" disabled id="tanggalEvent" class="form-control"/>
+                              </div>
+                          </div>
+                        </div>
+
+                        <!-- Venus Event -->
+                        <div class="col-12">
+                          <div class="mb-1 row">
+                              <div class="col-sm-3">
+                                  <label class="col-form-label" for="event">Venue Event</label>
+                              </div>
+                              <div class="col-sm-9">
+                                <input type="text" disabled id="venueEvent" class="form-control"/>
+                              </div>
+                          </div>
+                        </div>
+
                         <!-- Jenis -->
                         <div class="col-12">
                             <div class="mb-1 row">
@@ -47,7 +71,7 @@
                         <div class="col-12">
                             <div class="mb-1 row">
                                 <div class="col-sm-3">
-                                    <label class="col-form-label" for="tgl-event">Tanggal Event Berjalan</label>
+                                    <label class="col-form-label" for="tgl-event">Waktu Pengiriman</label>
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="tgl-event" class="form-control"
@@ -63,11 +87,24 @@
                                     <label class="col-form-label" for="driver">Driver</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <select class="form-select" id="driver">
+                                    <select class="form-select" id="driver" onchange="checkDriver()">
                                         @foreach ($karyawan as $k)
                                             <option value="{{$k->id}}">{{$k->nama}}</option>
                                         @endforeach
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="notes">Notes</label>
+                                </div>
+                                <div class="col-sm-9">
+                                  <input type="datetime-local" id="notes" class="form-control"
+                                  name="notes" />
                                 </div>
                             </div>
                         </div>
@@ -244,11 +281,40 @@
             }
         }
 
+        // Melakukan pengecekan apakah driver yang bersangkutan kosong pada 2 jam sebelum dan setelah waktu dan driver yang dipilih
+        function checkDriver() {
+          $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('checkdriver') }}",
+                type: 'POST',
+                data: {
+                    'driver': parseInt(document.getElementById('driver').value),
+                    'tglJalan': document.getElementById('tgl-event').value,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if(response.status != "success"){
+                        alertUpdate(response.msg, response.status)
+                    }
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
         // Melakukan update barang pada comboBox nama-barang
         function updateBarang() {
             arraySpesifikasiJson = Object.values(@json($array_jenis));
             var idEvent = document.getElementById('event').value;
             var jenis = document.getElementById('jenis').value;
+            var events = {!! json_encode($event) !!};
+            document.getElementById('tanggalEvent').value = "";
+            document.getElementById('venueEvent').value = "";
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -269,6 +335,22 @@
                         $('#responseController').html(response.msg);
                         $('#alertModal').modal('show');
                     } else {
+                        hasilFilterEvent = events.filter((e) => e.id == idEvent);
+                        let tanggalEvent = hasilFilterEvent[0].tanggal;
+                        document.getElementById('tanggalEvent').value = tanggalEvent;
+                        document.getElementById('venueEvent').value = hasilFilterEvent[0].lokasi;
+                        let tanggalEventMili = new Date(tanggalEvent);
+                        tanggalKirim = new Date(tanggalEventMili - (10*60*60*1000));
+
+                        const year = tanggalKirim.getFullYear();
+                        const month = String(tanggalKirim.getMonth()+1).padStart(2, '0');
+                        const date = String(tanggalKirim.getDate()).padStart(2, '0');
+                        const hour = tanggalKirim.getHours();
+                        const minute = tanggalKirim.getMinutes();
+                        const second = tanggalKirim.getSeconds();
+
+                        tanggalKirimDateTime = year + "-" + month + "-" + date + "T" + hour + ":" + minute + ":" + second;
+                        document.getElementById('tgl-event').value = tanggalKirimDateTime;
                         let spek = document.getElementById('spek');
                         let elementShow = document.getElementsByClassName('detail-barang');
 
@@ -505,6 +587,7 @@
                     'jenis': document.getElementById('jenis').value,
                     'driver': parseInt(document.getElementById('driver').value),
                     'tglJalan': document.getElementById('tgl-event').value,
+                    'notes': document.getElementById('notes').value,
                     'listbarang': arraySpesifikasiJson,
                 },
                 dataType: 'json',

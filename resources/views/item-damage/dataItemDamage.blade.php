@@ -12,6 +12,7 @@
                     <h4 class="card-title">Data Barang Rusak Belum Diperbaiki</h4>
                 </div>
                 <div class="card-body h5 text-dark">
+                    <a href="/tambah-damage" class="btn btn-primary mb-3"><i class="ti ti-plus"></i> Create New Data</a>
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
                         id="listbarangbelum">
                         <thead>
@@ -297,6 +298,13 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth()+1;
+            const date = currentDate.getDate();
+            const hour = currentDate.getHours();
+            const minute = currentDate.getMinutes();
+            const second = currentDate.getSeconds();
             var tableBelum = $('#listbarangbelum').DataTable( {
               lengthChange: false,
               buttons: [ 
@@ -306,12 +314,14 @@
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
                   },
+                  title: `Data Barang Rusak ${year}-${month}-${date}-${hour}.${minute}.${second}`,
                 },
                 {
                   extend: 'pdf',
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
                   },
+                  title: `Data Barang Rusak ${year}-${month}-${date}-${hour}.${minute}.${second}`,
                 },
                 'colvis' 
               ],

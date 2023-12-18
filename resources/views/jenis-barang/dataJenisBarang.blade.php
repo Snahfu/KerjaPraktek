@@ -12,12 +12,12 @@
                     <h4 class="card-title">Data Jenis Barang</h4>
                 </div>
                 <div class="card-body h5 text-dark">
+                    <a href="/tambah-jenis" class="btn btn-primary mb-3"><i class="ti ti-plus"></i> Create New Data</a>
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
                         id="listjenisbarang">
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>ID</th>
                                 <th>Nama</th>
                                 <th>Harga Sewa</th>
                                 <th>Kategori Barang</th>
@@ -30,7 +30,6 @@
                                 @csrf
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $data->id }}</td>
                                     <td>{{ $data->nama }}</td>
                                     <td>@currency($data->harga_sewa)</td>
                                     <td>{{ $data->kategori->nama }}</td>
@@ -66,7 +65,6 @@
                         <tfoot>
                             <tr>
                                 <th></th>
-                                <th>ID</th>
                                 <th>Nama</th>
                                 <th>Harga Sewa</th>
                                 <th>Kategori Barang</th>
@@ -191,6 +189,13 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth()+1;
+            const date = currentDate.getDate();
+            const hour = currentDate.getHours();
+            const minute = currentDate.getMinutes();
+            const second = currentDate.getSeconds();
             var table = $('#listjenisbarang').DataTable( {
               lengthChange: false,
               buttons: [ 
@@ -200,12 +205,14 @@
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5 ]
                   },
+                  title: `Data Jenis Barang ${year}-${month}-${date}-${hour}.${minute}.${second}`,
                 },
                 {
                   extend: 'pdf',
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5 ]
                   },
+                  title: `Data Jenis Barang ${year}-${month}-${date}-${hour}.${minute}.${second}`,
                 },
                 'colvis' 
               ],

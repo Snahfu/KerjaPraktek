@@ -8,6 +8,7 @@ use App\Models\JenisBarang;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class BarangController extends Controller
@@ -81,6 +82,38 @@ class BarangController extends Controller
         return view('gudang.tambahgudang', ['jenis_barang' => $semua_jenis]);
     }
 
+    public function getNama(Request $request)
+    {
+      $validator = Validator::make($request->all(), [
+          'jenis_barang_id' => 'required',
+      ]);
+
+      if ($validator->fails()) {
+          $status = "failed";
+          $msg = "Terdapat kesalahan pada sistem";
+          return response()->json([
+              'status' => $status,
+              'msg' => $msg,
+          ], 200);
+      }
+        $nama = JenisBarang::select('nama')
+        ->find($request['jenis_barang_id']);
+
+        $total = Barang::select(DB::raw('COUNT(*) AS total'))
+        ->where('jenis_barang_id', '=', $request['jenis_barang_id'])
+        ->first();
+
+        $nama = $nama->nama . " - " . $total->total + 1;
+
+        $status = "success";
+        $msg = "Berhasil menambahkan data";
+        return response()->json(array(
+            'status' => $status,
+            'msg' => $msg,
+            'data' => $nama,
+        ), 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -95,6 +128,8 @@ class BarangController extends Controller
             'satuan' => 'required',
             'tanggalBeli' => 'required|date',
             'hargaBeli' => 'required',
+            'type' => 'required',
+            'nama' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -105,9 +140,30 @@ class BarangController extends Controller
                 'msg' => $msg,
             ], 200);
         }
-        
-        $barang = Barang::create($request->all());
-        $dataId = $barang->id;
+
+        $count_jumlah_data = Barang::select(DB::raw('COUNT(*)'))
+        ->where('jenis_barang_id', '=', $request['jenis_barang_id'])
+        ->get();
+
+        $dataId = "";
+        if ($request->type == "serial") {
+          $qty = $request['type'];
+          for ($i=1; $i<=$qty; $i++) {
+            $request['qty'] = 1;
+            $request['nama'] = $request['nama'] . " - " . $count_jumlah_data + $i;
+            $request['hargaBeli'] = $request['hargaBeli'] / $request['qty'];
+            $barang = Barang::create($request->all());
+            $id = $barang->id;
+            if ($i != $qty)
+              $dataId .= $id . ", ";
+            else
+              $dataId .= $id;
+          }
+        }
+        else {
+          $barang = Barang::create($request->all());
+          $dataId = $barang->id;
+        }
 
         $status = "success";
         $msg = "Berhasil menambahkan data";
@@ -161,6 +217,8 @@ class BarangController extends Controller
             'satuan' => 'required',
             'tanggalBeli' => 'required|date',
             'hargaBeli' => 'required',
+            'type' => 'required',
+            'nama' => 'required'
         ]);
 
         if ($validator->fails()) {

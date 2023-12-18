@@ -12,6 +12,7 @@
                     <h4 class="card-title">Data Shipping</h4>
                 </div>
                 <div class="card-body h5 text-dark">
+                    <a href="/tambah-shipping" class="btn btn-primary mb-3"><i class="ti ti-plus"></i> Create New Data</a>
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
                         id="listshipping">
                         <thead>
@@ -22,6 +23,7 @@
                                 <th>Nama Event</th>
                                 <th>Tanggal Input</th>
                                 <th>Tanggal Jalan</th>
+                                <th>Notes</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -35,6 +37,7 @@
                                     <td>{{ $data->event->nama }}</td>
                                     <td>{{ $data->tglInput }}</td>
                                     <td>{{ $data->tglJalan }}</td>
+                                    <td>{{ $data->notes }}</td>
                                     <td>
                                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                                             <li class="nav-item dropdown">
@@ -44,6 +47,11 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
+                                                        <a href="{{ route('suratjalan', ['id' => $data->id]) }}"
+                                                            class="d-flex align-items-center gap-2 dropdown-item">
+                                                            <i class="ti ti-edit fs-6"></i>
+                                                            <p class="mb-0 fs-3">Surat Jalan</p>
+                                                        </a>
                                                         <a href="{{ route('editshipping', ['id' => $data->id]) }}"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
@@ -71,6 +79,7 @@
                                 <th>Nama Event</th>
                                 <th>Tanggal Input</th>
                                 <th>Tanggal Jalan</th>
+                                <th>Notes</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
@@ -191,6 +200,13 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth()+1;
+            const date = currentDate.getDate();
+            const hour = currentDate.getHours();
+            const minute = currentDate.getMinutes();
+            const second = currentDate.getSeconds();
             var table = $('#listshipping').DataTable( {
               lengthChange: false,
               buttons: [ 
@@ -200,12 +216,14 @@
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5 ]
                   },
+                  title: `Data Shipping ${year}-${month}-${date}-${hour}.${minute}.${second}`,
                 },
                 {
                   extend: 'pdf',
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5 ]
                   },
+                  title: `Data Shipping ${year}-${month}-${date}-${hour}.${minute}.${second}`,
                 },
                 'colvis' 
               ],

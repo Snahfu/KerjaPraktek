@@ -13,7 +13,8 @@ class Event extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Event::class, 'customers_id');
+        return $this->belongsTo(Customer::class, 'customers_id');
+        // return $this->belongsTo(Event::class, 'customers_id');
     }
     public function divisievent()
     {
@@ -29,7 +30,8 @@ class Event extends Model
         return $this->hasMany(Shipping::class, 'events_id');
     }
 
-    public function event()
+    // public function event()
+    public function invoice()
     {
         return $this->hasMany(Invoice::class, 'events_id');
     }
