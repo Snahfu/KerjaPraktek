@@ -69,7 +69,7 @@
                             </div>
                         </div>
 
-                        <!-- Tanggal Acara -->
+                        <!-- Jenis Kegiatan -->
                         <div class="col-12">
                             <div class="mb-1 row">
                                 <div class="col-sm-3">
@@ -632,6 +632,9 @@
             var selectElement = document.getElementById('client-name');
             var selectedIndex = selectElement.selectedIndex;
             var id_client = selectElement.options[selectedIndex].value;
+            var selectJenisElement = document.getElementById('jenis-kegiatan');
+            var selectedElementIndex = selectJenisElement.selectedIndex;
+            var jenis_kegiatan = selectJenisElement.options[selectedElementIndex].value;
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -651,10 +654,10 @@
                     'waktu_loading': document.getElementById('loading-in-date').value,
                     'jam_mulai_acara': document.getElementById('event-start-date').value,
                     'jam_selesai_acara': document.getElementById('event-end-date').value,
-                    'tanggal': document.getElementById('event-end-date').value,
-                    'budget': document.getElementById('event-end-date').value,
-                    'catatan': document.getElementById('event-end-date').value,
-                    'jenis_kegiatan': document.getElementById('event-end-date').value,
+                    'tanggal': document.getElementById('tanggal-acara').value,
+                    'budget': document.getElementById('budget').value,
+                    'catatan': document.getElementById('catatan').value,
+                    'jenis_kegiatan': jenis_kegiatan,
                     'listbarang': arraySpesifikasiJson,
                 },
                 dataType: 'json',

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 19, 2023 at 11:13 AM
+-- Generation Time: Dec 19, 2023 at 11:17 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -126,6 +126,7 @@ CREATE TABLE `events` (
   `PIC` int(11) NOT NULL,
   `customers_id` int(11) NOT NULL,
   `nama` mediumtext NOT NULL,
+  `penyelenggara` varchar(99) NOT NULL,
   `tanggal` datetime NOT NULL,
   `lokasi` longtext NOT NULL,
   `jenis_kegiatan` enum('Wisuda','Ulang Tahun','Wedding','Meeting','Galla Dinner','Konser','Bazzar','Drama') NOT NULL,
@@ -143,15 +144,15 @@ CREATE TABLE `events` (
 -- Dumping data for table `events`
 --
 
-INSERT INTO `events` (`id`, `PIC`, `customers_id`, `nama`, `tanggal`, `lokasi`, `jenis_kegiatan`, `status`, `jabatan_client`, `catatan`, `waktu_loading`, `jam_mulai_acara`, `jam_selesai_acara`, `waktu_loading_out`, `budget`) VALUES
-(1, 3, 3, 'JAFEST', '2023-12-12 00:52:39', '', 'Wisuda', 'Draft', 'Koordinator Acara', NULL, '2023-11-20 14:13:56', '2023-11-20 14:13:54', '2023-11-20 14:13:55', '2023-11-20 14:13:57', 0),
-(2, 2, 1, 'Pesta Bintang Malam', '2023-12-03 00:52:45', '', 'Wisuda', 'Menunggu Persetujuan', 'Ketua Acara', NULL, '2023-10-23 11:00:00', '2023-10-23 15:00:00', '2023-10-23 23:00:00', '2023-10-24 00:00:00', 0),
-(3, 5, 2, 'Harmoni Seni Lokal', '2023-12-12 00:52:48', '', 'Wisuda', 'Diproses', 'Koordinator Perlengkapan', NULL, '2023-10-11 10:00:00', '2023-10-11 18:00:00', '2023-10-11 22:00:00', '2023-10-11 23:00:00', 0),
-(4, 7, 3, 'Serba Seru Weekend Fiesta', '2023-12-06 00:52:51', '', 'Wisuda', 'Diterima', 'Manajer Pemasaran', NULL, '2023-10-04 02:00:00', '2023-10-04 09:00:00', '2023-10-04 14:00:00', '2023-10-04 15:00:00', 0),
-(5, 1, 4, 'Inspirasi Kreatif Expo', '2023-11-15 00:52:55', '', 'Wisuda', 'Event Berlangsung', 'Koordinator Acara', NULL, '2023-10-08 07:00:00', '2023-10-08 11:00:00', '2023-10-08 19:00:00', '2023-10-08 20:00:00', 0),
-(6, 3, 5, 'Santai di Bawah Bintang', '2023-11-04 00:52:58', '', 'Wisuda', 'Selesai', 'Ketua Acara', NULL, '2023-10-10 11:00:00', '2023-10-10 18:00:00', '2023-10-10 23:00:00', '2023-10-11 00:00:00', 0),
-(7, 5, 6, 'Festival Kuliner Asli', '2023-11-19 00:53:03', '', 'Wisuda', 'Tagihan', 'Koordinator Perlengkapan', NULL, '2023-10-27 10:00:00', '2023-10-27 18:00:00', '2023-10-27 22:00:00', '2023-10-27 23:00:00', 0),
-(8, 7, 4, 'Pasar Seni Urban', '2023-10-10 00:53:08', '', 'Wisuda', 'Diterima', 'Manajer Pemasaran', NULL, '2023-10-01 01:00:00', '2023-10-01 08:00:00', '2023-10-01 13:00:00', '2023-10-01 14:00:00', 0);
+INSERT INTO `events` (`id`, `PIC`, `customers_id`, `nama`, `penyelenggara`, `tanggal`, `lokasi`, `jenis_kegiatan`, `status`, `jabatan_client`, `catatan`, `waktu_loading`, `jam_mulai_acara`, `jam_selesai_acara`, `waktu_loading_out`, `budget`) VALUES
+(1, 3, 3, 'JAFEST', '', '2023-12-12 00:52:39', '', 'Wisuda', 'Draft', 'Koordinator Acara', NULL, '2023-11-20 14:13:56', '2023-11-20 14:13:54', '2023-11-20 14:13:55', '2023-11-20 14:13:57', 0),
+(2, 2, 1, 'Pesta Bintang Malam', '', '2023-12-03 00:52:45', '', 'Wisuda', 'Menunggu Persetujuan', 'Ketua Acara', NULL, '2023-10-23 11:00:00', '2023-10-23 15:00:00', '2023-10-23 23:00:00', '2023-10-24 00:00:00', 0),
+(3, 5, 2, 'Harmoni Seni Lokal', '', '2023-12-12 00:52:48', '', 'Wisuda', 'Diproses', 'Koordinator Perlengkapan', NULL, '2023-10-11 10:00:00', '2023-10-11 18:00:00', '2023-10-11 22:00:00', '2023-10-11 23:00:00', 0),
+(4, 7, 3, 'Serba Seru Weekend Fiesta', '', '2023-12-06 00:52:51', '', 'Wisuda', 'Diterima', 'Manajer Pemasaran', NULL, '2023-10-04 02:00:00', '2023-10-04 09:00:00', '2023-10-04 14:00:00', '2023-10-04 15:00:00', 0),
+(5, 1, 4, 'Inspirasi Kreatif Expo', '', '2023-11-15 00:52:55', '', 'Wisuda', 'Event Berlangsung', 'Koordinator Acara', NULL, '2023-10-08 07:00:00', '2023-10-08 11:00:00', '2023-10-08 19:00:00', '2023-10-08 20:00:00', 0),
+(6, 3, 5, 'Santai di Bawah Bintang', '', '2023-11-04 00:52:58', '', 'Wisuda', 'Selesai', 'Ketua Acara', NULL, '2023-10-10 11:00:00', '2023-10-10 18:00:00', '2023-10-10 23:00:00', '2023-10-11 00:00:00', 0),
+(7, 5, 6, 'Festival Kuliner Asli', '', '2023-11-19 00:53:03', '', 'Wisuda', 'Tagihan', 'Koordinator Perlengkapan', NULL, '2023-10-27 10:00:00', '2023-10-27 18:00:00', '2023-10-27 22:00:00', '2023-10-27 23:00:00', 0),
+(8, 7, 4, 'Pasar Seni Urban', '', '2023-10-10 00:53:08', '', 'Wisuda', 'Diterima', 'Manajer Pemasaran', NULL, '2023-10-01 01:00:00', '2023-10-01 08:00:00', '2023-10-01 13:00:00', '2023-10-01 14:00:00', 0);
 
 -- --------------------------------------------------------
 

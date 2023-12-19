@@ -92,7 +92,7 @@ class EventController extends Controller
             'listbarang' => 'required'
         ]);
         
-        dd($request['listbarang']);
+        dd($request);
 
         if ($validator->fails()) {
             $status = "failed";
