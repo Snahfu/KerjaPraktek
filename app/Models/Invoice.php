@@ -20,4 +20,14 @@ class Invoice extends Model
     public function invoiceBarang(){
         return $this->hasMany(InvoiceBarang::class,'invoices_id');
     }
+
+    protected $fillable = [
+        'id',
+        'events_id',
+        'tanggal_buat',
+        'tanggal_jatuh_tempo',
+        'total_harga',
+        'status',
+        'catatan',
+    ];
 }

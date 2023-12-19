@@ -69,6 +69,38 @@
                             </div>
                         </div>
 
+                        <!-- Tanggal Acara -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="jenis-kegiatan">Jenis Kegiatan</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <select type="text" class="form-select" id="jenis-kegiatan">
+                                        <option value="Wisuda">Wisuda</option>
+                                        <option value="Ulang Tahun">Ulang Tahun</option>
+                                        <option value="Wedding">Wedding</option>
+                                        <option value="Meeting">Meeting</option>
+                                        <option value="Galla Dinner">Galla Dinner</option>
+                                        <option value="Konser">Konser</option>
+                                        <option value="Bazzar">Bazzar</option>
+                                        <option value="Drama">Drama</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Tanggal Acara -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="tanggal-acara">Tanggal Acara</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="datetime-local" id="tanggal-acara" class="form-control"
+                                        name="tanggal-acara" />
+                                </div>
+                            </div>
+                        </div>
                         <!-- Tanggal Loading In -->
                         <div class="col-12">
                             <div class="mb-1 row">
@@ -392,10 +424,10 @@
                         harga_sewa_map = [];
                         for (var data in response.datas) {
                             var option = document.createElement('option');
-                            option.value = response.datas[data].idjenis_barang;
+                            option.value = response.datas[data].id;
                             option.text = response.datas[data].nama;
                             namaBarangElement.add(option);
-                            harga_sewa_map[response.datas[data].idjenis_barang] = response.datas[data]
+                            harga_sewa_map[response.datas[data].id] = response.datas[data]
                                 .harga_sewa;
                         }
                     }
@@ -562,7 +594,7 @@
 
         // Event trigger untuk melakukan perubahan pada spesifikasi order
         function perbaruhiDataTabel(id) {
-            var quantity = parcustomer-nameseFloat(document.getElementById('edit_jumlah_barang').value);
+            var quantity = parseFloat(document.getElementById('edit_jumlah_barang').value);
             var price = parseFloat(document.getElementById('edit_harga_per_barang').value);
             var subtotal = parseFloat(document.getElementById('edit_harga_total').value);
             updateArraySpesifikasiBarang(id, quantity, price, subtotal);

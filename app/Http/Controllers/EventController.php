@@ -91,6 +91,8 @@ class EventController extends Controller
             'jam_selesai_acara' => 'required|date',
             'listbarang' => 'required'
         ]);
+        
+        dd($request['listbarang']);
 
         if ($validator->fails()) {
             $status = "failed";
