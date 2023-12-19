@@ -152,6 +152,30 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Budget -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="budget">Budget</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="number" id="budget" class="form-control"
+                                        name="budget" />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Catatan -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="catatan">Catatan</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" id="catatan" class="form-control"
+                                        name="catatan" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -620,13 +644,17 @@
                     'PIC': userData.id,
                     'customers_id': id_client,
                     'nama': document.getElementById('event-name').value,
-                    'status': "Draft",
+                    'status': "Penawaran",
                     'lokasi': document.getElementById('event-location').value,
                     'jabatan_client': document.getElementById('client-position').value,
                     'waktu_loading_out': document.getElementById('loading-out-date').value,
                     'waktu_loading': document.getElementById('loading-in-date').value,
                     'jam_mulai_acara': document.getElementById('event-start-date').value,
                     'jam_selesai_acara': document.getElementById('event-end-date').value,
+                    'tanggal': document.getElementById('event-end-date').value,
+                    'budget': document.getElementById('event-end-date').value,
+                    'catatan': document.getElementById('event-end-date').value,
+                    'jenis_kegiatan': document.getElementById('event-end-date').value,
                     'listbarang': arraySpesifikasiJson,
                 },
                 dataType: 'json',

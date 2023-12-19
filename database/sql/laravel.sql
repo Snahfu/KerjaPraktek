@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 19, 2023 at 11:07 AM
+-- Generation Time: Dec 19, 2023 at 11:13 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -128,7 +128,7 @@ CREATE TABLE `events` (
   `nama` mediumtext NOT NULL,
   `tanggal` datetime NOT NULL,
   `lokasi` longtext NOT NULL,
-  `jenis kegiatan` enum('Wisuda','Ulang Tahun','Wedding','Meeting','Galla Dinner','Konser','Bazzar','Drama') NOT NULL,
+  `jenis_kegiatan` enum('Wisuda','Ulang Tahun','Wedding','Meeting','Galla Dinner','Konser','Bazzar','Drama') NOT NULL,
   `status` varchar(45) NOT NULL,
   `jabatan_client` varchar(45) NOT NULL,
   `catatan` longtext DEFAULT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE `events` (
 -- Dumping data for table `events`
 --
 
-INSERT INTO `events` (`id`, `PIC`, `customers_id`, `nama`, `tanggal`, `lokasi`, `jenis kegiatan`, `status`, `jabatan_client`, `catatan`, `waktu_loading`, `jam_mulai_acara`, `jam_selesai_acara`, `waktu_loading_out`, `budget`) VALUES
+INSERT INTO `events` (`id`, `PIC`, `customers_id`, `nama`, `tanggal`, `lokasi`, `jenis_kegiatan`, `status`, `jabatan_client`, `catatan`, `waktu_loading`, `jam_mulai_acara`, `jam_selesai_acara`, `waktu_loading_out`, `budget`) VALUES
 (1, 3, 3, 'JAFEST', '2023-12-12 00:52:39', '', 'Wisuda', 'Draft', 'Koordinator Acara', NULL, '2023-11-20 14:13:56', '2023-11-20 14:13:54', '2023-11-20 14:13:55', '2023-11-20 14:13:57', 0),
 (2, 2, 1, 'Pesta Bintang Malam', '2023-12-03 00:52:45', '', 'Wisuda', 'Menunggu Persetujuan', 'Ketua Acara', NULL, '2023-10-23 11:00:00', '2023-10-23 15:00:00', '2023-10-23 23:00:00', '2023-10-24 00:00:00', 0),
 (3, 5, 2, 'Harmoni Seni Lokal', '2023-12-12 00:52:48', '', 'Wisuda', 'Diproses', 'Koordinator Perlengkapan', NULL, '2023-10-11 10:00:00', '2023-10-11 18:00:00', '2023-10-11 22:00:00', '2023-10-11 23:00:00', 0),
