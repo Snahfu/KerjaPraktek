@@ -17,6 +17,6 @@ class Customer extends Model
     }
 
     protected $fillable = [
-        'nama_pelanggan', 'nohp_pelanggan', 'alamat_pelanggan', 'id'
+        'nama_pelanggan', 'nohp_pelanggan', 'alamat_pelanggan', 'id','sapaan'
     ];
 }

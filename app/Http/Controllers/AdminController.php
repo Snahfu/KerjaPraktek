@@ -51,11 +51,12 @@ class AdminController extends Controller
             'nama_pelanggan' => 'required',
             'nohp_pelanggan' => 'required|max:99',
             'alamat_pelanggan' => 'required',
+            'sapaan' => 'required',
         ]);
-
-        if (substr($validator->nohp_pelanggan, 0,1) == "0") {
-          $result_no_telp = "62" + substr($validator->nohp_pelanggan, 1, strlen($validator->nohp_pelanggan)-1);
-          $validator->nohp_pelanggan = $result_no_telp;
+        
+        if (substr($request['nohp_pelanggan'], 0,1) == "0") {
+          $result_no_telp = "62" + substr($request['nohp_pelanggan'], 1, strlen($request['nohp_pelanggan'])-1);
+          $request['nohp_pelanggan'] = $result_no_telp;
         }
 
         if ($validator->fails()) {
@@ -94,13 +95,14 @@ class AdminController extends Controller
             'nama_pelanggan' => 'required',
             'nohp_pelanggan' => 'required|max:99',
             'alamat_pelanggan' => 'required',
+            'sapaan' => 'required',
         ]);
 
-        if (substr($validator->nohp_pelanggan, 0,1) == "0") {
-          $result_no_telp = "62" + substr($validator->nohp_pelanggan, 1, strlen($validator->nohp_pelanggan)-1);
-          $validator->nohp_pelanggan = $result_no_telp;
+        if (substr($request['nohp_pelanggan'], 0,1) == "0") {
+            $result_no_telp = "62" + substr($request['nohp_pelanggan'], 1, strlen($request['nohp_pelanggan'])-1);
+            $result_no_telp = $result_no_telp;
         }
-
+        
         if ($validator->fails()) {
             $status = "failed";
             $msg = $validator->errors()->first();
@@ -123,8 +125,9 @@ class AdminController extends Controller
 
         $pelanggan->update([
             'nama_pelanggan' => $request->input('nama_pelanggan'),
-            'nohp_pelanggan' => $request->input('nohp_pelanggan'),
+            'nohp_pelanggan' => $result_no_telp,
             'alamat_pelanggan' => $request->input('alamat_pelanggan'),
+            'sapaan' => $request->input('sapaan'),
         ]);
 
         $status = "success";
