@@ -25,13 +25,16 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   // Route::get('/dashboard-admin', function () {
   //     return view('admin.index');
   // });
+
+//   EVENT CONTROLLER
   Route::get('/tambah', function () {
       return view('common.tambahorder');
   });
   Route::get('/tambah', [App\Http\Controllers\EventController::class, 'create'])->name('common.tambahorder');
-  Route::get('/data-penawaran', function () {
-      return view('common.datatransaksi');
-  });
+  
+//   INVOICE CONTROLLER
+  Route::get('/data-penawaran', [App\Http\Controllers\InvoiceController::class, 'tabelPenawaran'])->name('event.penawaran');
+
   Route::get('/detail', function () {
       return view('common.detailorder');
   });

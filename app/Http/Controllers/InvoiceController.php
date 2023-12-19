@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function tabelPenawaran(){
+        $event = Invoice::join('events', 'invoices.events_id','=','events.id')
+            ->where('invoices.status', 'Penawaran')
+            ->select('events.*, invoices.*');
+        return view('common.datatransaksi', [
+            'list_invoices' => $event,
+        ]);
+    }
+
     public function index()
     {
         //

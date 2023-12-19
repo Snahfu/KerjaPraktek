@@ -22,11 +22,15 @@
                                 <th>Jumlah Kontrak</th>
                                 <th>Sub Devisi</th>
                                 <th>Status</th>
-                                {{-- Draft, Menunggu Persetujuan, Diproses, Diterima, Event Berlangsung, Selesai, Tagihan --}}
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach ($list_invoices as $invoice)
+                                <tr>
+                                    <td></td>
+                                </tr>
+                            @endforeach
                             <td></td>
                             <td>No</td>
                             <td>Nama Acara</td>
@@ -36,7 +40,6 @@
                             <td>
                                 {{-- Button --}}
                                 <div class="button">
-                                    {{-- <i class="ti ti-edit"></i> --}}
                                     <p class="mb-0 fs-3">Detail</p>
                                 </div>
                                 {{-- <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
