@@ -85,7 +85,7 @@
               <span>
                 <i class="ti ti-timeline"></i>
               </span>
-              <span class="hide-menu">Transaksi Penjualan</span>
+              <span class="hide-menu">Tabel Penawaran</span>
             </a>
           </li>
           {{-- <li class="sidebar-item">

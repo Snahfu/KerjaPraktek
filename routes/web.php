@@ -29,7 +29,7 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
       return view('common.tambahorder');
   });
   Route::get('/tambah', [App\Http\Controllers\EventController::class, 'create'])->name('common.tambahorder');
-  Route::get('/data-transaksi', function () {
+  Route::get('/data-penawaran', function () {
       return view('common.datatransaksi');
   });
   Route::get('/detail', function () {

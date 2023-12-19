@@ -102,7 +102,6 @@
     </table>
     <br>
     <p>Catatan:</p>
-    <br>
     <p> {{ $data['catatanEvent'] }} </p>
 
     <br>
@@ -111,26 +110,26 @@
         {{ $data['sapaanClient'] }}
         {{ $data['namaClient'] }}, kami ucapkan terimakasih.
     </p>
-
-    <div class="signature-container">
-        <div class="signature-left">
-            <p style="text-align: center">Hormat kami,</p>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <p style="text-align: center">{{ $data['nama_pic'] }}</p>
-        </div>
-        <div class="signature-right">
-            <p style="text-align: center">Menyetujui</p>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <p style="text-align: center">{{ $data['sapaanClient'] }} {{ $data['namaClient'] }}</p>
-        </div>
+    <table style="border: none" cellpadding="0" cellspacing="0" width="100%">
+        <tr style="border: none">
+            <td style="border: none; text-align:center" width="50%" valign="top">
+                <p>Hormat kami,</p>
+                <br>
+                <br>
+                <br>
+                <br>
+                <p>{{ $data['nama_pic'] }}</p>
+            </td>
+            <td style="border: none; text-align:center" width="50%" valign="top">
+                <p>Menyetujui</p>
+                <br>
+                <br>
+                <br>
+                <br>
+                <p>Nama</p>
+            </td>
+        </tr>
+    </table>
     </div>
 </body>
 

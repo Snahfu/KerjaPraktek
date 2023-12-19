@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Date;
 
 class PdfController extends Controller
 {
-    //
-
     public function pdfPage()
     {
         $tanggalMulai = Carbon::parse('2023-11-20 14:13:56');
@@ -41,8 +39,8 @@ class PdfController extends Controller
             'noHP_pic' => '08872143452',
             'nama_pic' => 'Alvin Sales',
         ];
-        $pdf = PDF::loadView('pdf', $data);
-        return $pdf->stream('surat.pdf');
+        $pdf = PDF::loadView('pdf', ['data'=>$data]);
+        return $pdf->download('surat.pdf');
         // return view('pdf', compact('data'));
     }
 }

@@ -9,7 +9,7 @@
         <div class="col-12">
             <div class="card card-custom">
                 <div class="card-header border-bottom">
-                    <h4 class="card-title">Tabel Quotation</h4>
+                    <h4 class="card-title">Tabel Penawaran</h4>
                 </div>
                 <div class="card-body text-dark">
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
