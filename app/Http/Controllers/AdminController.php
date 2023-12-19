@@ -53,7 +53,7 @@ class AdminController extends Controller
             'alamat_pelanggan' => 'required',
             'sapaan' => 'required',
         ]);
-        
+
         if (substr($request['nohp_pelanggan'], 0,1) == "0") {
           $result_no_telp = "62" + substr($request['nohp_pelanggan'], 1, strlen($request['nohp_pelanggan'])-1);
           $request['nohp_pelanggan'] = $result_no_telp;
@@ -97,7 +97,7 @@ class AdminController extends Controller
             'alamat_pelanggan' => 'required',
             'sapaan' => 'required',
         ]);
-
+        $result_no_telp = $request['nohp_pelanggan'];
         if (substr($request['nohp_pelanggan'], 0,1) == "0") {
             $result_no_telp = "62" + substr($request['nohp_pelanggan'], 1, strlen($request['nohp_pelanggan'])-1);
             $result_no_telp = $result_no_telp;

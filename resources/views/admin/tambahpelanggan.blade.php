@@ -64,8 +64,12 @@
                                 <div class="col-sm-9">
                                     <div class="input-group input-group-merge">
                                         <span class="input-group-text"><i class="ti ti-address-book"></i></span>
-                                        <input type="text" id="inputSapaanPelanggan" class="form-control"
-                                            placeholder="Sapaan" />
+                                        <select type="text" class="form-select" id="inputSapaanPelanggan">
+                                            <option value="Bapak">Bapak</option>
+                                            <option value="Ibu">Ibu</option>
+                                            <option value="Kak">Kak</option>
+                                            <option value="Saudara">Saudara</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -128,10 +132,12 @@
             document.getElementById("inputNamaPelanggan").value = "";
             document.getElementById("inputNoHpPelanggan").value = "";
             document.getElementById("inputAlamatPelanggan").value = "";
-            document.getElementById("inputSapaanPelanggan").value = "";
         });
 
         function tambahPelanggan() {
+            var selectElement = document.getElementById('inputSapaanPelanggan');
+            var selectedIndex = selectElement.selectedIndex;
+            var sapaan = selectElement.options[selectedIndex].value;
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -145,14 +151,13 @@
                     'nama_pelanggan': document.getElementById("inputNamaPelanggan").value,
                     'nohp_pelanggan': document.getElementById("inputNoHpPelanggan").value,
                     'alamat_pelanggan': document.getElementById("inputAlamatPelanggan").value,
-                    'sapaan': document.getElementById("inputSapaanPelanggan").value,
+                    'sapaan': sapaan,
                 },
                 success: function(response) {
                     alertUpdate(response.msg, response.status);
                     document.getElementById("inputNamaPelanggan").value = "";
                     document.getElementById("inputNoHpPelanggan").value = "";
                     document.getElementById("inputAlamatPelanggan").value = "";
-                    document.getElementById("inputSapaanPelanggan").value = "";
                 },
                 error: function(error) {
                     console.log('Error:', error);
