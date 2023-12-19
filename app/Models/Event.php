@@ -20,16 +20,10 @@ class Event extends Model
     {
         return $this->hasMany(DivisiEvent::class, 'events_id');
     }
-    public function eventjenis()
-    {
-        return $this->hasMany(EventJenis::class, 'events_id');
-    }
-
     public function shipping()
     {
         return $this->hasMany(Shipping::class, 'events_id');
     }
-
     // public function event()
     public function invoice()
     {

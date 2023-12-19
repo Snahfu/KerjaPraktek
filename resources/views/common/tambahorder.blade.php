@@ -54,6 +54,18 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Penyelenggara -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="penyelenggara">Nama Lembaga</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" id="penyelenggara" class="form-control" name="penyelenggara"
+                                    placeholder="Nama Lembaga" />
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Posisi Jabatan Client -->
                         <div class="col-12">
@@ -657,6 +669,7 @@
                     'tanggal': document.getElementById('tanggal-acara').value,
                     'budget': document.getElementById('budget').value,
                     'catatan': document.getElementById('catatan').value,
+                    'penyelenggara': document.getElementById('penyelenggara').value,
                     'jenis_kegiatan': jenis_kegiatan,
                     'listbarang': arraySpesifikasiJson,
                 },

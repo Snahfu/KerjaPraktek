@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Event;
 use App\Models\EventJenis;
+use App\Models\Invoice;
 use App\Models\JenisBarang;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
@@ -89,10 +90,11 @@ class EventController extends Controller
             'waktu_loading' => 'required|date',
             'jam_mulai_acara' => 'required|date',
             'jam_selesai_acara' => 'required|date',
-            'listbarang' => 'required'
+            'listbarang' => 'required',
+            'jenis_kegiatan' => 'required',
+            'penyelenggara' => 'required',
+            'tanggal' => 'required|date',
         ]);
-        
-        dd($request);
 
         if ($validator->fails()) {
             $status = "failed";
@@ -117,19 +119,38 @@ class EventController extends Controller
                 'waktu_loading' => $request->input('waktu_loading'),
                 'jam_mulai_acara' => $request->input('jam_mulai_acara'),
                 'jam_selesai_acara' => $request->input('jam_selesai_acara'),
+                'tanggal' => $request->input('tanggal'),
+                'penyelenggara' => $request->input('penyelenggara'),
+                'jenis_kegiatan' => $request->input('jenis_kegiatan'),
+                'budget' => $request->input('budget'),
+                'catatan' => $request->input('catatan'),
             ]);
             $dataId = $event->id;
+            $invoice = Invoice::create([
+                'events_id' => $dataId,
+                'tanggal_jatuh_tempo' => $request->input('tanggal'),
+                'total_harga' => 0,
+                'status' => "Penawaran",
+                'catatan' => "",
+            ]);
+            $invoice_id = $invoice->id;
+            $total_harga = 0;
             foreach ($request['listbarang'] as $kategori) {
                 foreach($kategori as $barang){
+                    // EventJenis ini adalah Detail Invoice
                     $detailBarang = new EventJenis();
-                    $detailBarang->events_id = $dataId;
-                    $detailBarang->jenis_barang_idjenis_barang = $barang['idbarang'];
+                    $detailBarang->invoices_id = $invoice_id;
+                    $detailBarang->jenis_barang_id = $barang['idbarang'];
                     $detailBarang->qty = $barang['jumlah'];
                     $detailBarang->harga_barang = $barang['harga'];
                     $detailBarang->subtotal = $barang['subtotal'];
                     $detailBarang->save();
+                    $total_harga += $barang['subtotal'];
                 }
             }
+
+            $invoice->total_harga = $total_harga;
+            $invoice->save();
 
             DB::commit();
             $status = "success";

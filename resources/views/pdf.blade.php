@@ -17,11 +17,12 @@
             border: 1px solid black;
         }
 
-        th{
+        th {
             padding: 7px;
             text-align: center;
         }
-        td{
+
+        td {
             padding: 7px;
         }
 
@@ -32,22 +33,32 @@
         th#subject {
             width: 50%;
         }
-        .header{
+
+        .header {
             font-weight: bold;
+        }
+
+        .signature-container {
+            display: flex;
+            justify-content: space-between;
+            width: 50%;
+            margin: auto;
         }
     </style>
 </head>
 
 <body>
     <p>Kepada Yth</p>
-    <p>Bapak Christian Yaska</p>
-    <p>Laravel Developer dari Univeristas Surabaya</p>
-    <p>Ditempat</p>
+    <p>{{ $data['sapaanClient'] }} {{ $data['namaClient'] }}</p>
+    <p> {{ $data['jabatanClient'] }}, {{ $data['lembagaClient'] }}</p>
+    <p>Ditempat.</p>
     <p></p>
-    <p>Surabaya, 12 Desember 2023</p>
-    <p>Dengan Hormat, Untuk mendukung acara Japanese Festival, yang akan diselenggarakan selama 2 hari pada kamis,
-        tanggal 10 Desember 2023. Maka kami bermaksud mengajukan pemakaian Sound System, Lighting, Multimedia dan
-        Pendingin Ruangan (AC) dengan rincian sebagai berikut:</p>
+    <p>Surabaya, {{ $data['tanggalNow'] }}</p>
+    <p>Dengan Hormat, Untuk mendukung acara {{ $data['namaEvent'] }}, yang akan diselenggarakan selama
+        {{ $data['lamaEvent'] }}
+        hari pada {{ $data['pelaksanaan'] }}. Maka kami bermaksud mengajukan pemakaian
+        {{ implode(', ', $data['kategoriSewa']) }} dengan
+        rincian sebagai berikut:</p>
     <table>
         <thead>
             <tr>
@@ -91,23 +102,36 @@
     </table>
     <br>
     <p>Catatan:</p>
-    <ol>
-        <li>Harga di atas adalah biaya sewa untuk 1 (satu) hari acara maksimal 8 (enam) jam pemakaian per hari untuk Sound System.</li>
-        <li>
-            Apabila proposal telah disetujui, dapat dikirimkan bukti DP (50%) ke WA  +62 878-8482-9063 untuk proses booking.
-        </li>
-        <li>
-            Pembayaran dapat ditujukan :
-            <ul style="list-style-type: none">
-                <li>BCA</li>
-                <li>Nomor Rekening : 0882266239</li>
-                <li>
-                    Atas nama : Gregorius Alvin
-                </li>
-            </ul>
-        </li>
-        <li>Pelunasan dilakukan paling lambat H-1</li>
-    </ol>
+    <br>
+    <p> {{ $data['catatanEvent'] }} </p>
+
+    <br>
+    <p> Demikian penawaran kami sementara, semoga acara dapat berlangsung lancar, Kami tunggu kabar baiknya, bila ada
+        informasi lebih lanjut dapat menghubungi kami di no: {{ $data['noHP_pic'] }}. Atas perhatian
+        {{ $data['sapaanClient'] }}
+        {{ $data['namaClient'] }}, kami ucapkan terimakasih.
+    </p>
+
+    <div class="signature-container">
+        <div class="signature-left">
+            <p style="text-align: center">Hormat kami,</p>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <p style="text-align: center">{{ $data['nama_pic'] }}</p>
+        </div>
+        <div class="signature-right">
+            <p style="text-align: center">Menyetujui</p>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <p style="text-align: center">{{ $data['sapaanClient'] }} {{ $data['namaClient'] }}</p>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -71,6 +71,9 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/edit-gudang', [App\Http\Controllers\BarangController::class, 'edit'])->name('editgudang');
   Route::post('/update-gudang', [App\Http\Controllers\BarangController::class, 'update'])->name('updategudang');
   Route::post('/delete-gudang', [App\Http\Controllers\BarangController::class, 'destroy'])->name('deletegudang');
+  
+  
+  Route::get('/cekPDF', [App\Http\Controllers\PdfController::class, 'pdfPage'])->name('pdfbomat');
 
   // JENIS CONTROLLER
   Route::get('/data-jenis', [App\Http\Controllers\JenisBarangController::class, 'index'])->name('jenis.datajenis');
