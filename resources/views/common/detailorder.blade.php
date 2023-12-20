@@ -10,7 +10,7 @@
     <section id="basic-horizontal-layouts">
         <div class="row">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Form Input Data Order</h4>
                 </div>
                 <div class="card-body">
@@ -128,7 +128,7 @@
 
         <div class="row">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Spesifikasi Order</h4>
                 </div>
                 <div class="card-body">
@@ -203,7 +203,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-custom">
-                <div class="card-header border-bottom">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Table Detail Order</h4>
                 </div>
                 <div class="card-body h5 text-dark">
@@ -249,7 +249,7 @@
     {{-- Ini Untuk Sisi Sales --}}
     <div class="row">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header border-bottom custom-header-color">
                 <h4 class="card-title">Notes</h4>
             </div>
             <div class="card-body">
@@ -264,7 +264,7 @@
     {{-- Ini sisi Admin --}}
     <div class="row">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header border-bottom custom-header-color">
                 <h4 class="card-title">Notes</h4>
             </div>
             <div class="card-body">

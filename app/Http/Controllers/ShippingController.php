@@ -113,27 +113,22 @@ class ShippingController extends Controller
       $pdf->SetX(-100);
       $pdf->Cell(50,7,'Jenis Pengiriman: ' . $shipping->jenis);
       
-      //Display Invoice date
-      // $pdf->SetY(63);
-      // $pdf->SetX(-60);
-      // $pdf->Cell(50,7,"Invoice Date : ".$info["invoice_date"]);
-      
       //Display Table headings
       $pdf->SetY(95);
       $pdf->SetX(10);
       $pdf->SetFont('Arial','B',12);
       $pdf->Cell(10,9,"No",1,0,"C");
-      $pdf->Cell(80,9,"Nama Barang",1,0);
-      $pdf->Cell(70,9,"Desktipsi Barang",1,0,"C");
-      $pdf->Cell(30,9,"Kuantitas",1,1,"C");
+      $pdf->Cell(90,9,"Nama Barang",1,0,"C");
+      $pdf->Cell(30,9,"Kuantitas",1,0,"C");
+      $pdf->Cell(60,9,"Sastuan",1,1,"C");
       $pdf->SetFont('Arial','',12);
       
-      //Display table product rows
+      //Display table barang rows
       $i = 1;
       foreach($barang_shipping as $barang){
         $pdf->Cell(10,9,$i,"LR",0,"C");
         $pdf->Cell(90,9,$barang->barang->nama,"R",0);
-        $pdf->Cell(30,9,$barang->barang->qty,"R",0,"C");
+        $pdf->Cell(30,9,$barang->qty,"R",0,"C");
         $pdf->Cell(60,9,$barang->barang->satuan,"R",1, "C");
         $i += 1;
       }
@@ -155,21 +150,7 @@ class ShippingController extends Controller
       }
 
       $pdf->SetX(10);
-      $pdf->Cell(170,9,"Notes: " . $shipping->notes,1,0);
-
-      //Display table total row
-      // $pdf->SetFont('Arial','B',12);
-      // $pdf->Cell(150,9,"TOTAL",1,0,"R");
-      // $pdf->Cell(40,9,$info["total_amt"],1,1,"R");
-      
-      //Display amount in words
-      // $pdf->SetY(225);
-      // $pdf->SetX(10);
-      // $pdf->SetFont('Arial','B',12);
-      // $pdf->Cell(0,9,"Amount in Words ",0,1);
-      // $pdf->SetFont('Arial','',12);
-      // $pdf->Cell(0,9,$info["words"],0,1);
-
+      $pdf->Cell(190,9,"Notes: " . $shipping->notes,0,0);
 
       // FOOTER
       //set footer position
@@ -190,7 +171,7 @@ class ShippingController extends Controller
       $pdf->SetFont('Arial','',10);
       
       //Display Footer Text
-      $pdf->Cell(0,10,"This is a computer generated invoice",0,1,"C");
+      $pdf->Cell(0,10,"This is a computer generated",0,1,"C");
 
       $pdf->Output('D', $result_no_surat . ".pdf");
 
@@ -219,6 +200,7 @@ class ShippingController extends Controller
                  ->get();
         $jenis = JenisBarang::all();
 
+
         foreach ($jenis as $j) {
             $array_jenis[$j->id] = [];
             $jenis_map[$j->id] = $j->nama;
@@ -226,7 +208,45 @@ class ShippingController extends Controller
         return view('shipping.tambahshipping', ['karyawan' => $karyawan, 'event' => $event, 'jenis_map' => $jenis_map, 'array_jenis' => $array_jenis]);
     }
 
-    
+    public function checkDriver(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'driver' => 'required',
+            'tglJalan' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $status = "failed";
+            $msg = "Terdapat kesalahan pada sistem";
+            return response()->json([
+                'status' => $status,
+                'msg' => $msg,
+            ], 200);
+        }
+        $from = date_create($request['tglJalan']);
+        $to = date_create($request['tglJalan']);
+        date_sub($from, date_interval_create_from_date_string('2 hours'));
+        date_add($to, date_interval_create_from_date_string('2 hours'));
+        $shipping = Shipping::where("driver", "=", $request["driver"])
+        ->whereBetween('tgljalan', [$from, $to])
+        ->get();
+
+        // Jika driver sudah memiliki jadwal pengiriman dalam range 2 jam baik sebelum maupun setelah waktu yang dipilih
+        if (count($shipping) != 0) {
+            $status = "failed";
+            $msg = "Driver sudah memiliki jadwal pengiriman dalam range 2 jam baik sebelum maupun setelah waktu yang dipilih";
+            return response()->json([
+                'status' => $status,
+                'msg' => $msg,
+            ], 200);
+        }
+        $status = "success";
+        $msg = "Berhasil menambahkan data";
+        return response()->json(array(
+            'status' => $status,
+            'msg' => $msg,
+        ), 200);
+    }
 
     public function getBarangOut(Request $request)
     {
@@ -317,6 +337,7 @@ class ShippingController extends Controller
                 $kirim[] = ["qty"=> $ri->total_qty_invoices, "id" => $ri->barang_invoices, "idjenis" => $ri->id_jenis, "jenis" => $ri->nama_jenis];
             }
         }
+        dd($kirim);
 
         $status = "success";
         $msg = "Data berhasil diambil";

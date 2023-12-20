@@ -45,3 +45,11 @@
     color: black;
     background-color: #A7C7E7;
 }
+
+.custom-header-color {
+  background-color: #174feb;
+}
+
+h4.card-title {
+  color: whitesmoke;
+}

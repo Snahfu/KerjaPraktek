@@ -94,6 +94,7 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   // SHIPPING CONTROLLER
   Route::get('/data-shipping', [App\Http\Controllers\ShippingController::class, 'index'])->name('shipping.datashipping');
   Route::get('/tambah-shipping', [App\Http\Controllers\ShippingController::class, 'create'])->name('tambahshipping');
+  Route::post('/check-driver', [App\Http\Controllers\ShippingController::class, 'checkDriver'])->name('checkdriver');
   Route::post('/get-barang-shipping', [App\Http\Controllers\ShippingController::class, 'getBarang'])->name('getbarangshipping');
   Route::get('/get-barang-keluar-get', [App\Http\Controllers\ShippingController::class, 'getBarangOut'])->name('getbarangoutget');
   Route::post('/get-barang-keluar-post', [App\Http\Controllers\ShippingController::class, 'getBarangOut'])->name('getbarangoutpost');

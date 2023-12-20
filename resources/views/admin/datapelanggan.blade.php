@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-custom">
-                <div class="card-header border-bottom bg-primary">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Data Pelanggan</h4>
                 </div>
                 <div class="card-body h5 text-dark">
@@ -30,7 +30,7 @@
                                 <tr id="tr_{{ $customer->id }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td id="td_nama_{{ $customer->id }}">{{ $customer->nama_pelanggan }}</td>
-                                    <td id="td_nohp_{{ $customer->id }}"><a href="http://wa.me/{{ $customer->nohp_pelanggan }}">{{ $customer->nohp_pelanggan }}</a></td>
+                                    <td id="td_nohp_{{ $customer->id }}"><a href="http://wa.me/{{ $customer->nohp_pelanggan_wa }}">{{ $customer->nohp_pelanggan }}</a></td>
                                     <td id="td_alamat_{{ $customer->id }}">{{ $customer->alamat_pelanggan }}</td>
                                     <td>
                                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
@@ -175,7 +175,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                    <button id="alertModalButton" type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
                 </div>
             </div>
         </div>

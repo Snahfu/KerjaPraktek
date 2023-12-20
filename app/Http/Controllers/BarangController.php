@@ -84,18 +84,18 @@ class BarangController extends Controller
 
     public function getNama(Request $request)
     {
-      $validator = Validator::make($request->all(), [
-          'jenis_barang_id' => 'required',
-      ]);
+        $validator = Validator::make($request->all(), [
+            'jenis_barang_id' => 'required',
+        ]);
 
-      if ($validator->fails()) {
-          $status = "failed";
-          $msg = "Terdapat kesalahan pada sistem";
-          return response()->json([
-              'status' => $status,
-              'msg' => $msg,
-          ], 200);
-      }
+        if ($validator->fails()) {
+            $status = "failed";
+            $msg = "Terdapat kesalahan pada sistem";
+            return response()->json([
+                'status' => $status,
+                'msg' => $msg,
+            ], 200);
+        }
         $nama = JenisBarang::select('nama')
         ->find($request['jenis_barang_id']);
 
@@ -141,18 +141,20 @@ class BarangController extends Controller
             ], 200);
         }
 
-        $count_jumlah_data = Barang::select(DB::raw('COUNT(*)'))
+        $count_jumlah_data = Barang::select(DB::raw('jenis_barang.nama as nama, COUNT(*) AS total'))
         ->where('jenis_barang_id', '=', $request['jenis_barang_id'])
-        ->get();
+        ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
+        ->first();
 
         $dataId = "";
         if ($request->type == "serial") {
-          $qty = $request['type'];
+          $qty = $request['qty'];
+          $request_copy = $request;
+          $request_copy['qty'] = 1;
+          $request_copy['hargaBeli'] = $request_copy['hargaBeli'] / $qty;
           for ($i=1; $i<=$qty; $i++) {
-            $request['qty'] = 1;
-            $request['nama'] = $request['nama'] . " - " . $count_jumlah_data + $i;
-            $request['hargaBeli'] = $request['hargaBeli'] / $request['qty'];
-            $barang = Barang::create($request->all());
+            $request_copy['nama'] = $count_jumlah_data->nama . " - " . $count_jumlah_data->total + $i;
+            $barang = Barang::create($request_copy->all());
             $id = $barang->id;
             if ($i != $qty)
               $dataId .= $id . ", ";

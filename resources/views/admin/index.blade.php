@@ -1,15 +1,11 @@
 @extends('layouts.app')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('template/assets/css/dashboard.css') }}" />
-@endsection
-
 @section('content')
     {{-- isinya kyk summary dari masing masing contoh persentase / jumlah transaksi total / penghasilan dsbnya --}}
     <section id="basic-horizontal-layouts">
       <div class="row">
           <div class="card">
-              <div class="card-header">
+              <div class="card-header border-bottom custom-header-color">
                   <h4 class="card-title">Dashboard</h4>
               </div>
               <div class="card-body">
@@ -60,7 +56,7 @@
                             id="listevent">
                             <thead>
                                 <tr>
-                                    <th></th>
+                                    <th>No</th>
                                     <th>Tanggal</th>
                                     <th>Nama</th>
                                     <th>Status</th>
@@ -72,20 +68,20 @@
                             <tbody>
                                 @foreach ($data['list_events'] as $event)
                                     @csrf
-                                    <tr id="tr_{{ $event['id'] }}">
-                                        <td></td>
-                                        <td id="td_tanggal_{{ $event['id'] }}">{{ $event['tanggal'] }}</td>
-                                        <td id="td_nama_{{ $event['id'] }}">{{ $event['nama'] }}</td>
-                                        <td id="td_status_{{ $event['id'] }}">{{ $event['status'] }}</td>
-                                        <td id="td_lokasi_{{ $event['id'] }}">{{ $event['lokasi'] }}</td>
-                                        <td id="td_budget_{{ $event['id'] }}">{{ $event['budget'] }}</td>
-                                        <td id="td_kategori_{{ $event['id'] }}">{{ $event['kategori'] }}</td>
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $event['tanggal'] }}</td>
+                                        <td>{{ $event['nama'] }}</td>
+                                        <td>{{ $event['status'] }}</td>
+                                        <td>{{ $event['lokasi'] }}</td>
+                                        <td>{{ $event['budget'] }}</td>
+                                        <td>{{ $event['kategori'] }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th></th>
+                                    <th>No</th>
                                     <th>Tanggal</th>
                                     <th>Nama</th>
                                     <th>Status</th>
@@ -243,9 +239,10 @@
                 document.getElementById('jumlahEvent').innerHTML = response.data.jumlah_event;
                 document.getElementById('omzet').innerHTML = response.data.omzet;
                 updatePie(response.data.status_events);
+                var i = 1;
                 response.data.list_events.forEach(event => {
                   table.row.add([
-                    "",
+                    i,
                     event.tanggal,
                     event.nama,
                     event.status,
@@ -253,6 +250,7 @@
                     event.budget,
                     event.kategori
                   ]).draw();
+                  i += 1;
                 });
             },
             error: function(error) {

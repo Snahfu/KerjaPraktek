@@ -9,7 +9,7 @@ class EventJenis extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    protected $table = "jenis_barang_has_events";
+    protected $table = "item_barang_has_invoices";
 
     public function jenis()
     {

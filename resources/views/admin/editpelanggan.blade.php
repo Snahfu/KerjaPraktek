@@ -9,7 +9,7 @@
         <div class="row">
 
             <div class="card">
-                <div class="card-header">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Form Edit Data Pelanggan</h4>
                 </div>
                 <div class="card-body">
@@ -81,7 +81,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                  <form action="{{ route('admin.datapelanggan') }}">
+                    <button id="alertModalButton" type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                  </form>
                 </div>
             </div>
         </div>
@@ -93,14 +95,17 @@
     <script>
         function alertUpdate(msg, status) {
             var alertModalTitle = document.getElementById('alertModalTitle');
+            var alertModalButton = document.getElementById('alertModalButton');
             if (status == "success") {
                 alertModalTitle.classList.remove('bg-danger');
                 alertModalTitle.classList.add('bg-success');
+                alertModalButton.type = "submit";
                 $('#responseController').html(msg);
                 $('#alertModal').modal('show');
             } else {
                 alertModalTitle.classList.remove('bg-success');
                 alertModalTitle.classList.add('bg-danger');
+                alertModalButton.type = "button";
                 $('#responseController').html(msg);
                 $('#alertModal').modal('show');
             }

@@ -9,7 +9,7 @@
         <div class="row">
 
             <div class="card">
-                <div class="card-header">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Form Input Data Pelanggan</h4>
                 </div>
                 <div class="card-body">
@@ -84,7 +84,7 @@
                 </div>
                 <div class="modal-footer">
                   <form action="{{ route('admin.datapelanggan') }}">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                    <button id="alertModalButton" type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
                   </form>
                 </div>
             </div>
@@ -100,11 +100,13 @@
             if (status == "success") {
                 alertModalTitle.classList.remove('bg-danger');
                 alertModalTitle.classList.add('bg-success');
+                alertModalButton.type = "submit";
                 $('#responseController').html(msg);
                 $('#alertModal').modal('show');
             } else {
                 alertModalTitle.classList.remove('bg-success');
                 alertModalTitle.classList.add('bg-danger');
+                alertModalTitle.type = "button";
                 $('#responseController').html(msg);
                 $('#alertModal').modal('show');
             }
@@ -133,9 +135,9 @@
                 },
                 success: function(response) {
                     alertUpdate(response.msg, response.status);
-                    document.getElementById("inputNamaPelanggan").value = "";
-                    document.getElementById("inputNoHpPelanggan").value = "";
-                    document.getElementById("inputAlamatPelanggan").value = "";
+                    // document.getElementById("inputNamaPelanggan").value = "";
+                    // document.getElementById("inputNoHpPelanggan").value = "";
+                    // document.getElementById("inputAlamatPelanggan").value = "";
                 },
                 error: function(error) {
                     console.log('Error:', error);

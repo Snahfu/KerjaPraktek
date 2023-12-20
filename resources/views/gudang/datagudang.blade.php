@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-custom">
-                <div class="card-header border-bottom">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Data Gudang</h4>
                 </div>
                 <div class="card-body h5 text-dark">
@@ -184,7 +184,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                    <button id="alertModalButton" type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
                 </div>
             </div>
         </div>

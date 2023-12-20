@@ -8,7 +8,7 @@
     <section id="basic-horizontal-layouts">
         <div class="row">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Form Input Data Shipping</h4>
                 </div>
                 <div class="card-body">
@@ -75,7 +75,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="tgl-event" class="form-control"
-                                        name="tgl-event" />
+                                        name="tgl-event" onchange="checkDriver()" />
                                 </div>
                             </div>
                         </div>
@@ -103,7 +103,7 @@
                                     <label class="col-form-label" for="notes">Notes</label>
                                 </div>
                                 <div class="col-sm-9">
-                                  <input type="datetime-local" id="notes" class="form-control"
+                                  <input type="text" id="notes" class="form-control"
                                   name="notes" />
                                 </div>
                             </div>
@@ -116,7 +116,7 @@
 
         <div class="row detail-barang" id="spek">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Spesifikasi Barang Shipping</h4>
                 </div>
                 <div class="card-body">
@@ -154,7 +154,7 @@
     <div class="row detail-barang">
         <div class="col-12">
             <div class="card card-custom">
-                <div class="card-header border-bottom">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Table Detail Barang</h4>
                 </div>
                 <div class="card-body h5 text-dark">
@@ -169,7 +169,17 @@
                             </tr>
                         </thead>
                         <tbody id="data_table">
-                            
+                            <td></td>
+                            <td>
+                              {{-- <select class="form-select" id="driver">
+                                @foreach ($itemBarang as $ib)
+                                    <option value="{{$ib->id}}">{{$ib->nama}}</option>
+                                @endforeach
+                              </select> --}}
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                         </tbody>
                     </table>
                 </div>
@@ -195,7 +205,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                  <form action="{{ route('shipping.datashipping') }}">
+                    <button id="alertModalButton" type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                  </form>
                 </div>
             </div>
         </div>
@@ -261,14 +273,17 @@
         // Function untuk alert Message
         function alertUpdate(msg, status) {
             var alertModalTitle = document.getElementById('alertModalTitle');
+            var alertModalButton = document.getElementById('alertModalButton');
             if (status == "success") {
                 alertModalTitle.classList.remove('bg-danger');
                 alertModalTitle.classList.add('bg-success');
+                alertModalButton.type = "submit";
                 $('#responseController').html(msg);
                 $('#alertModal').modal('show');
             } else {
                 alertModalTitle.classList.remove('bg-success');
                 alertModalTitle.classList.add('bg-danger');
+                alertModalTitle.type = "button";
                 $('#responseController').html(msg);
                 $('#alertModal').modal('show');
             }
@@ -592,10 +607,8 @@
                 },
                 dataType: 'json',
                 success: function(response) {
-                    // Kalau success clear data
-                    alertUpdate(response.msg, response.status)
+                    alertUpdate(response.msg, response.status);
                     if(response.status == "success"){
-                        resetAll();
                     }
                 },
                 error: function(error) {

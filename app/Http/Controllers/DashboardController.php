@@ -38,18 +38,20 @@ class DashboardController extends Controller
           $lokasi = $event->lokasi;
           $budget = $event->budget;
 
-          $list_kategori = Event::select('kategori_barang.nama')
-          ->join('jenis_barang_has_events', 'events.id', '=', 'jenis_barang_has_events.events_id')
-          ->join('jenis_barang', 'jenis_barang_has_events.jenis_barang_id', '=', 'jenis_barang.id')
+          $list_kategori = Event::select(DB::raw('DISTINCT kategori_barang.nama'))
+          ->join('invoices', 'events.id', '=', 'invoices.events_id')
+          ->join('item_barang_has_invoices', 'invoices.id', '=', 'item_barang_has_invoices.invoices_id')
+          ->join('item_barang', 'item_barang_has_invoices.item_barang_id', '=', 'item_barang.id')
+          ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
           ->join('kategori_barang', 'jenis_barang.kategori_barang_id', '=', 'kategori_barang.id')
           ->get();
 
           $string_kategori = "";
           for ($i=0; $i<count($list_kategori); $i++) {
             if ($i != count($list_kategori)-1)
-              $string_kategori .= $list_kategori[$i] .= ", ";
+              $string_kategori .= $list_kategori[$i]->nama .= ", ";
             else
-              $string_kategori .= $list_kategori[$i];
+              $string_kategori .= $list_kategori[$i]->nama;
           }
           $list = [
             'id' => $id,
@@ -102,18 +104,20 @@ class DashboardController extends Controller
           $lokasi = $event->lokasi;
           $budget = $event->budget;
 
-          $list_kategori = Event::select('kategori_barang.nama')
-          ->join('jenis_barang_has_events', 'events.id', '=', 'jenis_barang_has_events.events_id')
-          ->join('jenis_barang', 'jenis_barang_has_events.jenis_barang_id', '=', 'jenis_barang.id')
+          $list_kategori = Event::select(DB::raw('DISTINCT kategori_barang.nama'))
+          ->join('invoices', 'events.id', '=', 'invoices.events_id')
+          ->join('item_barang_has_invoices', 'invoices.id', '=', 'item_barang_has_invoices.invoices_id')
+          ->join('item_barang', 'item_barang_has_invoices.item_barang_id', '=', 'item_barang.id')
+          ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
           ->join('kategori_barang', 'jenis_barang.kategori_barang_id', '=', 'kategori_barang.id')
           ->get();
 
           $string_kategori = "";
           for ($i=0; $i<count($list_kategori); $i++) {
             if ($i != count($list_kategori)-1)
-              $string_kategori .= $list_kategori[$i] .= ", ";
+              $string_kategori .= $list_kategori[$i]->nama .= ", ";
             else
-              $string_kategori .= $list_kategori[$i];
+              $string_kategori .= $list_kategori[$i]->nama;
           }
           $list = [
             'tanggal' => $tanggal,

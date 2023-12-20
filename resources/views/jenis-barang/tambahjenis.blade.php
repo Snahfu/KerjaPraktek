@@ -8,7 +8,7 @@
     <section id="basic-horizontal-layouts">
         <div class="row">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Form Input Data Jenis Barang</h4>
                 </div>
                 <div class="card-body">
@@ -89,7 +89,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                  <form action="{{ route('jenis.datajenis') }}">
+                    <button id="alertModalButton" type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                  </form>
                 </div>
             </div>
         </div>
@@ -102,14 +104,17 @@
         // Function untuk alert Message
         function alertUpdate(msg, status) {
             var alertModalTitle = document.getElementById('alertModalTitle');
+            var alertModalButton = document.getElementById('alertModalButton');
             if (status == "success") {
                 alertModalTitle.classList.remove('bg-danger');
                 alertModalTitle.classList.add('bg-success');
+                alertModalButton.type = "submit";
                 $('#responseController').html(msg);
                 $('#alertModal').modal('show');
             } else {
                 alertModalTitle.classList.remove('bg-success');
                 alertModalTitle.classList.add('bg-danger');
+                alertModalTitle.type = "button";
                 $('#responseController').html(msg);
                 $('#alertModal').modal('show');
             }
@@ -133,10 +138,8 @@
                     'spesifikasi': document.getElementById('spesifikasi').value,
                 },
                 success: function(response) {
-                    // Kalau success clear data
-                    alertUpdate(response.msg, response.status)
+                    alertUpdate(response.msg, response.status);
                     if(response.status == "success"){
-                        resetAll();
                     }
                 },
                 error: function(error) {
