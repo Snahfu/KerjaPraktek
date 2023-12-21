@@ -12,6 +12,6 @@ class Tagihan extends Model
     protected $table = "tagihan";
 
     protected $fillable = [
-        'id', 'events_id', 'termin_number', 'tanggal_input', 'tanggal_tagihan', 'nominal','status','bukti_pembayaran'
+        'id', 'invoices_id','tanggal_input', 'nominal','status','bukti_pembayaran'
     ];
 }

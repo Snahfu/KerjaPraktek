@@ -9,18 +9,18 @@ class EventJenis extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    protected $table = "item_barang_has_invoices";
+    protected $table = "detail_invoice";
 
     public function jenis()
     {
         return $this->belongsTo(JenisBarang::class, 'jenis_barang_id');
     }
-    public function event()
+    public function invoice()
     {
-        return $this->belongsTo(Event::class, 'events_id');
+        return $this->belongsTo(Invoice::class, 'invoices_id');
     }
 
     protected $fillable = [
-        'jenis_barang_id', 'events_id', 'qty', 'harga_barang', 'subtotal'
+        'jenis_barang_id', 'invoices_id', 'qty', 'harga_barang', 'subtotal'
     ];
 }

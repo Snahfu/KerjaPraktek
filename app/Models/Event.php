@@ -20,16 +20,10 @@ class Event extends Model
     {
         return $this->hasMany(DivisiEvent::class, 'events_id');
     }
-    public function eventjenis()
-    {
-        return $this->hasMany(EventJenis::class, 'events_id');
-    }
-
     public function shipping()
     {
         return $this->hasMany(Shipping::class, 'events_id');
     }
-
     // public function event()
     public function invoice()
     {
@@ -37,6 +31,6 @@ class Event extends Model
     }
 
     protected $fillable = [
-        'id', 'PIC', 'customers_id', 'nama', 'status', 'lokasi', 'jabatan_client', 'waktu_loading','waktu_loading_out','jam_mulai_acara','jam_selesai_acara'
+        'id', 'PIC', 'customers_id', 'nama', 'status', 'lokasi', 'jabatan_client', 'waktu_loading','waktu_loading_out','jam_mulai_acara','jam_selesai_acara','budget','catatan','jenis_kegiatan','tanggal'
     ];
 }

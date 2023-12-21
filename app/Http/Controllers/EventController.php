@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Event;
 use App\Models\EventJenis;
+use App\Models\Invoice;
 use App\Models\JenisBarang;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class EventController extends Controller
     {
         //
         $userRole = Auth::user()->divisi_id;
-        if($userRole){
+        if ($userRole) {
             abort(403);
         }
         return view('karyawan.reminder', []);
@@ -27,7 +28,7 @@ class EventController extends Controller
     public function create()
     {
         $userRole = Auth::user()->divisi_id;
-        if(!$userRole){
+        if (!$userRole) {
             abort(403);
         }
 
@@ -38,7 +39,11 @@ class EventController extends Controller
             $kategori_map[$kategori->id] = $kategori->nama;
         }
         // dd($kategori_map);
-        return view('common.tambahorder', ['array_kategori' => $kategori_array, 'kategori_map' => $kategori_map, 'semua_customer' => $semua_customer]);
+        return view('common.tambahorder', [
+            'array_kategori' => $kategori_array,
+            'kategori_map' => $kategori_map,
+            'semua_customer' => $semua_customer
+        ]);
     }
 
     public function get_barang(Request $request)
@@ -89,7 +94,10 @@ class EventController extends Controller
             'waktu_loading' => 'required|date',
             'jam_mulai_acara' => 'required|date',
             'jam_selesai_acara' => 'required|date',
-            'listbarang' => 'required'
+            'listbarang' => 'required',
+            'jenis_kegiatan' => 'required',
+            'penyelenggara' => 'required',
+            'tanggal' => 'required|date',
         ]);
 
         if ($validator->fails()) {
@@ -115,19 +123,38 @@ class EventController extends Controller
                 'waktu_loading' => $request->input('waktu_loading'),
                 'jam_mulai_acara' => $request->input('jam_mulai_acara'),
                 'jam_selesai_acara' => $request->input('jam_selesai_acara'),
+                'tanggal' => $request->input('tanggal'),
+                'penyelenggara' => $request->input('penyelenggara'),
+                'jenis_kegiatan' => $request->input('jenis_kegiatan'),
+                'budget' => $request->input('budget'),
+                'catatan' => $request->input('catatan'),
             ]);
             $dataId = $event->id;
+            $invoice = Invoice::create([
+                'events_id' => $dataId,
+                'tanggal_jatuh_tempo' => $request->input('tanggal'),
+                'total_harga' => 0,
+                'status' => "Penawaran",
+                'catatan' => "",
+            ]);
+            $invoice_id = $invoice->id;
+            $total_harga = 0;
             foreach ($request['listbarang'] as $kategori) {
-                foreach($kategori as $barang){
+                foreach ($kategori as $barang) {
+                    // EventJenis ini adalah Detail Invoice
                     $detailBarang = new EventJenis();
-                    $detailBarang->events_id = $dataId;
-                    $detailBarang->jenis_barang_idjenis_barang = $barang['idbarang'];
+                    $detailBarang->invoices_id = $invoice_id;
+                    $detailBarang->jenis_barang_id = $barang['idbarang'];
                     $detailBarang->qty = $barang['jumlah'];
                     $detailBarang->harga_barang = $barang['harga'];
                     $detailBarang->subtotal = $barang['subtotal'];
                     $detailBarang->save();
+                    $total_harga += $barang['subtotal'];
                 }
             }
+
+            $invoice->total_harga = $total_harga;
+            $invoice->save();
 
             DB::commit();
             $status = "success";
@@ -171,18 +198,21 @@ class EventController extends Controller
 
     public function update(Request $request)
     {
+        // UPDATE DATA STATUS TIDAK PERLU DIKIRIM
         $validator = Validator::make($request->all(), [
-            'id' => 'required',
             'PIC' => 'required',
             'customers_id' => 'required',
             'nama' => 'required|string',
-            'status' => 'required|string',
             'lokasi' => 'required|string',
             'jabatan_client' => 'required|string',
             'waktu_loading_out' => 'required|date',
             'waktu_loading' => 'required|date',
             'jam_mulai_acara' => 'required|date',
             'jam_selesai_acara' => 'required|date',
+            'listbarang' => 'required',
+            'jenis_kegiatan' => 'required',
+            'penyelenggara' => 'required',
+            'tanggal' => 'required|date',
         ]);
 
         if ($validator->fails()) {
@@ -194,6 +224,7 @@ class EventController extends Controller
             ], 200);
         }
 
+        // 
         $event = Event::find($request->input('id'));
 
         if (!$event) {
@@ -205,25 +236,67 @@ class EventController extends Controller
             ], 200);
         }
 
-        $event->update([
-            'PIC' => $request->input('PIC'),
-            'customers_id' => $request->input('customers_id'),
-            'nama' => $request->input('nama'),
-            'status' => $request->input('status'),
-            'lokasi' => $request->input('lokasi'),
-            'jabatan_client' => $request->input('jabatan_client'),
-            'waktu_loading_out' => $request->input('waktu_loading_out'),
-            'waktu_loading' => $request->input('waktu_loading'),
-            'jam_mulai_acara' => $request->input('jam_mulai_acara'),
-            'jam_selesai_acara' => $request->input('jam_selesai_acara'),
-        ]);
+        DB::beginTransaction();
 
-        $status = "success";
-        $msg = "Berhasil mengubah data";
-        return response()->json(array(
-            'status' => $status,
-            'msg' => $msg,
-        ), 200);
+        try {
+            $event->update([
+                'PIC' => $request->input('PIC'),
+                'customers_id' => $request->input('customers_id'),
+                'nama' => $request->input('nama'),
+                'lokasi' => $request->input('lokasi'),
+                'jabatan_client' => $request->input('jabatan_client'),
+                'waktu_loading_out' => $request->input('waktu_loading_out'),
+                'waktu_loading' => $request->input('waktu_loading'),
+                'jam_mulai_acara' => $request->input('jam_mulai_acara'),
+                'jam_selesai_acara' => $request->input('jam_selesai_acara'),
+                'tanggal' => $request->input('tanggal'),
+                'penyelenggara' => $request->input('penyelenggara'),
+                'jenis_kegiatan' => $request->input('jenis_kegiatan'),
+                'budget' => $request->input('budget'),
+                'catatan' => $request->input('catatan'),
+            ]);
+
+            // Hapus Database 
+            DB::table('detail_invoice')->where('invoices_id', $request['invoices_id'])->delete();
+
+            $invoice_data = Invoice::find($request['invoices_id']);
+            $invoice_id = $invoice_data->id;
+            $total_harga = 0;
+            
+            foreach ($request['listbarang'] as $kategori) {
+                foreach ($kategori as $barang) {
+                    // EventJenis ini adalah Detail Invoice
+                    $detailBarang = new EventJenis();
+                    $detailBarang->invoices_id = $invoice_id;
+                    $detailBarang->jenis_barang_id = $barang['idbarang'];
+                    $detailBarang->qty = $barang['jumlah'];
+                    $detailBarang->harga_barang = $barang['harga'];
+                    $detailBarang->subtotal = $barang['subtotal'];
+                    $detailBarang->save();
+                    $total_harga += $barang['subtotal'];
+                }
+            }
+
+            $invoice_data->total_harga = $total_harga;
+            $invoice_data->save();
+
+            DB::commit();
+            $status = "success";
+            $msg = "Berhasil merubah data";
+            return response()->json(array(
+                'status' => $status,
+                'msg' => $msg,
+            ), 200);
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            $status = "failed";
+            return response()->json(array(
+                'status' => $status,
+                'msg' => $e->getMessage(),
+            ), 200);
+        }
     }
 
     public function destroy(Request $request)

@@ -81,11 +81,19 @@
             </a>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link" href="/data-transaksi" aria-expanded="false">
+            <a class="sidebar-link" href="/data-invoice" aria-expanded="false">
               <span>
                 <i class="ti ti-timeline"></i>
               </span>
-              <span class="hide-menu">Transaksi Penjualan</span>
+              <span class="hide-menu">Tabel Invoice</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a class="sidebar-link" href="/data-tagihan" aria-expanded="false">
+              <span>
+                <i class="ti ti-timeline"></i>
+              </span>
+              <span class="hide-menu">Tabel Tagihan</span>
             </a>
           </li>
           {{-- <li class="sidebar-item">

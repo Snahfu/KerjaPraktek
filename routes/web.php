@@ -15,10 +15,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/', function () {
-      return view('admin.index');
+    return view('admin.index');
   });
   Route::get('/dashboard', function () {
-      return view('karyawan.index');
+    return view('karyawan.index');
   });
   Route::get('/dashboard-admin', [App\Http\Controllers\DashboardController::class, 'index']);
   Route::post('/dashboard-admin-param', [App\Http\Controllers\DashboardController::class, 'indexParameter'])->name('admin.indexParameter');
@@ -26,14 +26,12 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   //     return view('admin.index');
   // });
   Route::get('/tambah', function () {
-      return view('common.tambahorder');
+    return view('common.tambahorder');
   });
   Route::get('/tambah', [App\Http\Controllers\EventController::class, 'create'])->name('common.tambahorder');
-  Route::get('/data-transaksi', function () {
-      return view('common.datatransaksi');
-  });
+  
   Route::get('/detail', function () {
-      return view('common.detailorder');
+    return view('common.detailorder');
   });
   // KARYAWAN CONTROLLER
   Route::get('/reminder', [App\Http\Controllers\KaryawanController::class, 'jadwalreminder'])->name('karyawan.reminder');
@@ -60,6 +58,13 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::post('/tambah-event', [App\Http\Controllers\EventController::class, 'store'])->name('common.tambahevent');
   Route::post('/delete-event', [App\Http\Controllers\EventController::class, 'destroy'])->name('common.deleteevent');
   Route::post('/update-event', [App\Http\Controllers\EventController::class, 'update'])->name('common.updateevent');
+
+  //   INVOICE CONTROLLER
+  Route::get('/data-invoice', [App\Http\Controllers\InvoiceController::class, 'tabelPenawaran'])->name('invoice.list');
+  Route::get('/detail-invoice', [App\Http\Controllers\InvoiceController::class, 'show'])->name('invoice.detail');
+  Route::get('/data-tagihan', [App\Http\Controllers\InvoiceController::class, 'index'])->name('invoice.tagihan.list');
+  Route::post('/invoice-status-update', [App\Http\Controllers\InvoiceController::class, 'ubahStatus'])->name('invoice.ubahstatus');
+  Route::get('/invoice-cetak', [App\Http\Controllers\InvoiceController::class, 'pdfPage'])->name('invoice.cetak');
 
   // GUDANG CONTROLLER
   Route::get('/data-gudang', [App\Http\Controllers\BarangController::class, 'index'])->name('gudang.datagudang');

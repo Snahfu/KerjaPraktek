@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Tambah Order Page
+    Edit Order Page
 @endsection
 
 @section('content')
@@ -20,8 +20,9 @@
                                     <label class="col-form-label" for="event-name">Nama Acara</label>
                                 </div>
                                 <div class="col-sm-9">
+
                                     <input type="text" id="event-name" class="form-control" name="event-name"
-                                        placeholder="Nama Acara" />
+                                        placeholder="Nama Acara" value="{{ $detail_invoices[0]->nama }}" />
                                 </div>
                             </div>
                         </div>
@@ -34,7 +35,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="text" id="event-location" class="form-control" name="event-location"
-                                        placeholder="Lokasi" />
+                                        placeholder="Lokasi" value="{{ $detail_invoices[0]->lokasi }}" />
                                 </div>
                             </div>
                         </div>
@@ -48,7 +49,9 @@
                                 <div class="col-sm-9">
                                     <select class="form-select" id="client-name">
                                         @foreach ($semua_customer as $customer)
-                                            <option value="{{$customer->id}}">{{$customer->nama_pelanggan}}</option>
+                                            <option value="{{ $customer->id }}"
+                                                {{ $detail_invoices[0]->customers_id == $customer->id ? 'selected' : '' }}>
+                                                {{ $customer->nama_pelanggan }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -62,7 +65,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="text" id="penyelenggara" class="form-control" name="penyelenggara"
-                                    placeholder="Nama Lembaga" />
+                                        placeholder="Nama Lembaga" value="{{ $detail_invoices[0]->penyelenggara }}" />
                                 </div>
                             </div>
                         </div>
@@ -76,7 +79,8 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="text" id="client-position" class="form-control" name="client-position"
-                                        placeholder="Posisi Jabatan Client" />
+                                        placeholder="Posisi Jabatan Client"
+                                        value="{{ $detail_invoices[0]->jabatan_client }}" />
                                 </div>
                             </div>
                         </div>
@@ -89,14 +93,11 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <select type="text" class="form-select" id="jenis-kegiatan">
-                                        <option value="Wisuda">Wisuda</option>
-                                        <option value="Ulang Tahun">Ulang Tahun</option>
-                                        <option value="Wedding">Wedding</option>
-                                        <option value="Meeting">Meeting</option>
-                                        <option value="Galla Dinner">Galla Dinner</option>
-                                        <option value="Konser">Konser</option>
-                                        <option value="Bazzar">Bazzar</option>
-                                        <option value="Drama">Drama</option>
+                                        @foreach ($array_jenisKegiatan as $jeniskegiatan)
+                                            <option value="{{ $jeniskegiatan }}"
+                                                {{ $detail_invoices[0]->jenis_kegiatan == $jeniskegiatan ? 'selected' : '' }}>
+                                                {{ $jeniskegiatan }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -109,7 +110,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="tanggal-acara" class="form-control"
-                                        name="tanggal-acara" />
+                                        name="tanggal-acara" value="{{ $detail_invoices[0]->tanggal }}" />
                                 </div>
                             </div>
                         </div>
@@ -121,7 +122,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="loading-in-date" class="form-control"
-                                        name="loading-in-date" />
+                                        name="loading-in-date" value="{{ $detail_invoices[0]->waktu_loading }}" />
                                 </div>
                             </div>
                         </div>
@@ -134,7 +135,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="event-start-date" class="form-control"
-                                        name="event-start-date" />
+                                        name="event-start-date" value="{{ $detail_invoices[0]->jam_mulai_acara }}" />
                                 </div>
                             </div>
                         </div>
@@ -147,7 +148,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="event-end-date" class="form-control"
-                                        name="event-end-date" />
+                                        name="event-end-date" value="{{ $detail_invoices[0]->jam_selesai_acara }}" />
                                 </div>
                             </div>
                         </div>
@@ -160,7 +161,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="loading-out-date" class="form-control"
-                                        name="loading-out-date" />
+                                        name="loading-out-date" value="{{ $detail_invoices[0]->waktu_loading_out }}" />
                                 </div>
                             </div>
                         </div>
@@ -171,8 +172,8 @@
                                     <label class="col-form-label" for="budget">Budget</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <input type="number" id="budget" class="form-control"
-                                        name="budget" />
+                                    <input type="number" id="budget" class="form-control" name="budget"
+                                        value="{{ $detail_invoices[0]->budget }}" />
                                 </div>
                             </div>
                         </div>
@@ -183,8 +184,8 @@
                                     <label class="col-form-label" for="catatan">Catatan</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <input type="text" id="catatan" class="form-control"
-                                        name="catatan" />
+                                    <input type="text" id="catatan" class="form-control" name="catatan"
+                                        value="{{ $detail_invoices[0]->catatan }}" />
                                 </div>
                             </div>
                         </div>
@@ -192,6 +193,7 @@
                 </div>
             </div>
         </div>
+
 
         <div class="row">
             <div class="card">
@@ -288,7 +290,34 @@
                             </tr>
                         </thead>
                         <tbody id="data_table">
-                            
+                            @for ($i = 1; $i < count($array_kategori); $i++)
+                                @if (count($array_kategori[$i]) > 0)
+                                    <tr>
+                                        <td colspan="6">{{ $kategori_map[$i] }}</td>
+                                    </tr>
+                                    @for ($j = 0; $j < count($array_kategori[$i]); $j++)
+                                        <tr id='barang_{{ $array_kategori[$i][$j]->idbarang }}'>
+                                            <td></td>
+                                            <td>{{ $array_kategori[$i][$j]->nama }}</td>
+                                            <td>{{ $array_kategori[$i][$j]->jumlah }}</td>
+                                            <td>{{ $array_kategori[$i][$j]->harga }}</td>
+                                            <td>{{ $array_kategori[$i][$j]->subtotal }}</td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-primary"
+                                                    onclick="editDataTabel({{ $array_kategori[$i][$j]->idbarang }})">
+                                                    <i class="ti ti-edit"></i>
+                                                </button>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-danger"
+                                                    onclick="hapusDataTabel({{ $array_kategori[$i][$j]->idbarang }})">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endfor
+                                @endif
+                            @endfor
                         </tbody>
                     </table>
                 </div>
@@ -297,7 +326,6 @@
     </div>
 
     <button type="submit" class="btn btn-primary me-1" onclick="insertDatabase()">Submit</button>
-    <button type="reset" class="btn btn-outline-secondary" onclick="resetAll()">Reset</button>
 
     {{-- Modal Alert Begin --}}
     <div class="modal fade" id="alertModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -314,7 +342,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                    <button id="alertModalButton" type="button" class="btn btn-primary"
+                        data-bs-dismiss="modal">Oke</button>
                 </div>
             </div>
         </div>
@@ -392,8 +421,12 @@
         // var arraySpesifikasiJson = @json($array_kategori);
         // Maping untuk menampilkan nama kategori pada comboboxnya
         var kategori_map = @json($kategori_map);
+
         // Maping untuk menyimpan harga dari setiap barang
         var harga_sewa_map = [];
+
+        var invoices_id = @json($invoices_id);
+        var id_event = @json($events_id);
 
         $(document).ready(function() {
 
@@ -528,7 +561,7 @@
                 subtotal: subtotal
             }
 
-            arraySpesifikasiJson[kategori-1].push(spesifikasiBarang);
+            arraySpesifikasiJson[kategori - 1].push(spesifikasiBarang);
             console.log(arraySpesifikasiJson);
             updateTabel();
         }
@@ -653,9 +686,11 @@
                 }
             });
             $.ajax({
-                url: "{{ route('common.tambahevent') }}",
+                url: "{{ route('common.updateevent') }}",
                 type: 'POST',
                 data: {
+                    'id': id_event,
+                    'invoices_id': invoices_id,
                     'PIC': userData.id,
                     'customers_id': id_client,
                     'nama': document.getElementById('event-name').value,
@@ -677,7 +712,7 @@
                 success: function(response) {
                     // Kalau success clear data
                     alertUpdate(response.msg, response.status)
-                    if(response.status == "success"){
+                    if (response.status == "success") {
                         resetAll();
                     }
                 },
@@ -688,12 +723,12 @@
         }
 
         // Function untuk reset semua input
-        function resetAll(){
-            $(':input').val('');
-            $('#kategori_barang option[disabled]').prop('selected', true)
-            $('#nama_barang').empty();
-            arraySpesifikasiJson = Object.values(@json($array_kategori));
-            updateTabel();
+        function resetAll() {
+            // $(':input').val('');
+            // $('#kategori_barang option[disabled]').prop('selected', true)
+            // $('#nama_barang').empty();
+            // arraySpesifikasiJson = Object.values(@json($array_kategori));
+            // updateTabel();
         }
     </script>
 @endsection
