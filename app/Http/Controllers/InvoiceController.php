@@ -10,6 +10,7 @@ use App\Models\Tagihan;
 use Barryvdh\DomPDF\Facade\PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,15 +19,23 @@ class InvoiceController extends Controller
     public function tabelPenawaran()
     {
         // Pengecekan User
-        $list_invoices = Invoice::join('events', 'invoices.events_id', '=', 'events.id')
+        if (Auth::user()->divisi_id == 5) {
+            $list_invoices = Invoice::join('events', 'invoices.events_id', '=', 'events.id')
+                ->join('customers', 'events.customers_id', '=', 'customers.id')
+                ->join('karyawans', 'events.PIC', '=', 'karyawans.id')
+                // ->whereNotIn('invoices.status', ['Batal', 'Deal', 'Selesai', 'Disetujui'])
+                ->select('invoices.*', 'events.nama as nama', 'events.tanggal as tanggal', 'customers.sapaan as sapaan', 'customers.nama_pelanggan as nama_pelanggan', 'karyawans.nama as namaPIC')
+                ->get();
+        } else {
+            $list_invoices = Invoice::join('events', 'invoices.events_id', '=', 'events.id')
             ->join('customers', 'events.customers_id', '=', 'customers.id')
             ->join('karyawans', 'events.PIC', '=', 'karyawans.id')
-            // ->where('invoices.status', 'Penawaran')
-            ->whereNotIn('invoices.status', ['Batal', 'Deal', 'Selesai', 'Disetujui'])
+            ->where('events.PIC', Auth::user()->id) // Cuman bisa lihat invoice yang dibuat dia saja
+            // ->whereNotIn('invoices.status', ['Batal', 'Deal', 'Selesai', 'Disetujui'])
             ->select('invoices.*', 'events.nama as nama', 'events.tanggal as tanggal', 'customers.sapaan as sapaan', 'customers.nama_pelanggan as nama_pelanggan', 'karyawans.nama as namaPIC')
             ->get();
+        }
 
-        // dd($list_invoices);
         return view('common.datainvoice', [
             'list_invoices' => $list_invoices,
         ]);
@@ -98,38 +107,38 @@ class InvoiceController extends Controller
     }
 
     public function pdfPage(Request $request)
-    {   
+    {
         $detail_invoice = EventJenis::join('invoices', 'invoices.id', '=', 'detail_invoice.invoices_id')
-        ->join('jenis_barang', 'jenis_barang.id', '=', 'detail_invoice.jenis_barang_id')
-        ->join('events', 'events.id', '=', 'invoices.events_id')
-        ->join('karyawans', 'events.PIC', '=', 'karyawans.id')
-        ->join('customers', 'customers.id', '=', 'events.customers_id')
-        ->where('detail_invoice.invoices_id', $request['id'])
-        ->select(
-            'events.*',
-            'customers.sapaan',
-            'customers.nama_pelanggan',
-            'karyawans.nama as picNama',
-            'karyawans.nomer_telepon',
-            'jenis_barang.kategori_barang_id',
-            'jenis_barang.nama as nama_barang',
-            'detail_invoice.*',
-        )
-        ->get();
+            ->join('jenis_barang', 'jenis_barang.id', '=', 'detail_invoice.jenis_barang_id')
+            ->join('events', 'events.id', '=', 'invoices.events_id')
+            ->join('karyawans', 'events.PIC', '=', 'karyawans.id')
+            ->join('customers', 'customers.id', '=', 'events.customers_id')
+            ->where('detail_invoice.invoices_id', $request['id'])
+            ->select(
+                'events.*',
+                'customers.sapaan',
+                'customers.nama_pelanggan',
+                'karyawans.nama as picNama',
+                'karyawans.nomer_telepon',
+                'jenis_barang.kategori_barang_id',
+                'jenis_barang.nama as nama_barang',
+                'detail_invoice.*',
+            )
+            ->get();
         // dd($request);
         $query_divisi_yang_terlibat =  EventJenis::join('invoices', 'invoices.id', '=', 'detail_invoice.invoices_id')
-        ->join('jenis_barang', 'jenis_barang.id', '=', 'detail_invoice.jenis_barang_id')
-        ->join('kategori_barang', 'jenis_barang.kategori_barang_id', '=', 'kategori_barang.id')
-        ->where('detail_invoice.invoices_id', $request['id'])
-        ->select(
-            'jenis_barang.kategori_barang_id',
-            'jenis_barang.nama as nama_barang',
-            'kategori_barang.nama as nama_kategori',
-        )
-        ->get();
+            ->join('jenis_barang', 'jenis_barang.id', '=', 'detail_invoice.jenis_barang_id')
+            ->join('kategori_barang', 'jenis_barang.kategori_barang_id', '=', 'kategori_barang.id')
+            ->where('detail_invoice.invoices_id', $request['id'])
+            ->select(
+                'jenis_barang.kategori_barang_id',
+                'jenis_barang.nama as nama_barang',
+                'kategori_barang.nama as nama_kategori',
+            )
+            ->get();
 
         $divisi_yang_terlibat = [];
-        foreach($query_divisi_yang_terlibat as $itemBarang){
+        foreach ($query_divisi_yang_terlibat as $itemBarang) {
             $kategori_barang = $itemBarang->nama_kategori;
             if (!in_array($kategori_barang, $divisi_yang_terlibat)) {
                 $divisi_yang_terlibat[] = $kategori_barang;
@@ -169,7 +178,7 @@ class InvoiceController extends Controller
                 'nama' => $data->nama_barang,
                 'subtotal' => $data->subtotal,
             ];
-            
+
             $subtotal_map[$data->kategori_barang_id] += $data->subtotal;
             array_push($kategori_array[$data->kategori_barang_id], $objek);
             $grandtotal += $data->subtotal;
@@ -195,7 +204,7 @@ class InvoiceController extends Controller
             'grandtotal' => $grandtotal,
         ];
 
-        $pdf = PDF::loadView('common.cetak_invoice', ['data'=>$data]);
+        $pdf = PDF::loadView('common.cetak_invoice', ['data' => $data]);
         return $pdf->download('surat_penawaran.pdf');
         // return view('pdf', compact('data'));
     }
