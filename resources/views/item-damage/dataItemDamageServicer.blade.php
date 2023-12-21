@@ -33,7 +33,7 @@
                         <tbody>
                             @foreach ($datas as $data)
                                 @csrf
-                                <tr>
+                                <tr id="tr_{{ $data->id }}">
                                     <td></td>
                                     <td>{{ $data->damage_date }}</td>
                                     <td>{{ $data->damage_type }}</td>

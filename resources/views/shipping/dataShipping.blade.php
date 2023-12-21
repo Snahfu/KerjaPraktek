@@ -30,7 +30,7 @@
                         <tbody>
                             @foreach ($datas as $data)
                                 @csrf
-                                <tr>
+                                <tr id="tr_{{ $data->id }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $data->jenis }}</td>
                                     <td>{{ $data->karyawan->nama }}</td>

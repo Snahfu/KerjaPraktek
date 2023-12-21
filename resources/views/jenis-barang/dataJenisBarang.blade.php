@@ -28,7 +28,7 @@
                         <tbody>
                             @foreach ($datas as $data)
                                 @csrf
-                                <tr>
+                                <tr id="tr_{{ $data->id }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $data->nama }}</td>
                                     <td>@currency($data->harga_sewa)</td>
@@ -178,7 +178,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
+                    <button id="alertModalButton" type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke</button>
                 </div>
             </div>
         </div>

@@ -35,7 +35,7 @@
                             @foreach ($datas as $data)
                               @if ($data->repair_date == null)
                                 @csrf
-                                <tr>
+                                <tr id="tr_{{ $data->id }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $data->damage_date }}</td>
                                     <td>{{ $data->damage_type }}</td>
@@ -124,7 +124,7 @@
                             @foreach ($datas as $data)
                               @if ($data->repair_date != null)
                                 @csrf
-                                <tr>
+                                <tr id="tr_{{ $data->id }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $data->damage_date }}</td>
                                     <td>{{ $data->damage_type }}</td>

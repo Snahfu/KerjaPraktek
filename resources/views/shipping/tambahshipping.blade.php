@@ -124,7 +124,7 @@
                         <div class="col-12">
                             <div class="mb-1 row">
                                 <div class="col-sm-3">
-                                    <label class="col-form-label" for="barang">ID Barang</label>
+                                    <label class="col-form-label" for="barang">Jenis Barang</label>
                                 </div>
                                 <div class="col-sm-9">
                                     <select class="form-select" id="barang" onchange="updateQuantity()" disabled>
@@ -263,6 +263,8 @@
     <script>
         // Array untuk menyimpan data spesifikasi order pada tabel
         var arraySpesifikasiJson = Object.values(@json($array_jenis));
+        // Array untuk menyimpan data list barang pada setiap jenis barang
+        var arrayBarang;
         // Maping untuk menampilkan nama jenis pada comboboxnya
         var jenis_map = @json($jenis_map);
 
@@ -399,16 +401,17 @@
         
                                 for (var data in response.datas) {
                                     var option = document.createElement('option');
-                                    option.value = response.datas[data].qty + '~~' + response.datas[data].id + '~~' + response.datas[data].idjenis + '~~' + response.datas[data].jenis;
-                                    option.text = response.datas[data].id + ' - ' + response.datas[data].jenis;
+                                    option.value = response.datas[data].qty + '~~' + response.datas[data].idjenis + '~~' + response.datas[data].jenis;
+                                    option.text = response.datas[data].jenis;
                                     namaBarangElement.add(option);
 
                                     // Isi tabel detail barang
                                     var spesifikasiBarang = {
-                                        idbarang: response.datas[data].id,
+                                        idbarang: 0,
                                         idjenis: response.datas[data].idjenis,
                                         jenis: response.datas[data].jenis,
                                         quantity: response.datas[data].qty,
+                                        list_barang: response.datas[data].list_barang,
                                     }
 
                                     arraySpesifikasiJson[response.datas[data].idjenis].push(spesifikasiBarang);
@@ -436,10 +439,11 @@
                                 for (var data in response.datas) {
                                     // Isi tabel detail barang
                                     var spesifikasiBarang = {
-                                        idbarang: response.datas[data].id,
+                                        idbarang: 0,
                                         idjenis: response.datas[data].idjenis,
                                         jenis: response.datas[data].jenis,
                                         quantity: response.datas[data].qty,
+                                        list_barang: response.datas[data].list_barang,
                                     }
     
                                         arraySpesifikasiJson[response.datas[data].idjenis].push(spesifikasiBarang);
@@ -472,11 +476,10 @@
             var barangElement = document.getElementById('barang');
             var barangIndex = barangElement.selectedIndex;
             var idAndJenis = barangElement.options[barangIndex].value.split("~~");
-            var id = idAndJenis[1];
-            var idJenis = idAndJenis[2];
-            var jenis = idAndJenis[3];
+            var idJenis = idAndJenis[1];
+            var jenis = idAndJenis[2];
             
-            if(id == 0) {
+            if(idJenis == 0) {
                 $('#alertModal').modal('show');
                 alertModalTitle.classList.remove('bg-success');
                 alertModalTitle.classList.add('bg-danger');
@@ -487,15 +490,39 @@
 
             var quantity = parseInt(document.getElementById('quantity').value);
 
+            var listBarang;
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('getlistbarangshipping') }}",
+                type: 'POST',
+                data: {
+                    'idJenis': idJenis,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if(response.status == "success"){
+                      listBarang = response.datas;
+                    }
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+
             var spesifikasiBarang = {
-                idbarang: id,
+                idbarang: 0,
                 idjenis: idJenis,
                 jenis: jenis,
                 quantity: quantity,
+                list_barang: listBarang,
             }
 
             arraySpesifikasiJson[idJenis].push(spesifikasiBarang);
-            console.log(arraySpesifikasiJson);
             updateTabel();
         }
 
@@ -503,15 +530,27 @@
         function updateTabel() {
             var stringHTML = ``;
             for (var i = 0; i < arraySpesifikasiJson.length; i++) {
-                if (arraySpesifikasiJson[i].length > 0) {
+              if (arraySpesifikasiJson[i].length > 0) {
                     stringHTML += `<tr><td colspan="4">${jenis_map[i]}</td></tr>`
                     for (var j = 0; j < arraySpesifikasiJson[i].length; j++) {
+                        listBarang = arraySpesifikasiJson[i][j].list_barang;
+                        stringComboboxBarang = "";
+                        listBarang.forEach(barang => {
+                          stringComboboxBarang += 
+                          `
+                          <option value="${barang.id}">${barang.nama}</option>
+                          `
+                        });
                         stringHTML +=
                             `
-                            <tr id='barang_${arraySpesifikasiJson[i][j].idbarang}'>
+                            <tr id='barang_${i}_${j}'>
                                 <td></td>
-                                <td>${arraySpesifikasiJson[i][j].idbarang}</td>
-                                <td>${arraySpesifikasiJson[i][j].quantity}</td>
+                                <td class="col-sm-6">
+                                  <select class="form-select" id="idbarang">
+                                    ${stringComboboxBarang}
+                                  </select>
+                                </td>
+                                <td class="col-sm-3"><input type="number" value="${arraySpesifikasiJson[i][j].quantity}" max=""${arraySpesifikasiJson[i][j].quantity}" min="1" id="edit_quantity_barang_${arraySpesifikasiJson[i][j].idjenis}" class="form-control"/></td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-primary" onclick="editDataTabel(${arraySpesifikasiJson[i][j].idbarang})">
                                         <i class="ti ti-edit"></i>
@@ -589,6 +628,18 @@
 
         // Function untuk simpan ke database
         function insertDatabase() {
+            for (var i = 0; i < arraySpesifikasiJson.length; i++) {
+              if (arraySpesifikasiJson[i].length > 0) {
+                    for (var j = 0; j < arraySpesifikasiJson[i].length; j++) {
+                        var tdList = $('#barang_' + i + "_" + j).find('td');
+                        var idBarang = tdList[1].children[0].value;
+                        var quantity = tdList[2].children[0].value;
+                        arraySpesifikasiJson[i][j].idbarang = idBarang;
+                        arraySpesifikasiJson[i][j].quantity = quantity;
+                    }
+                }
+            }
+            console.log(arraySpesifikasiJson);
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -624,7 +675,7 @@
             $("select#jenis").prop('selectedIndex', 0);
             $("select#driver").prop('selectedIndex', 0);
             $("#quantity").val(1);
-            $('#jenis_barang option[disabled]').prop('selected', true)
+            $('#barang option[disabled]').prop('selected', true)
             $('#barang').empty();
             updateBarang();
             arraySpesifikasiJson = Object.values(@json($array_jenis));

@@ -37,6 +37,7 @@ class ShippingController extends Controller
       $shipping = Shipping::with('event', 'event.customer')
       ->where('id', '=', $shipping_id)
       ->first();
+      $event_id = $shipping->events_id;
       $shipping_jenis = $shipping->jenis;
       $kloter = DB::table(DB::raw('(SELECT 
       item_shipping.id, item_shipping.events_id, ROW_NUMBER() OVER(ORDER BY item_shipping.id ASC) as kloter
@@ -44,7 +45,7 @@ class ShippingController extends Controller
       item_barang_has_item_shipping
       INNER JOIN item_shipping ON item_barang_has_item_shipping.item_shipping_id = item_shipping.id
       WHERE 
-      item_shipping.events_id = 1 AND item_shipping.jenis = "'. $shipping_jenis . '"
+      item_shipping.events_id = "'. $event_id .'" AND item_shipping.jenis = "'. $shipping_jenis . '"
       GROUP BY 
       item_barang_has_item_shipping.item_barang_id) as sub'))
       ->select('sub.id', 'sub.events_id', 'sub.kloter')
@@ -173,9 +174,12 @@ class ShippingController extends Controller
       //Display Footer Text
       $pdf->Cell(0,10,"This is a computer generated",0,1,"C");
 
-      $pdf->Output('D', $result_no_surat . ".pdf");
+      $pdfFileName = $result_no_surat . ".pdf";
 
-      exit;
+      header('Content-Type: application/octet-stream');
+      header('Content-Disposition: attachment; filename="' . basename($pdfFileName) . '"');
+      // header('Content-Length: ' . filesize($pdfFileName));
+      $pdf->Output($pdfFileName, "D");
     }
 
     /**
@@ -293,19 +297,30 @@ class ShippingController extends Controller
         }
 
         $kirim = [];
-        $resultInvoices = DB::table('item_barang_has_invoices')
-                ->join('invoices', 'invoices.id', '=', 'item_barang_has_invoices.invoices_id')
-                ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_invoices.item_barang_id')
-                ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
+        $resultInvoices = DB::table('detail_invoice')
+                ->join('invoices', 'invoices.id', '=', 'detail_invoice.invoices_id')
+                ->join('jenis_barang', 'jenis_barang.id', '=', 'detail_invoice.jenis_barang_id')
                 ->select(
-                    'item_barang_has_invoices.item_barang_id as barang_invoices',
-                    DB::raw('SUM(item_barang_has_invoices.qty) as total_qty_invoices'),
-                    'jenis_barang.nama as nama_jenis',
-                    'item_barang.jenis_barang_id as id_jenis'
+                    'detail_invoice.jenis_barang_id as jenis_barang_invoices',
+                    DB::raw('SUM(detail_invoice.qty) as total_qty_invoices'),
+                    'jenis_barang.nama as nama_jenis'
                 )
                 ->where('invoices.events_id',  $request['id']) // Specify the desired events_id here
-                ->groupBy('item_barang_has_invoices.item_barang_id', 'jenis_barang.nama', 'item_barang.jenis_barang_id')
+                ->groupBy('detail_invoice.jenis_barang_id', 'jenis_barang.nama')
                 ->get();
+        // $resultInvoices = DB::table('item_barang_has_invoices')
+        //         ->join('invoices', 'invoices.id', '=', 'item_barang_has_invoices.invoices_id')
+        //         ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_invoices.item_barang_id')
+        //         ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
+        //         ->select(
+        //             'item_barang_has_invoices.item_barang_id as barang_invoices',
+        //             DB::raw('SUM(item_barang_has_invoices.qty) as total_qty_invoices'),
+        //             'jenis_barang.nama as nama_jenis',
+        //             'item_barang.jenis_barang_id as id_jenis'
+        //         )
+        //         ->where('invoices.events_id',  $request['id']) // Specify the desired events_id here
+        //         ->groupBy('item_barang_has_invoices.item_barang_id', 'jenis_barang.nama', 'item_barang.jenis_barang_id')
+        //         ->get();
 
         $resultShipping = DB::table('item_barang_has_item_shipping')
                 ->join('item_shipping', 'item_barang_has_item_shipping.item_shipping_id', '=', 'item_shipping.id')
@@ -321,23 +336,27 @@ class ShippingController extends Controller
                 ->where('item_shipping.jenis', $request['jenis'])
                 ->groupBy('item_barang_has_item_shipping.item_barang_id', 'jenis_barang.nama', 'item_barang.jenis_barang_id')
                 ->get();
+        
 
         foreach($resultInvoices as $ri){
             $found = false;
             foreach($resultShipping as $rs){
-                if($ri->barang_invoices == $rs->barang_shipping) {
+                if($ri->jenis_barang_invoices == $rs->id_jenis) {
                     $found = true;
                     $diff = $ri->total_qty_invoices - $rs->total_qty_shipping;
                     if($diff != 0) {
-                        $kirim[] = ["qty"=> $diff, "id" => $ri->barang_invoices, "idjenis" => $ri->id_jenis, "jenis" => $ri->nama_jenis];
+                        $list_barang = Barang::where("jenis_barang_id", "=", $rs->id_jenis)
+                        ->get();
+                        $kirim[] = ["qty"=> $diff, "id" => $ri->barang_invoices, "idjenis" => $ri->id_jenis, "jenis" => $ri->nama_jenis, "list_barang" => $list_barang];
                     }
                 }
             }
             if(!$found) {
-                $kirim[] = ["qty"=> $ri->total_qty_invoices, "id" => $ri->barang_invoices, "idjenis" => $ri->id_jenis, "jenis" => $ri->nama_jenis];
+                $list_barang = Barang::where("jenis_barang_id", "=", $ri->jenis_barang_invoices)
+                ->get();
+                $kirim[] = ["qty"=> $ri->total_qty_invoices, "idjenis" => $ri->jenis_barang_invoices, "jenis" => $ri->nama_jenis, "list_barang" => $list_barang];
             }
         }
-        dd($kirim);
 
         $status = "success";
         $msg = "Data berhasil diambil";
@@ -345,6 +364,31 @@ class ShippingController extends Controller
             'status' => $status,
             'msg' => $msg,
             'datas' => $kirim,
+        ), 200);
+    }
+
+    public function getListBarang(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'idJenis' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $status = "failed";
+            $msg = "Terdapat kesalahan pada sistem";
+            return response()->json([
+                'status' => $status,
+                'msg' => $msg,
+            ], 200);
+        }
+        $barang = Barang::where('jenis_barang_id', '=', $request['idJenis'])
+        ->get();
+        $status = "success";
+        $msg = "Data berhasil diambil";
+        return response()->json(array(
+            'status' => $status,
+            'msg' => $msg,
+            'datas' => $barang,
         ), 200);
     }
 
