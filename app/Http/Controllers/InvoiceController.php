@@ -135,7 +135,6 @@ class InvoiceController extends Controller
                 $divisi_yang_terlibat[] = $kategori_barang;
             }
         }
-
         $tanggalMulai = Carbon::parse($detail_invoice[0]->jam_mulai_acara);
         $tanggalSelesai = Carbon::parse($detail_invoice[0]->jam_selesai_acara);
 
@@ -146,16 +145,21 @@ class InvoiceController extends Controller
         } else {
             $nilaiPerbedaan = $tanggalSelesai->diffInDays($tanggalMulai);
         }
-        $tanggalMulaiDiformat = $tanggalMulai->format('l, d F Y');
+        $tanggalMulai->locale('id');
+        $tanggalMulaiDiformat = $tanggalMulai->translatedFormat('l, d F Y');
+
         $tanggalSekarang = Date::now();
-        $tanggalDiformat = $tanggalSekarang->format('d F Y');
+        $tanggalSekarang->locale('id');
+        $tanggalDiformat = $tanggalSekarang->translatedFormat('d F Y');
 
         $semua_kategori = Kategori::all();
         foreach ($semua_kategori as $kategori) {
             $kategori_array[$kategori->id] = [];
             $kategori_map[$kategori->id] = $kategori->nama;
+            $subtotal_map[$kategori->id] = 0;
         }
 
+        $grandtotal = 0;
         foreach ($detail_invoice as $data) {
             $objek = (object) [
                 'harga' => $data->harga_barang,
@@ -165,9 +169,13 @@ class InvoiceController extends Controller
                 'nama' => $data->nama_barang,
                 'subtotal' => $data->subtotal,
             ];
+            
+            $subtotal_map[$data->kategori_barang_id] += $data->subtotal;
             array_push($kategori_array[$data->kategori_barang_id], $objek);
+            $grandtotal += $data->subtotal;
         }
-        // dd(count($kategori[2]));
+
+        // dd($subtotal_map);
         $data = [
             'namaClient' => $detail_invoice[0]->nama_pelanggan,
             'sapaanClient' => $detail_invoice[0]->sapaan,
@@ -183,6 +191,8 @@ class InvoiceController extends Controller
             'nama_pic' => $detail_invoice[0]->picNama,
             'array_kategori' => $kategori_array,
             'kategori_map' => $kategori_map,
+            'subtotal_map' => $subtotal_map,
+            'grandtotal' => $grandtotal,
         ];
 
         $pdf = PDF::loadView('common.cetak_invoice', ['data'=>$data]);
@@ -276,7 +286,6 @@ class InvoiceController extends Controller
             "Bazzar",
             "Drama",
         ];
-        // dd($kategori_array);
         return view('common.editinvoice', [
             'detail_invoices' => $detail_invoice,
             'array_kategori' => $kategori_array,

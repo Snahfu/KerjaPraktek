@@ -36,6 +36,11 @@
 
         .header {
             font-weight: bold;
+            background: #9abcff;
+        }
+
+        .bold {
+            font-weight: bold;
         }
 
         .signature-container {
@@ -62,37 +67,49 @@
     <table>
         <thead>
             <tr>
-                <th id="no">No</th>
-                <th id="subject">Subject</th>
-                <th>Qty</th>
-                <th>Unit</th>
-                <th>Price</th>
+                <th class="header" id="no">No</th>
+                <th class="header" id="subject">Subject</th>
+                <th class="header">Qty</th>
+                <th class="header">Harga per Qty</th>
+                <th class="header">Price</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($data['array_kategori'] as $key => $barang)
                 @if (!empty($barang))
                     <tr>
-                        <td class="header">{{ $key }}</td>
-                        <td colspan="4" class="header">{{ $data['kategori_map'][$key] }}</td>
+                        <td class="bold">{{ $key }}</td>
+                        <td colspan="3" class="bold">{{ $data['kategori_map'][$key] }}</td>
+                        <td class="bold">Rp{{ number_format($data['subtotal_map'][$key], 0, ',', ',') }}
+                        </td>
                     </tr>
                     @for ($j = 0; $j < count($data['array_kategori'][$key]); $j++)
                         <tr>
                             <td></td>
-                            <td class="header">{{ $data['array_kategori'][$key][$j]->nama }}</td>
+                            <td class="bold">{{ $data['array_kategori'][$key][$j]->nama }}</td>
                             <td>{{ $data['array_kategori'][$key][$j]->jumlah }}</td>
-                            <td>{{ $data['array_kategori'][$key][$j]->harga }}</td>
-                            <td>{{ $data['array_kategori'][$key][$j]->subtotal }}</td>
+                            <td>Rp{{ number_format($data['array_kategori'][$key][$j]->harga, 0, ',', ',') }}</td>
+                            <td>Rp{{ number_format($data['array_kategori'][$key][$j]->subtotal, 0, ',', ',') }}</td>
                         </tr>
                     @endfor
                 @endif
             @endforeach
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="header" colspan="3"> Total Sewa </td>
+                <td class="header">Rp{{ number_format($data['grandtotal'], 0, ',', ',') }}</td>
+            </tr>
         </tbody>
     </table>
-    <br>
     <p>Catatan:</p>
     <p> {{ $data['catatanEvent'] }} </p>
-
     <br>
     <p> Demikian penawaran kami sementara, semoga acara dapat berlangsung lancar, Kami tunggu kabar baiknya, bila ada
         informasi lebih lanjut dapat menghubungi kami di no: {{ $data['noHP_pic'] }}. Atas perhatian
