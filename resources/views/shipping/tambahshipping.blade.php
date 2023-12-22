@@ -362,9 +362,9 @@
                         const year = tanggalKirim.getFullYear();
                         const month = String(tanggalKirim.getMonth()+1).padStart(2, '0');
                         const date = String(tanggalKirim.getDate()).padStart(2, '0');
-                        const hour = tanggalKirim.getHours();
-                        const minute = tanggalKirim.getMinutes();
-                        const second = tanggalKirim.getSeconds();
+                        const hour = String(tanggalKirim.getHours()).padStart(2, '0');
+                        const minute = String(tanggalKirim.getMinutes()).padStart(2, '0');
+                        const second = String(tanggalKirim.getSeconds()).padStart(2, '0');
 
                         tanggalKirimDateTime = year + "-" + month + "-" + date + "T" + hour + ":" + minute + ":" + second;
                         document.getElementById('tgl-event').value = tanggalKirimDateTime;
@@ -552,17 +552,18 @@
                                 </td>
                                 <td class="col-sm-3"><input type="number" value="${arraySpesifikasiJson[i][j].quantity}" max=""${arraySpesifikasiJson[i][j].quantity}" min="1" id="edit_quantity_barang_${arraySpesifikasiJson[i][j].idjenis}" class="form-control"/></td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-primary" onclick="editDataTabel(${arraySpesifikasiJson[i][j].idbarang})">
+                                    <button type="button" class="btn btn-primary" onclick="editDataTabel(${i, j})">
                                         <i class="ti ti-edit"></i>
                                     </button>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-danger" onclick="hapusDataTabel(${arraySpesifikasiJson[i][j].idbarang})">
+                                    <button type="button" class="btn btn-danger" onclick="hapusDataTabel(${i},${j})">
                                         <i class="ti ti-trash"></i>
                                     </button>
                                 </td>
                             </tr>
                             `
+                            // console.log(arraySpesifikasiJson[i][j].idbarang);
                     }
                 }
                 document.getElementById('data_table').innerHTML = stringHTML;
@@ -570,15 +571,27 @@
         }
 
         // Menghapus data tabel baik tampilan maupun pada arraySpesifikasiOrder
-        function hapusDataTabel(id) {
-            var idBarangToDelete = parseInt(id);
+        function hapusDataTabel(i,j) {
+            var iBarangToDelete = parseInt(i);
+            var jBarangToDelete = parseInt(j);
             for (var key in arraySpesifikasiJson) {
-                if (arraySpesifikasiJson.hasOwnProperty(key)) {
-                    arraySpesifikasiJson[key] = arraySpesifikasiJson[key].filter(function(obj) {
-                        return obj.idbarang != idBarangToDelete;
+              if (arraySpesifikasiJson.hasOwnProperty(key)) {
+                for (var k in arraySpesifikasiJson[key]) {
+                  if (key.hasOwnProperty(k)) {
+                    arraySpesifikasiJson[i] = arraySpesifikasiJson[i].filter(function(obj) {
+                        return k != j;
                     });
+                  }
                 }
+              }
             }
+            // for (var key in arraySpesifikasiJson) {
+            //     if (arraySpesifikasiJson.hasOwnProperty(key)) {
+            //         arraySpesifikasiJson[key] = arraySpesifikasiJson[key].filter(function(obj) {
+            //             return obj.idbarang != idBarangToDelete;
+            //         });
+            //     }
+            // }
             updateTabel();
         }
 
@@ -639,7 +652,6 @@
                     }
                 }
             }
-            console.log(arraySpesifikasiJson);
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
