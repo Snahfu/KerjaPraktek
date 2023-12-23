@@ -46,12 +46,12 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
                                                     <div class="message-body">
-                                                        <a href="#"
+                                                        <a href="{{ route('tagihan.cetak', ['id' => $invoice->id]) }}"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-file-text fs-6"></i>
                                                             <p class="mb-0 fs-3">Cetak Invoice</p>
                                                         </a>
-                                                        <a href="#"
+                                                        <a href="{{ route('invoice.bayar.index', ['id' => $invoice->id]) }}"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-cash fs-6"></i>
                                                             <p class="mb-0 fs-3">Bayar</p>

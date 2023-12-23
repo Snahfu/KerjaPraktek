@@ -59,24 +59,21 @@
 
 <body>
     <pre>
-Kepada Yth.
+Kepada Yth. 
 {{ $data['sapaanClient'] }} {{ $data['namaClient'] }}
 {{ $data['jabatanClient'] }}, {{ $data['lembagaClient'] }}
-Ditempat.</pre>
-    <p>Surabaya, {{ $data['tanggalNow'] }}</p>
-    <p class="bottom-gone">Dengan Hormat,</p>
-    <p> Untuk mendukung acara {{ $data['namaEvent'] }}, yang akan diselenggarakan selama
-        {{ $data['lamaEvent'] }}
-        hari pada {{ $data['pelaksanaan'] }}. Maka kami bermaksud mengajukan pemakaian
-        {{ implode(', ', $data['kategoriSewa']) }} dengan
-        rincian sebagai berikut:</p>
+    
+No. Invoice                 : {{ $data['idInvoice'] }}
+Tanggal                       : {{ $data['tanggal_acara'] }}
+Nama Acara                : {{ $data['namaEvent'] }}
+Lokasi                         : {{ $data['lokasi'] }}
+Tanggal Jatuh Tempo  : {{ $data['jatuhtempo'] }}
+    </pre>
     <table>
         <thead>
             <tr>
                 <th class="header" id="no">No</th>
                 <th class="header" id="subject">Subject</th>
-                <th class="header">Qty</th>
-                <th class="header">Harga per Qty</th>
                 <th class="header">Price</th>
             </tr>
         </thead>
@@ -84,8 +81,13 @@ Ditempat.</pre>
             @foreach ($data['array_kategori'] as $key => $barang)
                 @if (!empty($barang))
                     <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
                         <td class="bold">{{ $key }}</td>
-                        <td colspan="3" class="bold">{{ $data['kategori_map'][$key] }}</td>
+                        <td class="bold">{{ $data['kategori_map'][$key] }}</td>
                         <td class="bold">Rp{{ number_format($data['subtotal_map'][$key], 0, ',', ',') }}
                         </td>
                     </tr>
@@ -93,9 +95,7 @@ Ditempat.</pre>
                         <tr>
                             <td></td>
                             <td class="bold">{{ $data['array_kategori'][$key][$j]->nama }}</td>
-                            <td>{{ $data['array_kategori'][$key][$j]->jumlah }}</td>
-                            <td>Rp{{ number_format($data['array_kategori'][$key][$j]->harga, 0, ',', ',') }}</td>
-                            <td>Rp{{ number_format($data['array_kategori'][$key][$j]->subtotal, 0, ',', ',') }}</td>
+                            <td></td>
                         </tr>
                     @endfor
                 @endif
@@ -104,41 +104,30 @@ Ditempat.</pre>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
-                <td></td>
             </tr>
             <tr>
                 <td></td>
-                <td class="header" colspan="3"> Total Sewa </td>
+                <td class="header"> Grand Total Sewa </td>
                 <td class="header">Rp{{ number_format($data['grandtotal'], 0, ',', ',') }}</td>
             </tr>
         </tbody>
     </table>
-    <p>Catatan:</p>
-    <p> {{ $data['catatanEvent'] }} </p>
+    <p>Cara Pembayaran:</p>
+    <p> Ditujukan pada rekening BCA nomor rekening: 0882266239 </p>
+    <p> Atas nama : Gregorius Alvin </p>
     <br>
-    <p> Demikian penawaran kami sementara, semoga acara dapat berlangsung lancar, Kami tunggu kabar baiknya, bila ada
-        informasi lebih lanjut dapat menghubungi kami di no: {{ $data['noHP_pic'] }}. Atas perhatian
-        {{ $data['sapaanClient'] }}
-        {{ $data['namaClient'] }}, kami ucapkan terimakasih.
-    </p>
     <table style="border: none" cellpadding="0" cellspacing="0" width="100%">
         <tr style="border: none">
             <td style="border: none; text-align:center" width="50%" valign="top">
-                <p>Hormat kami,</p>
+                <p>Terima Kasih atas kerjasamanya.</p>
                 <br>
                 <br>
                 <br>
                 <br>
-                <p>{{ $data['nama_pic'] }}</p>
+                <p>Gregorius Alvin</p>
             </td>
             <td style="border: none; text-align:center" width="50%" valign="top">
-                <p>Menyetujui</p>
-                <br>
-                <br>
-                <br>
-                <br>
-                <p> {{ $data['namaClient'] }}</p>
+
             </td>
         </tr>
     </table>

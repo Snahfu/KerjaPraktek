@@ -29,7 +29,7 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
     return view('common.tambahorder');
   });
   Route::get('/tambah', [App\Http\Controllers\EventController::class, 'create'])->name('common.tambahorder');
-  
+
   Route::get('/detail', function () {
     return view('common.detailorder');
   });
@@ -65,7 +65,10 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/data-tagihan', [App\Http\Controllers\InvoiceController::class, 'index'])->name('invoice.tagihan.list');
   Route::post('/invoice-status-update', [App\Http\Controllers\InvoiceController::class, 'ubahStatus'])->name('invoice.ubahstatus');
   Route::get('/invoice-cetak', [App\Http\Controllers\InvoiceController::class, 'pdfPage'])->name('invoice.cetak');
-
+  Route::get('/form-bayar-invoice', [App\Http\Controllers\InvoiceController::class, 'showBayar'])->name('invoice.bayar.index');
+  Route::post('/bayar-invoice', [App\Http\Controllers\InvoiceController::class, 'bayar'])->name('invoice.bayar');
+  Route::get('/tagihan-cetak', [App\Http\Controllers\InvoiceController::class, 'pdfPageTagihan'])->name('tagihan.cetak');
+  
   // GUDANG CONTROLLER
   Route::get('/data-gudang', [App\Http\Controllers\BarangController::class, 'index'])->name('gudang.datagudang');
   Route::get('/gudang', [App\Http\Controllers\BarangController::class, 'task'])->name('gudang');
