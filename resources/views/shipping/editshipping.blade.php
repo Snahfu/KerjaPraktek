@@ -34,6 +34,44 @@
                             </div>
                         </div>
 
+                        <!-- Tanggal Input -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="tgl-input">Tanggal Input</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="datetime-local" id="tgl-input" class="form-control"
+                                        name="tgl-input" value="{{ $shipping->tglInput }}" disabled/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tanggal Event -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="tgl-event">Tanggal Event Berjalan</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="datetime-local" id="tgl-event" class="form-control"
+                                        name="tgl-event" value="{{ $shipping->tglJalan }}"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Venus Event -->
+                        <div class="col-12">
+                          <div class="mb-1 row">
+                              <div class="col-sm-3">
+                                  <label class="col-form-label" for="event">Venue Event</label>
+                              </div>
+                              <div class="col-sm-9">
+                                <input type="text" disabled id="venueEvent" class="form-control"/>
+                              </div>
+                          </div>
+                        </div>
+
                         <!-- Jenis -->
                         <div class="col-12">
                             <div class="mb-1 row">
@@ -50,30 +88,6 @@
                                             <option value="Jemput" selected>Jemput</option>
                                         @endif
                                     </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="mb-1 row">
-                                <div class="col-sm-3">
-                                    <label class="col-form-label" for="tgl-input">Tanggal Input</label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="datetime-local" id="tgl-input" class="form-control"
-                                        name="tgl-input" value="{{ $shipping->tglInput }}" disabled/>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="mb-1 row">
-                                <div class="col-sm-3">
-                                    <label class="col-form-label" for="tgl-event">Tanggal Event Berjalan</label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="datetime-local" id="tgl-event" class="form-control"
-                                        name="tgl-event" value="{{ $shipping->tglJalan }}"/>
                                 </div>
                             </div>
                         </div>
@@ -97,6 +111,20 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Notes -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="notes">Notes</label>
+                                </div>
+                                <div class="col-sm-9">
+                                  <input type="text" id="notes" class="form-control"
+                                  name="notes" />
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -118,7 +146,7 @@
                                 <th></th>
                                 <th>ID Barang</th>
                                 <th>Quantity</th>
-                                <th>Edit</th>
+                                {{-- <th>Edit</th> --}}
                                 <th>Delete</th>
                             </tr>
                         </thead>

@@ -213,6 +213,26 @@
                     columns: [ 0, 1, 2, 3, 4, 5 ]
                   },
                   title: `Data Jenis Barang ${year}-${month}-${date}-${hour}.${minute}.${second}`,
+                  customize: function (doc) {
+                    // Create footer
+                    // Left side: tanggal report dicetak
+                    // Right side: detail halaman
+                    doc['footer']=(function(page, pages) {
+                      return {
+                        columns: [
+                          {
+                            alignment: 'left',
+                            text: ['Created on: ', { text: `${year}-${month}-${date}-${hour}.${minute}.${second}` }]
+                          },
+                          {
+                            alignment: 'right',
+                            text: ['page ', { text: page.toString() },	' of ',	{ text: pages.toString() }]
+                          }
+                        ],
+                        margin: 20
+                      }
+                    });
+                  }
                 },
                 'colvis' 
               ],

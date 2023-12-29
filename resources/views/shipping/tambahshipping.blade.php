@@ -164,22 +164,12 @@
                                 <th></th>
                                 <th>ID Barang</th>
                                 <th>Quantity</th>
-                                <th>Edit</th>
+                                {{-- <th>Edit</th> --}}
                                 <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody id="data_table">
-                            <td></td>
-                            <td>
-                              {{-- <select class="form-select" id="driver">
-                                @foreach ($itemBarang as $ib)
-                                    <option value="{{$ib->id}}">{{$ib->nama}}</option>
-                                @endforeach
-                              </select> --}}
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                          
                         </tbody>
                     </table>
                 </div>
@@ -551,11 +541,6 @@
                                   </select>
                                 </td>
                                 <td class="col-sm-3"><input type="number" value="${arraySpesifikasiJson[i][j].quantity}" max=""${arraySpesifikasiJson[i][j].quantity}" min="1" id="edit_quantity_barang_${arraySpesifikasiJson[i][j].idjenis}" class="form-control"/></td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-primary" onclick="editDataTabel(${i, j})">
-                                        <i class="ti ti-edit"></i>
-                                    </button>
-                                </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-danger" onclick="hapusDataTabel(${i},${j})">
                                         <i class="ti ti-trash"></i>
