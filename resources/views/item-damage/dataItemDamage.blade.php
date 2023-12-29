@@ -321,7 +321,8 @@
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
                   },
-                  title: `Data Barang Rusak ${year}-${month}-${date}-${hour}.${minute}.${second}`,
+                  filename: `Data Barang Rusak ${year}-${month}-${date}-${hour}.${minute}.${second}`,
+                  title: `Data Barang Rusak`,
                   customize: function (doc) {
                     // Create footer
                     // Left side: tanggal report dicetak

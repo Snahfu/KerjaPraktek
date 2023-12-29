@@ -212,7 +212,8 @@
                   exportOptions: {
                     columns: [ 0, 1, 2, 3, 4, 5 ]
                   },
-                  title: `Data Jenis Barang ${year}-${month}-${date}-${hour}.${minute}.${second}`,
+                  filename: `Data Jenis Barang ${year}-${month}-${date}-${hour}.${minute}.${second}`,
+                  title: `Data Jenis Barang`,
                   customize: function (doc) {
                     // Create footer
                     // Left side: tanggal report dicetak

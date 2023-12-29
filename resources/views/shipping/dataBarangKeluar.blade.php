@@ -186,7 +186,8 @@
                   exportOptions: {
                     columns: [ 0, 1, 2, 3 ]
                   },
-                  title: `Data Shipping ${year}-${month}-${date}-${hour}.${minute}.${second}`,
+                  filename: `Data Shipping ${year}-${month}-${date}-${hour}.${minute}.${second}`,
+                  title: `Data Shipping`,
                   customize: function (doc) {
                     // Create footer
                     // Left side: tanggal report dicetak
