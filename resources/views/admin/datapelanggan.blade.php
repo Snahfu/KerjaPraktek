@@ -30,7 +30,7 @@
                                 <tr id="tr_{{ $customer->id }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td id="td_nama_{{ $customer->id }}">{{ $customer->nama_pelanggan }}</td>
-                                    <td id="td_nohp_{{ $customer->id }}"><a href="http://wa.me/{{ $customer->nohp_pelanggan_wa }}">{{ $customer->nohp_pelanggan }}</a></td>
+                                    <td id="td_nohp_{{ $customer->id }}"><a href="http://wa.me/{{ $customer->nohp_pelanggan_wa }}" target="_blank">{{ $customer->nohp_pelanggan }}</a></td>
                                     <td id="td_alamat_{{ $customer->id }}">{{ $customer->alamat_pelanggan }}</td>
                                     <td>
                                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">

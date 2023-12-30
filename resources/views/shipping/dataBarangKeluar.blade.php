@@ -11,9 +11,17 @@
                 <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Data Barang Keluar</h4>
                 </div>
-                <div class="col-sm-9">
-                    <input type="date" id="tanggal" class="form-control"
-                        name="tanggal" />
+                <div class="row">
+                  <div class="col-sm-6">
+                      <input type="date" id="tanggal" class="form-control"
+                          name="tanggal" />
+                  </div>
+                  <div class="col-sm-1">
+                    <a id="tanggalKemarin" class="btn btn-primary mb-3">Kemarin</a>
+                  </div>
+                  <div class="col-sm-1">
+                    <a id="tanggalBesok" class="btn btn-primary mb-3">Besok</a>
+                  </div>
                 </div>
                 <div class="card-body h5 text-dark">
                     <table class="table caption-top table-bordered table-striped table-hover table-responsive"
@@ -215,6 +223,18 @@
     
             table.buttons().container()
                 .appendTo( '#listbarang_wrapper .col-md-6:eq(0)' );
+
+            $('#tanggalKemarin').on('click', function() {
+              var date = new Date();
+              date.setDate(date.getDate() - 1);
+              document.getElementById('tanggal').valueAsDate = date;
+            })
+
+            $('#tanggalBesok').on('click', function() {
+              var date = new Date();
+              date.setDate(date.getDate() + 1);
+              document.getElementById('tanggal').valueAsDate = date;
+            })
 
             $('#tanggal').on('change', function() {
               table.clear().draw();
