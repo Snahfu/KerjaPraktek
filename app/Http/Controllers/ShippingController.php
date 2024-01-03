@@ -55,6 +55,7 @@ class ShippingController extends Controller
       $no_invoice = $shipping->id;
       $lokasi = $shipping->event->lokasi;
       $nama = $shipping->event->customer->nama_pelanggan;
+      $namaAcara = $shipping->event->nama;
       $tanggal = $shipping->tglJalan;
       $nohp_pelanggan = $shipping->event->customer->nohp_pelanggan;
 
@@ -97,6 +98,7 @@ class ShippingController extends Controller
       $pdf->Cell(50,7,'No Dokumen: ' . $result_no_surat,0,1);
       $pdf->SetFont('Arial','',12);
       $pdf->Cell(50,7,'Customer: ' . $nama,0,1);
+      $pdf->Cell(50,7,'Nama Acara: ' . $namaAcara,0,1);
       $pdf->Cell(50,7,'Alamat Pengiriman: ' . $lokasi,0,1);
       
       // Display Tanggal Pengiriman
@@ -300,10 +302,12 @@ class ShippingController extends Controller
         $resultInvoices = DB::table('detail_invoice')
                 ->join('invoices', 'invoices.id', '=', 'detail_invoice.invoices_id')
                 ->join('jenis_barang', 'jenis_barang.id', '=', 'detail_invoice.jenis_barang_id')
+                ->join('item_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
                 ->select(
                     'detail_invoice.jenis_barang_id as jenis_barang_invoices',
                     DB::raw('SUM(detail_invoice.qty) as total_qty_invoices'),
-                    'jenis_barang.nama as nama_jenis'
+                    'jenis_barang.nama as nama_jenis',
+                    'item_barang.type as type_barang'
                 )
                 ->where('invoices.events_id',  $request['id']) // Specify the desired events_id here
                 ->groupBy('detail_invoice.jenis_barang_id', 'jenis_barang.nama')
@@ -330,7 +334,7 @@ class ShippingController extends Controller
                     'item_barang_has_item_shipping.item_barang_id as barang_shipping',
                     DB::raw('SUM(item_barang_has_item_shipping.qty) as total_qty_shipping'),
                     'jenis_barang.nama as nama_jenis',
-                    'item_barang.jenis_barang_id as id_jenis'
+                    'item_barang.jenis_barang_id as id_jenis',
                 )
                 ->where('item_shipping.events_id', $request['id']) // Specify the desired events_id here
                 ->where('item_shipping.jenis', $request['jenis'])
@@ -347,14 +351,14 @@ class ShippingController extends Controller
                     if($diff != 0) {
                         $list_barang = Barang::where("jenis_barang_id", "=", $rs->id_jenis)
                         ->get();
-                        $kirim[] = ["qty"=> $diff, "id" => $ri->barang_invoices, "idjenis" => $ri->id_jenis, "jenis" => $ri->nama_jenis, "list_barang" => $list_barang];
+                        $kirim[] = ["qty"=> $diff, "id" => $ri->barang_invoices, "idjenis" => $ri->id_jenis, "jenis" => $ri->nama_jenis, "list_barang" => $list_barang, "type_barang" => $ri->type_barang];
                     }
                 }
             }
             if(!$found) {
                 $list_barang = Barang::where("jenis_barang_id", "=", $ri->jenis_barang_invoices)
                 ->get();
-                $kirim[] = ["qty"=> $ri->total_qty_invoices, "idjenis" => $ri->jenis_barang_invoices, "jenis" => $ri->nama_jenis, "list_barang" => $list_barang];
+                $kirim[] = ["qty"=> $ri->total_qty_invoices, "idjenis" => $ri->jenis_barang_invoices, "jenis" => $ri->nama_jenis, "list_barang" => $list_barang, "type_barang" => $ri->type_barang];
             }
         }
 

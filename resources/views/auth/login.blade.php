@@ -21,10 +21,10 @@
                         <div class="card mb-0">
                             <div class="card-body">
                                 <a href="" class="text-nowrap logo-img text-center d-block py-3 w-100">
-                                    <img src="{{ asset('template/assets/images/logos/dark-logo.svg') }}" width="180"
+                                    <img src="{{ asset('template/assets/images/logos/logo-rental-alat.png') }}" width="180"
                                         alt="">
                                 </a>
-                                <p class="text-center">Your Social Campaigns</p>
+                                <p class="text-center">LOGIN</p>
                                 <form action="{{ route('masuk') }}" method="post">
                                     @csrf
                                     <div class="mb-3">
@@ -43,15 +43,32 @@
                                         <a class="text-primary fw-bold ms-2" href="{{ route('registerPage') }}">Buat
                                             Akun</a>
                                     </div>
-                                    @if ($errors->any())
+                                    @if (session()->has('error'))
+                                      <div class="alert alert-danger m-0">
+                                        <ul>
+                                          <li>{{ session('error') }}</li>
+                                        </ul>
+                                      </div>
+                                    @endif
+                                    {{-- @if ($errors->any())
                                     <div class="alert alert-danger">
                                         <ul>
+                                          <li>Masuk</li>
                                             @foreach ($errors->all() as $error)
                                                 <li>{{ $error }}</li>
                                             @endforeach
                                         </ul>
                                     </div>
-                                @endif
+                                    @else
+                                    <div class="alert alert-danger">
+                                      <ul>
+                                        <li>Coba</li>
+                                          @foreach ($errors->all() as $error)
+                                              <li>{{ $error }}</li>
+                                          @endforeach
+                                      </ul>
+                                  </div> --}}
+                                    {{-- @endif --}}
                                 </form>
                             </div>
                         </div>

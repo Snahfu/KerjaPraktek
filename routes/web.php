@@ -20,6 +20,7 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/dashboard', function () {
     return view('karyawan.index');
   });
+  Route::get('/myprofile', [App\Http\Controllers\DashboardController::class, 'myprofile']);
   Route::get('/dashboard-admin', [App\Http\Controllers\DashboardController::class, 'index']);
   Route::post('/dashboard-admin-param', [App\Http\Controllers\DashboardController::class, 'indexParameter'])->name('admin.indexParameter');
   // Route::get('/dashboard-admin', function () {

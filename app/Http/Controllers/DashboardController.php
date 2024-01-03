@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -142,5 +143,11 @@ class DashboardController extends Controller
             'msg' => $msg,
             'data' => $data,
         ), 200);
+    }
+
+    public function myprofile()
+    {
+      $user = Auth::user();
+      return view('common.myprofile', ['profile' => $user]);
     }
 }

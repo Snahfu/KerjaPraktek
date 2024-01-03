@@ -22,7 +22,7 @@
                             <div class="card-body">
                                 <a href="" class="text-nowrap logo-img text-center d-block py-3 w-100">
                                     {{-- LOGO --}}
-                                    <img src="{{ asset('template/assets/images/logos/dark-logo.svg') }}" width="180"
+                                    <img src="{{ asset('template/assets/images/logos/logo-rental-alat.png') }}" width="180"
                                         alt="">
                                 </a>
                                 <form action="{{ route('daftar') }}" method="post">

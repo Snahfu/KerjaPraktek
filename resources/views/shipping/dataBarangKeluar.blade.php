@@ -13,7 +13,7 @@
                 </div>
                 <div class="row">
                   <div class="col-sm-6">
-                      <input type="date" id="tanggal" class="form-control"
+                      <input type="date"  id="tanggal" class="form-control"
                           name="tanggal" />
                   </div>
                   <div class="col-sm-1">
@@ -169,7 +169,7 @@
 
 @section('javascript')
     <script>
-            document.getElementById('tanggal').valueAsDate = new Date();
+            // date_default_timezone_set('Asia/Jakarta');
             const currentDate = new Date();
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth()+1;
@@ -177,6 +177,11 @@
             const hour = currentDate.getHours();
             const minute = currentDate.getMinutes();
             const second = currentDate.getSeconds();
+
+            const monthNow = String(month).padStart(2, '0');
+            const tanggalNow = String(date).padStart(2, '0');
+            document.getElementById('tanggal').value = `${year}-${monthNow}-${tanggalNow}`;
+
             var table = $('#listbarang').DataTable( {
               "aaSorting": [[1,'asc']],
               lengthChange: false,
@@ -224,19 +229,7 @@
             table.buttons().container()
                 .appendTo( '#listbarang_wrapper .col-md-6:eq(0)' );
 
-            $('#tanggalKemarin').on('click', function() {
-              var date = new Date();
-              date.setDate(date.getDate() - 1);
-              document.getElementById('tanggal').valueAsDate = date;
-            })
-
-            $('#tanggalBesok').on('click', function() {
-              var date = new Date();
-              date.setDate(date.getDate() + 1);
-              document.getElementById('tanggal').valueAsDate = date;
-            })
-
-            $('#tanggal').on('change', function() {
+            function changeDatePicker() {
               table.clear().draw();
               dateValue = document.getElementById('tanggal').value;
               $.ajaxSetup({
@@ -267,6 +260,29 @@
                       console.log('Error:', error);
                   }
               });
+            }
+            
+            $('#tanggalKemarin').on('click', function() {
+              currentDate.setDate(currentDate.getDate() - 1);
+              const yearDatePicker = currentDate.getFullYear();
+              const monthDatePicker = String(currentDate.getMonth()+1).padStart(2, '0');
+              const tanggalDatePicker = String(currentDate.getDate()).padStart(2, '0');
+              document.getElementById('tanggal').value = `${yearDatePicker}-${monthDatePicker}-${tanggalDatePicker}`;
+              changeDatePicker();
+            })
+
+            $('#tanggalBesok').on('click', function() {
+              currentDate.setDate(currentDate.getDate() + 1);
+              const yearDatePicker = currentDate.getFullYear();
+              const monthDatePicker = String(currentDate.getMonth()+1).padStart(2, '0');
+              const tanggalDatePicker = String(currentDate.getDate()).padStart(2, '0');
+              document.getElementById('tanggal').value = `${yearDatePicker}-${monthDatePicker}-${tanggalDatePicker}`;
+              changeDatePicker();
+            })
+
+
+            $('#tanggal').on('change', function() {
+              changeDatePicker();
             });
 
         function alertUpdate(msg, status) {

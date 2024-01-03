@@ -391,7 +391,7 @@
         
                                 for (var data in response.datas) {
                                     var option = document.createElement('option');
-                                    option.value = response.datas[data].qty + '~~' + response.datas[data].idjenis + '~~' + response.datas[data].jenis;
+                                    option.value = response.datas[data].qty + '~~' + response.datas[data].idjenis + '~~' + response.datas[data].jenis + '~~' +  response.datas[data].type_barang,
                                     option.text = response.datas[data].jenis;
                                     namaBarangElement.add(option);
 
@@ -402,6 +402,7 @@
                                         jenis: response.datas[data].jenis,
                                         quantity: response.datas[data].qty,
                                         list_barang: response.datas[data].list_barang,
+                                        type_barang: response.datas[data].type_barang,
                                     }
 
                                     arraySpesifikasiJson[response.datas[data].idjenis].push(spesifikasiBarang);
@@ -434,6 +435,7 @@
                                         jenis: response.datas[data].jenis,
                                         quantity: response.datas[data].qty,
                                         list_barang: response.datas[data].list_barang,
+                                        type_barang: response.datas[data].type_barang,
                                     }
     
                                         arraySpesifikasiJson[response.datas[data].idjenis].push(spesifikasiBarang);
@@ -468,6 +470,7 @@
             var idAndJenis = barangElement.options[barangIndex].value.split("~~");
             var idJenis = idAndJenis[1];
             var jenis = idAndJenis[2];
+            var type_barang = idAndJenis[3];
             
             if(idJenis == 0) {
                 $('#alertModal').modal('show');
@@ -510,6 +513,7 @@
                 jenis: jenis,
                 quantity: quantity,
                 list_barang: listBarang,
+                type_barang: type_barang,
             }
 
             arraySpesifikasiJson[idJenis].push(spesifikasiBarang);
@@ -519,36 +523,76 @@
         // Melakukan update UI pada tabel agar sesuai dengan tampilannya
         function updateTabel() {
             var stringHTML = ``;
+            var stringCheckboxBarang = ``;
+            var stringQuantityBarang = ``;
             for (var i = 0; i < arraySpesifikasiJson.length; i++) {
               if (arraySpesifikasiJson[i].length > 0) {
                     stringHTML += `<tr><td colspan="4">${jenis_map[i]}</td></tr>`
                     for (var j = 0; j < arraySpesifikasiJson[i].length; j++) {
+                        console.log(arraySpesifikasiJson);
                         listBarang = arraySpesifikasiJson[i][j].list_barang;
-                        stringComboboxBarang = "";
                         listBarang.forEach(barang => {
-                          stringComboboxBarang += 
-                          `
-                          <option value="${barang.id}">${barang.nama}</option>
-                          `
+                          stringCheckboxBarang = "";
+                          stringQuantityBarang = "";
+                          if (arraySpesifikasiJson[i][j].type_barang == "serial") {
+                              $('#spek').css('display','none')
+                              stringCheckboxBarang += 
+                              `
+                              <input type="checkbox" id="chckbx${barang.id}" name="chckbx${barang.id}" value="${barang.id}">
+                              <label for="chckbx${barang.id}">${barang.nama} </label>
+                              `
+                              stringQuantityBarang +=
+                              `
+                              <input type="number" value="1" disabled id="edit_quantity_barang_${arraySpesifikasiJson[i][j].idjenis}" class="form-control"/>
+                              `
+                              stringHTML +=
+                                `
+                                <tr id='barang_${i}_${j}'>
+                                    <td></td>
+                                    <td class="col-sm-6">
+                                      ${stringCheckboxBarang}
+                                    </td>
+                                    <td class="col-sm-3">
+                                      ${stringQuantityBarang}
+                                    </td>
+                                    <td class="text-center">
+                                        <button disabled type="button" class="btn btn-danger" onclick="hapusDataTabel(${i},${j})">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                `
+                          } else {
+                              $('#spek').css('display','')
+                              stringCheckboxBarang += 
+                              `
+                              ${barang.nama}
+                              `
+                              stringQuantityBarang +=
+                              `
+                              <input type="number" value="1" max="${arraySpesifikasiJson[i][j].quantity}" min="1" id="edit_quantity_barang_${arraySpesifikasiJson[i][j].idjenis}" class="form-control"/>
+                              `
+                              stringHTML +=
+                                `
+                                <tr id='barang_${i}_${j}'>
+                                    <td></td>
+                                    <td class="col-sm-6">
+                                      ${stringCheckboxBarang}
+                                    </td>
+                                    <td class="col-sm-3">
+                                      ${stringQuantityBarang}
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-danger" onclick="hapusDataTabel(${i},${j})">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                `
+                            }
+                            
+                                // console.log(arraySpesifikasiJson[i][j].idbarang);
                         });
-                        stringHTML +=
-                            `
-                            <tr id='barang_${i}_${j}'>
-                                <td></td>
-                                <td class="col-sm-6">
-                                  <select class="form-select" id="idbarang">
-                                    ${stringComboboxBarang}
-                                  </select>
-                                </td>
-                                <td class="col-sm-3"><input type="number" value="${arraySpesifikasiJson[i][j].quantity}" max=""${arraySpesifikasiJson[i][j].quantity}" min="1" id="edit_quantity_barang_${arraySpesifikasiJson[i][j].idjenis}" class="form-control"/></td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-danger" onclick="hapusDataTabel(${i},${j})">
-                                        <i class="ti ti-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            `
-                            // console.log(arraySpesifikasiJson[i][j].idbarang);
                     }
                 }
                 document.getElementById('data_table').innerHTML = stringHTML;

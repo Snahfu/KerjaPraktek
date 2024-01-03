@@ -65,7 +65,7 @@ class AuthController extends Controller
 
         Auth::login($karyawan);
 
-        return redirect('/dashboard');
+        return redirect('/dashboard-admin');
     }
 
     public function logout()
