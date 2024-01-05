@@ -23,13 +23,13 @@ class AuthController extends Controller
 
             $userlevel = Auth::user()->divisi_id;
             if ($userlevel == 2) {
-                return redirect('/data-gudang');
+                return redirect('/dashboard-gudang');
             } else if ($userlevel == 4) {
-                return redirect('/dashbord-sales');
+                return redirect('/dashboard-sales');
             } else if ($userlevel == 5) {
                 return redirect('/dashboard-admin');
             } else {
-                return redirect('/dashbord-sales');
+                return redirect('/dashboard-sales');
             }
         }
 

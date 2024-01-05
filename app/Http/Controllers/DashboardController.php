@@ -150,4 +150,5 @@ class DashboardController extends Controller
       $user = Auth::user();
       return view('common.myprofile', ['profile' => $user]);
     }
+    
 }

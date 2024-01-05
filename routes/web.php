@@ -72,6 +72,8 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/tagihan-cetak', [App\Http\Controllers\InvoiceController::class, 'pdfPageTagihan'])->name('tagihan.cetak');
   
   // GUDANG CONTROLLER
+  Route::get('/dashboard-gudang', [App\Http\Controllers\BarangController::class, 'dashboard'])->name('gudang.dashboard');
+  Route::post('/dashboard-gudang-param', [App\Http\Controllers\BarangController::class, 'dashboardParameter'])->name('gudang.dashboard.parameter');
   Route::get('/data-gudang', [App\Http\Controllers\BarangController::class, 'index'])->name('gudang.datagudang');
   Route::get('/gudang', [App\Http\Controllers\BarangController::class, 'task'])->name('gudang');
   Route::get('/tambah-gudang', [App\Http\Controllers\BarangController::class, 'create'])->name('tambahgudang');
@@ -118,7 +120,7 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
 });
 
 // KARYAWAN CONTROLLER
-Route::get('/dashbord-sales', [App\Http\Controllers\KaryawanController::class, 'index'])->name('sales.dashboard');
+Route::get('/dashboard-sales', [App\Http\Controllers\KaryawanController::class, 'index'])->name('sales.dashboard');
 // Route::get('/reminder', [App\Http\Controllers\KaryawanController::class, 'jadwalreminder'])->name('karyawan.reminder');
 // Route::get('/tagihan', [App\Http\Controllers\KaryawanController::class, 'getTagihan'])->name('karyawan.tagihan');
 // Route::post('/detail-agenda', [App\Http\Controllers\KaryawanController::class, 'getData'])->name('karyawan.detailagenda');
