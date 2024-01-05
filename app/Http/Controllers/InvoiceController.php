@@ -466,8 +466,6 @@ class InvoiceController extends Controller
             'bukti_pembayaran.max' => 'Ukuran file tidak boleh lebih dari 2 MB.',
         ]);
 
-        // dd($request);
-
         $invoice = Invoice::where('invoices.id', $request['invoice_id'])
             ->select(
                 'invoices.*',
@@ -510,8 +508,7 @@ class InvoiceController extends Controller
             $tagihanBaru->save();
         }
 
-        return redirect()->route('invoice.bayar.index', ['id' => $invoice[0]->id])
-            ->with('success', 'Berhasil Input Data Pembayaran!');
+        return redirect()->route('invoice.tagihan.list');
     }
 
     public function destroy(Invoice $invoice)
