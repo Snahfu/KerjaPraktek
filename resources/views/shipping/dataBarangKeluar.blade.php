@@ -169,8 +169,7 @@
 
 @section('javascript')
     <script>
-            // date_default_timezone_set('Asia/Jakarta');
-            const currentDate = new Date();
+            var currentDate = new Date();
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth()+1;
             const date = currentDate.getDate();
@@ -263,6 +262,7 @@
             }
             
             $('#tanggalKemarin').on('click', function() {
+              currentDate = document.getElementById('tanggal').valueAsDate;
               currentDate.setDate(currentDate.getDate() - 1);
               const yearDatePicker = currentDate.getFullYear();
               const monthDatePicker = String(currentDate.getMonth()+1).padStart(2, '0');
@@ -272,6 +272,7 @@
             })
 
             $('#tanggalBesok').on('click', function() {
+              currentDate = document.getElementById('tanggal').valueAsDate;
               currentDate.setDate(currentDate.getDate() + 1);
               const yearDatePicker = currentDate.getFullYear();
               const monthDatePicker = String(currentDate.getMonth()+1).padStart(2, '0');

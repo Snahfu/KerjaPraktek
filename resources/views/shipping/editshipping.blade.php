@@ -51,7 +51,7 @@
                         <div class="col-12">
                             <div class="mb-1 row">
                                 <div class="col-sm-3">
-                                    <label class="col-form-label" for="tgl-event">Tanggal Event Berjalan</label>
+                                    <label class="col-form-label" for="tgl-event">Tanggal Event</label>
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="tgl-event" class="form-control"
@@ -235,6 +235,8 @@
     <script>
         // Array untuk menyimpan data spesifikasi order pada tabel
         var arraySpesifikasiJson = Object.values(@json($array_jenis));
+        // Array untuk menyimpan data list barang pada setiap jenis barang
+        var arrayBarang;
         // Maping untuk menampilkan nama jenis pada comboboxnya
         var jenis_map = @json($jenis_map);
         
@@ -268,19 +270,46 @@
             }
         }
 
-        // Melakukan update barang pada comboBox nama-barang
+        function checkDriver() {
+          $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('checkdriver') }}",
+                type: 'POST',
+                data: {
+                    'driver': parseInt(document.getElementById('driver').value),
+                    'tglJalan': document.getElementById('tgl-event').value,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if(response.status != "success"){
+                        alertUpdate(response.msg, response.status)
+                    }
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
         function updateBarang() {
+          // console.log(arraySpesifikasiJson);
             arraySpesifikasiJson = Object.values(@json($array_jenis));
             var idEvent = document.getElementById('event').value;
             var jenis = document.getElementById('jenis').value;
-
+            var events = {!! json_encode($event) !!};
+            document.getElementById('tanggalEvent').value = "";
+            document.getElementById('venueEvent').value = "";
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
             $.ajax({
-                url: "{{ route('getbarangeditshipping') }}",
+                url: "{{ route('getbarangshipping') }}",
                 type: 'POST',
                 data: {
                     'id': idEvent,
@@ -294,16 +323,35 @@
                         $('#responseController').html(response.msg);
                         $('#alertModal').modal('show');
                     } else {
+                        hasilFilterEvent = events.filter((e) => e.id == idEvent);
+                        let tanggalEvent = hasilFilterEvent[0].tanggal;
+                        document.getElementById('tanggalEvent').value = tanggalEvent;
+                        document.getElementById('venueEvent').value = hasilFilterEvent[0].lokasi;
+                        let tanggalEventMili = new Date(tanggalEvent);
+                        tanggalKirim = new Date(tanggalEventMili - (10*60*60*1000));
+
+                        const year = tanggalKirim.getFullYear();
+                        const month = String(tanggalKirim.getMonth()+1).padStart(2, '0');
+                        const date = String(tanggalKirim.getDate()).padStart(2, '0');
+                        const hour = String(tanggalKirim.getHours()).padStart(2, '0');
+                        const minute = String(tanggalKirim.getMinutes()).padStart(2, '0');
+                        const second = String(tanggalKirim.getSeconds()).padStart(2, '0');
+
+                        tanggalKirimDateTime = year + "-" + month + "-" + date + "T" + hour + ":" + minute + ":" + second;
+                        document.getElementById('tgl-event').value = tanggalKirimDateTime;
+                        let spek = document.getElementById('spek');
                         let elementShow = document.getElementsByClassName('detail-barang');
 
                         if(jenis === "Kirim") {
+                            spek.style.display = '';
+
                             if(Object.keys(response.datas).length === 0) {
                                 for (var i = 0; i < elementShow.length; i ++) {
                                     elementShow[i].style.display = 'none';
                                 }
 
                                 var h2 = document.getElementById('forNothing');
-                                h2.textContent = "Tidak ada barang yang dikirim";
+                                h2.textContent = "Tidak ada barang untuk dikirim";
                             } else {
                                 var h2 = document.getElementById('forNothing');
                                 h2.textContent = "";
@@ -311,14 +359,31 @@
                                 for (var i = 0; i < elementShow.length; i ++) {
                                     elementShow[i].style.display = '';
                                 }
+                                namaBarangElement = document.getElementById("barang")
+                                namaBarangElement.disabled = false;
+                                hapusOptionPadaSelect(namaBarangElement);
+        
+                                var optionSelected = document.createElement('option');
+                                optionSelected.value = 'x~~'+ 0;
+                                optionSelected.text = "-- Pilih ID Barang --";
+                                optionSelected.disabled = true;
+                                optionSelected.selected = true;
+                                namaBarangElement.add(optionSelected);
         
                                 for (var data in response.datas) {
+                                    var option = document.createElement('option');
+                                    option.value = response.datas[data].qty + '~~' + response.datas[data].idjenis + '~~' + response.datas[data].jenis + '~~' +  response.datas[data].type_barang,
+                                    option.text = response.datas[data].jenis;
+                                    namaBarangElement.add(option);
+
                                     // Isi tabel detail barang
                                     var spesifikasiBarang = {
-                                        idbarang: response.datas[data].id,
+                                        idbarang: 0,
                                         idjenis: response.datas[data].idjenis,
                                         jenis: response.datas[data].jenis,
                                         quantity: response.datas[data].qty,
+                                        list_barang: response.datas[data].list_barang,
+                                        type_barang: response.datas[data].type_barang,
                                     }
 
                                     arraySpesifikasiJson[response.datas[data].idjenis].push(spesifikasiBarang);
@@ -326,13 +391,15 @@
                                 updateTabel();
                             }
                         } else {
+                            spek.style.display = 'none';
+
                             if(Object.keys(response.datas).length === 0) {
                                 for (var i = 0; i < elementShow.length; i ++) {
                                     elementShow[i].style.display = 'none';
                                 }
 
                                 var h2 = document.getElementById('forNothing');
-                                h2.textContent = "Tidak ada barang yang dijemput";
+                                h2.textContent = "Tidak ada barang untuk dijemput";
                             } else {
                                 for (var i = 1; i < elementShow.length; i ++) {
                                     elementShow[i].style.display = '';
@@ -344,10 +411,12 @@
                                 for (var data in response.datas) {
                                     // Isi tabel detail barang
                                     var spesifikasiBarang = {
-                                        idbarang: response.datas[data].id,
+                                        idbarang: 0,
                                         idjenis: response.datas[data].idjenis,
                                         jenis: response.datas[data].jenis,
                                         quantity: response.datas[data].qty,
+                                        list_barang: response.datas[data].list_barang,
+                                        type_barang: response.datas[data].type_barang,
                                     }
     
                                         arraySpesifikasiJson[response.datas[data].idjenis].push(spesifikasiBarang);
@@ -363,31 +432,136 @@
             });
         }
 
+        // Menambahkan data spesifikasi barang ke dalam tabel
+        function tambahSpesifikasi() {
+            var barangElement = document.getElementById('barang');
+            var barangIndex = barangElement.selectedIndex;
+            var idAndJenis = barangElement.options[barangIndex].value.split("~~");
+            var idJenis = idAndJenis[1];
+            var jenis = idAndJenis[2];
+            var type_barang = idAndJenis[3];
+            
+            if(idJenis == 0) {
+                $('#alertModal').modal('show');
+                alertModalTitle.classList.remove('bg-success');
+                alertModalTitle.classList.add('bg-danger');
+                $('#responseController').text("Pilih ID barang terlebih dahulu!");
+
+                return
+            }
+
+            var quantity = parseInt(document.getElementById('quantity').value);
+
+            var listBarang;
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('getlistbarangshipping') }}",
+                type: 'POST',
+                data: {
+                    'idJenis': idJenis,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if(response.status == "success"){
+                      listBarang = response.datas;
+                    }
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+
+            var spesifikasiBarang = {
+                idbarang: 0,
+                idjenis: idJenis,
+                jenis: jenis,
+                quantity: quantity,
+                list_barang: listBarang,
+                type_barang: type_barang,
+            }
+
+            arraySpesifikasiJson[idJenis].push(spesifikasiBarang);
+            updateTabel();
+        }
+
         // Melakukan update UI pada tabel agar sesuai dengan tampilannya
         function updateTabel() {
             var stringHTML = ``;
+            var stringCheckboxBarang = ``;
+            var stringQuantityBarang = ``;
             for (var i = 0; i < arraySpesifikasiJson.length; i++) {
-                if (arraySpesifikasiJson[i].length > 0) {
-                    stringHTML += `<tr><td colspan="4">${jenis_map[i]}</td></tr>`
+              if (arraySpesifikasiJson[i].length > 0) {
+                console.log(arraySpesifikasiJson);
+                    stringHTML += `<tr><td colspan="2">${jenis_map[i]}</td><td colspan="1">Quantity: ${arraySpesifikasiJson[i][0].quantity}</td></tr>`
                     for (var j = 0; j < arraySpesifikasiJson[i].length; j++) {
-                        stringHTML +=
-                            `
-                            <tr id='barang_${arraySpesifikasiJson[i][j].idbarang}'>
-                                <td></td>
-                                <td>${arraySpesifikasiJson[i][j].idbarang}</td>
-                                <td>${arraySpesifikasiJson[i][j].quantity}</td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-primary" onclick="editDataTabel(${arraySpesifikasiJson[i][j].idbarang})">
-                                        <i class="ti ti-edit"></i>
-                                    </button>
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-danger" onclick="hapusDataTabel(${arraySpesifikasiJson[i][j].idbarang})">
-                                        <i class="ti ti-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            `
+                        listBarang = arraySpesifikasiJson[i][j].list_barang;
+                        listBarang.forEach(barang => {
+                          stringCheckboxBarang = "";
+                          stringQuantityBarang = "";
+                          if (arraySpesifikasiJson[i][j].type_barang == "serial") {
+                              $('#spek').css('display','none')
+                              stringCheckboxBarang += 
+                              `
+                              <input type="checkbox" id="chckbx${barang.id}" name="chckbx${barang.id}" value="${barang.id}">
+                              <label for="chckbx${barang.id}">${barang.nama} </label>
+                              `
+                              stringQuantityBarang +=
+                              `
+                              <input type="number" value="1" disabled id="edit_quantity_barang_${arraySpesifikasiJson[i][j].idjenis}" class="form-control"/>
+                              `
+                              stringHTML +=
+                                `
+                                <tr id='barang_${i}_${j}'>
+                                    <td></td>
+                                    <td class="col-sm-6">
+                                      ${stringCheckboxBarang}
+                                    </td>
+                                    <td class="col-sm-3">
+                                      ${stringQuantityBarang}
+                                    </td>
+                                    <td class="text-center">
+                                        <button disabled type="button" class="btn btn-danger" onclick="hapusDataTabel(${i},${j})">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                `
+                          } else {
+                              $('#spek').css('display','')
+                              stringCheckboxBarang += 
+                              `
+                              ${barang.nama}
+                              `
+                              stringQuantityBarang +=
+                              `
+                              <input type="number" value="1" max="${arraySpesifikasiJson[i][j].quantity}" min="1" id="edit_quantity_barang_${arraySpesifikasiJson[i][j].idjenis}" class="form-control"/>
+                              `
+                              stringHTML +=
+                                `
+                                <tr id='barang_${i}_${j}'>
+                                    <td></td>
+                                    <td class="col-sm-6">
+                                      ${stringCheckboxBarang}
+                                    </td>
+                                    <td class="col-sm-3">
+                                      ${stringQuantityBarang}
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-danger" onclick="hapusDataTabel(${i},${j})">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                `
+                            }
+                            
+                                // console.log(arraySpesifikasiJson[i][j].idbarang);
+                        });
                     }
                 }
                 document.getElementById('data_table').innerHTML = stringHTML;
@@ -439,7 +613,7 @@
         function perbaruhiDataTabel(id) {
             var tdList = $('#barang_' + id).find('td');
             var quantity = parseInt(document.getElementById('edit_quantity_barang').value);
-            
+
             if(quantity > tdList[2].textContent) {
                 quantity = tdList[2].textContent;
             } else if(quantity < tdList[2].textContent) {

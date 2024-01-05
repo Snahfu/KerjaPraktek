@@ -527,9 +527,9 @@
             var stringQuantityBarang = ``;
             for (var i = 0; i < arraySpesifikasiJson.length; i++) {
               if (arraySpesifikasiJson[i].length > 0) {
-                    stringHTML += `<tr><td colspan="4">${jenis_map[i]}</td></tr>`
+                console.log(arraySpesifikasiJson);
+                    stringHTML += `<tr><td colspan="2">${jenis_map[i]}</td><td colspan="1">Quantity: ${arraySpesifikasiJson[i][0].quantity}</td></tr>`
                     for (var j = 0; j < arraySpesifikasiJson[i].length; j++) {
-                        console.log(arraySpesifikasiJson);
                         listBarang = arraySpesifikasiJson[i][j].list_barang;
                         listBarang.forEach(barang => {
                           stringCheckboxBarang = "";
@@ -674,10 +674,27 @@
               if (arraySpesifikasiJson[i].length > 0) {
                     for (var j = 0; j < arraySpesifikasiJson[i].length; j++) {
                         var tdList = $('#barang_' + i + "_" + j).find('td');
-                        var idBarang = tdList[1].children[0].value;
-                        var quantity = tdList[2].children[0].value;
-                        arraySpesifikasiJson[i][j].idbarang = idBarang;
-                        arraySpesifikasiJson[i][j].quantity = quantity;
+                        if (arraySpesifikasiJson[i][j].type == "serial") {
+                          var isChecked = tdList[1].children[0].checked;
+                          var listIdBarangNotChecked = [];
+                          if (!isChecked) {
+                            var idBarang = tdList[1].children[0].value;
+                            var quantity = tdList[2].children[0].value;
+                            arraySpesifikasiJson[i][j].idbarang = idBarang;
+                            arraySpesifikasiJson[i][j].quantity = quantity;
+
+                            listIdBarangNotChecked.push(idbarang);
+
+                          }
+                          arraySpesifikasiJson[i] = arraySpesifikasiJson[i].filter(function(obj) {
+                              // return arraySpesifikasiJson[i][j].idbarang != ;
+                          });
+                        }
+                        // var tdList = $('#barang_' + i + "_" + j).find('td');
+                        // var idBarang = tdList[1].children[0].value;
+                        // var quantity = tdList[2].children[0].value;
+                        // arraySpesifikasiJson[i][j].idbarang = idBarang;
+                        // arraySpesifikasiJson[i][j].quantity = quantity;
                     }
                 }
             }

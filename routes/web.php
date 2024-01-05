@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('role:1,2,3,4,5')->group(function () {
+Route::middleware('role:2,3,4,5')->group(function () {
   Route::get('/', function () {
     return view('admin.index');
   });
@@ -26,31 +26,9 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   // Route::get('/dashboard-admin', function () {
   //     return view('admin.index');
   // });
-  Route::get('/tambah', function () {
-    return view('common.tambahorder');
-  });
-  Route::get('/tambah', [App\Http\Controllers\EventController::class, 'create'])->name('common.tambahorder');
+});
 
-  Route::get('/detail', function () {
-    return view('common.detailorder');
-  });
-  // KARYAWAN CONTROLLER
-  Route::get('/reminder', [App\Http\Controllers\KaryawanController::class, 'jadwalreminder'])->name('karyawan.reminder');
-  Route::get('/tagihan', [App\Http\Controllers\KaryawanController::class, 'getTagihan'])->name('karyawan.tagihan');
-  Route::post('/detail-agenda', [App\Http\Controllers\KaryawanController::class, 'getData'])->name('karyawan.detailagenda');
-  Route::post('/delete-agenda', [App\Http\Controllers\KaryawanController::class, 'destroy'])->name('karyawan.deleteagenda');
-  Route::post('/update-agenda', [App\Http\Controllers\KaryawanController::class, 'update'])->name('karyawan.updateagenda');
-  Route::post('/tambah-agenda', [App\Http\Controllers\KaryawanController::class, 'store'])->name('karyawan.tambahagenda');
-
-  // ADMIN CONTROLLER
-  Route::get('/data-pelanggan', [App\Http\Controllers\AdminController::class, 'index_datapelanggan'])->name('admin.datapelanggan');
-  Route::get('/tambah-pelanggan', [App\Http\Controllers\AdminController::class, 'index_tambahpelanggan'])->name('admin.index.tambahpelanggan');
-  Route::post('/detail-pelanggan', [App\Http\Controllers\AdminController::class, 'detail'])->name('admin.detailpelanggan');
-  Route::post('/tambah-pelanggan', [App\Http\Controllers\AdminController::class, 'store'])->name('admin.tambahpelanggan');
-  Route::post('/delete-pelanggan', [App\Http\Controllers\AdminController::class, 'destroy'])->name('admin.deletepelanggan');
-  Route::get('/edit-pelanggan', [App\Http\Controllers\AdminController::class, 'edit'])->name('admin.editpelanggan');
-  Route::post('/update-pelanggan', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.updatepelanggan');
-
+Route::middleware('role:4,5')->group(function () {
   // EVENT CONTORLLER
   Route::get('/event-list', [App\Http\Controllers\EventController::class, 'index'])->name('common.listevent');
   Route::get('/tambah-event', [App\Http\Controllers\EventController::class, 'create'])->name('common.index.tambahevent');
@@ -59,7 +37,30 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::post('/tambah-event', [App\Http\Controllers\EventController::class, 'store'])->name('common.tambahevent');
   Route::post('/delete-event', [App\Http\Controllers\EventController::class, 'destroy'])->name('common.deleteevent');
   Route::post('/update-event', [App\Http\Controllers\EventController::class, 'update'])->name('common.updateevent');
+});
 
+// Route::middleware('role:4,5')->group(function () {
+//   // KARYAWAN CONTROLLER
+//   Route::get('/reminder', [App\Http\Controllers\KaryawanController::class, 'jadwalreminder'])->name('karyawan.reminder');
+//   Route::get('/tagihan', [App\Http\Controllers\KaryawanController::class, 'getTagihan'])->name('karyawan.tagihan');
+//   Route::post('/detail-agenda', [App\Http\Controllers\KaryawanController::class, 'getData'])->name('karyawan.detailagenda');
+//   Route::post('/delete-agenda', [App\Http\Controllers\KaryawanController::class, 'destroy'])->name('karyawan.deleteagenda');
+//   Route::post('/update-agenda', [App\Http\Controllers\KaryawanController::class, 'update'])->name('karyawan.updateagenda');
+//   Route::post('/tambah-agenda', [App\Http\Controllers\KaryawanController::class, 'store'])->name('karyawan.tambahagenda');
+// });
+
+Route::middleware('role:4,5')->group(function () {
+  // ADMIN CONTROLLER
+  Route::get('/data-pelanggan', [App\Http\Controllers\AdminController::class, 'index_datapelanggan'])->name('admin.datapelanggan');
+  Route::get('/tambah-pelanggan', [App\Http\Controllers\AdminController::class, 'index_tambahpelanggan'])->name('admin.index.tambahpelanggan');
+  Route::post('/detail-pelanggan', [App\Http\Controllers\AdminController::class, 'detail'])->name('admin.detailpelanggan');
+  Route::post('/tambah-pelanggan', [App\Http\Controllers\AdminController::class, 'store'])->name('admin.tambahpelanggan');
+  Route::post('/delete-pelanggan', [App\Http\Controllers\AdminController::class, 'destroy'])->name('admin.deletepelanggan');
+  Route::get('/edit-pelanggan', [App\Http\Controllers\AdminController::class, 'edit'])->name('admin.editpelanggan');
+  Route::post('/update-pelanggan', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.updatepelanggan');
+});
+
+Route::middleware('role:4,5')->group(function () {
   //   INVOICE CONTROLLER
   Route::get('/data-invoice', [App\Http\Controllers\InvoiceController::class, 'tabelPenawaran'])->name('invoice.list');
   Route::get('/detail-invoice', [App\Http\Controllers\InvoiceController::class, 'show'])->name('invoice.detail');
@@ -69,7 +70,9 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/form-bayar-invoice', [App\Http\Controllers\InvoiceController::class, 'showBayar'])->name('invoice.bayar.index');
   Route::post('/bayar-invoice', [App\Http\Controllers\InvoiceController::class, 'bayar'])->name('invoice.bayar');
   Route::get('/tagihan-cetak', [App\Http\Controllers\InvoiceController::class, 'pdfPageTagihan'])->name('tagihan.cetak');
-  
+});
+
+Route::middleware('role:2,3,5')->group(function () {
   // GUDANG CONTROLLER
   Route::get('/data-gudang', [App\Http\Controllers\BarangController::class, 'index'])->name('gudang.datagudang');
   Route::get('/gudang', [App\Http\Controllers\BarangController::class, 'task'])->name('gudang');
@@ -80,7 +83,9 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/edit-gudang', [App\Http\Controllers\BarangController::class, 'edit'])->name('editgudang');
   Route::post('/update-gudang', [App\Http\Controllers\BarangController::class, 'update'])->name('updategudang');
   Route::post('/delete-gudang', [App\Http\Controllers\BarangController::class, 'destroy'])->name('deletegudang');
+});
 
+Route::middleware('role:2,3,4,5')->group(function () {
   // JENIS CONTROLLER
   Route::get('/data-jenis', [App\Http\Controllers\JenisBarangController::class, 'index'])->name('jenis.datajenis');
   Route::get('/tambah-jenis', [App\Http\Controllers\JenisBarangController::class, 'create'])->name('tambahjenis');
@@ -88,7 +93,9 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/edit-jenis', [App\Http\Controllers\JenisBarangController::class, 'edit'])->name('editjenis');
   Route::post('/update-jenis', [App\Http\Controllers\JenisBarangController::class, 'update'])->name('updatejenis');
   Route::post('/delete-jenis', [App\Http\Controllers\JenisBarangController::class, 'destroy'])->name('deletejenis');
+});
 
+Route::middleware('role:2,3,5')->group(function () {
   // ITEM DAMAGE CONTROLLER
   Route::get('/data-damage', [App\Http\Controllers\ItemDamageController::class, 'index'])->name('damage.datadamage');
   Route::get('/data-damage-servicer', [App\Http\Controllers\ItemDamageController::class, 'indexServicer'])->name('damage.datadamage-servicer');
@@ -99,7 +106,9 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/edit-service-damage', [App\Http\Controllers\ItemDamageController::class, 'editService'])->name('editservicedamage');
   Route::post('/service-damage', [App\Http\Controllers\ItemDamageController::class, 'service'])->name('servicedamage');
   Route::post('/delete-damage', [App\Http\Controllers\ItemDamageController::class, 'destroy'])->name('deletedamage');
+});
 
+Route::middleware('role:2,4,5')->group(function () {
   // SHIPPING CONTROLLER
   Route::get('/data-shipping', [App\Http\Controllers\ShippingController::class, 'index'])->name('shipping.datashipping');
   Route::get('/tambah-shipping', [App\Http\Controllers\ShippingController::class, 'create'])->name('tambahshipping');
@@ -114,6 +123,22 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::post('/update-shipping', [App\Http\Controllers\ShippingController::class, 'update'])->name('updateshipping');
   Route::post('/delete-shipping', [App\Http\Controllers\ShippingController::class, 'destroy'])->name('deleteshipping');
   Route::get('/surat-jalan', [App\Http\Controllers\ShippingController::class, 'cetakSuratjalan'])->name('suratjalan');
+});
+
+Route::middleware('role:2,3,5')->group(function () {
+  
+});
+
+Route::middleware('role:1,2,3,4,5')->group(function () {
+  
+  // Route::get('/tambah', function () {
+  //   return view('common.tambahorder');
+  // });
+  // Route::get('/tambah', [App\Http\Controllers\EventController::class, 'create'])->name('common.tambahorder');
+
+  // Route::get('/detail', function () {
+  //   return view('common.detailorder');
+  // });
 });
 
 
