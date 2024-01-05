@@ -36,7 +36,7 @@
                                     </div>
                                     <div class="col-sm-9">
                                         <input type="number" id="nominal" class="form-control" name="nominal"
-                                            placeholder="100000" min="0" />
+                                            placeholder="Rp{{ number_format($harus_bayar, 0, ',', ',') }}" min="0" />
                                     </div>
                                 </div>
                             </div>
@@ -79,7 +79,7 @@
                                     </div>
                                     <div class="col-sm-9">
                                         <label class="col-form-label text-danger" for="lunaskan">
-                                            Biaya yang perlu dibayarkan Rp{{ number_format($sisa, 0, ',', ',') }}
+                                            Biaya yang perlu dibayarkan Rp{{ number_format($sisa, 0, ',', ',') }} dari Rp{{ number_format($harus_bayar, 0, ',', ',') }}
                                         </label>
                                     </div>
                                 </div>

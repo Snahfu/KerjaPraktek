@@ -91,7 +91,7 @@ class EventController extends Controller
             'tanggal_out' => 'required',
             'id_jenis_barangs' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             $status = "failed";
             $msg = "Terdapat kesalahan pada sistem";
@@ -109,8 +109,9 @@ class EventController extends Controller
         $shippings_data = ShippingBarang::join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
             // ->join('item_barang','item_barang.id','=','item_barang_has_item_shipping.item_barang_id')
             ->whereBetween('item_shipping.tglJalan', [$tanggal_in, $tanggal_out])
+            ->where('item_shipping.jenis', '!=', 'Jemput')
+            // ->whereNotBetween('item_shipping.tglJalan', [$tanggal_in, $tanggal_out])
             ->get();
-        // dd($shippings_data);
 
         // Inisialisasi Variabel Total
         $total_pakai = 0;
@@ -124,7 +125,7 @@ class EventController extends Controller
         // Stock yg Dimiliki pada Jenis Barang $request
         $total_stock = Barang::where('jenis_barang_id', $id_jenis_barangs)
             ->sum('qty');
-        
+
         $sisa = $total_stock - $total_pakai;
         $status = "success";
         $msg = "Data berhasil diambil";
@@ -142,7 +143,7 @@ class EventController extends Controller
             'tanggal_out' => 'required',
             'nama_jenis_barang' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             $status = "failed";
             $msg = "Terdapat kesalahan pada sistem";
@@ -176,7 +177,7 @@ class EventController extends Controller
         // Stock yg Dimiliki pada Jenis Barang $request
         $total_stock = Barang::where('jenis_barang_id', $id_jenis_barangs['id'])
             ->sum('qty');
-        
+
         $sisa = $total_stock - $total_pakai;
         $status = "success";
         $msg = "Data berhasil diambil";

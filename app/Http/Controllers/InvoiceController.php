@@ -69,10 +69,24 @@ class InvoiceController extends Controller
                 ->select('invoices.*', 'tagihan.id as tagihan_id', 'tagihan.status as status_tagihan', 'tagihan.nominal as pembayaran', 'events.nama as nama', 'events.tanggal as tanggal', 'customers.nama_pelanggan', 'customers.sapaan', 'karyawans.nama as namaPIC')
                 ->get();
         }
-
+        $arrayTotalBayar = [];
+        foreach ($list_invoices as $invoice) {
+            $semua_tagihan = Tagihan::where('invoices_id', $invoice->id)
+                ->select(
+                    'tagihan.*'
+                )
+                ->get();
+            $total_bayar = 0;
+            foreach ($semua_tagihan as $tagihan) {
+                $total_bayar += $tagihan->nominal;
+            }
+            array_push($arrayTotalBayar, $total_bayar);
+        }
+        // dd($arrayTotalBayar);
         // dd($list_invoices);
         return view('common.datatagihan', [
             'list_invoices' => $list_invoices,
+            'arrayTotalBayar' => $arrayTotalBayar,
         ]);
     }
 
@@ -112,7 +126,7 @@ class InvoiceController extends Controller
             $tagihan->status = "Belum DP";
             $tagihan->save();
         }
-        
+
         $invoice->status = $request['status_baru'];
         $invoice->save();
 
@@ -154,7 +168,7 @@ class InvoiceController extends Controller
                 'kategori_barang.nama as nama_kategori',
             )
             ->get();
-        
+
         $divisi_yang_terlibat = [];
         foreach ($query_divisi_yang_terlibat as $itemBarang) {
             $kategori_barang = $itemBarang->nama_kategori;
@@ -253,7 +267,7 @@ class InvoiceController extends Controller
             ->get();
 
         // dd($detail_invoice);
-            
+
         $semua_kategori = Kategori::all();
         foreach ($semua_kategori as $kategori) {
             $kategori_array[$kategori->id] = [];
@@ -289,13 +303,12 @@ class InvoiceController extends Controller
         $hariSelesai = $tanggalSelesai->translatedFormat('d');
         $tanggalJadi = "";
         // dd($tanggalMulai);
-        
-        if($hariMulai == $hariSelesai && $bulanMulai == $bulanSelesai){
+
+        if ($hariMulai == $hariSelesai && $bulanMulai == $bulanSelesai) {
             $tanggalMulaiFormat = $tanggalMulai->translatedFormat('j');
             $tanggalSelesaiFormat = $tanggalSelesai->translatedFormat('j F Y');
             $tanggalJadi = "$tanggalSelesaiFormat";
-        }
-        else{
+        } else {
             $tanggalMulaiFormat = $tanggalMulai->translatedFormat('j');
             $tanggalSelesaiFormat = $tanggalSelesai->translatedFormat('j F Y');
             $tanggalJadi = "$tanggalMulaiFormat - $tanggalSelesaiFormat";
@@ -303,9 +316,24 @@ class InvoiceController extends Controller
 
         $tanggalJatuhTempo = Carbon::parse($detail_invoice[0]->tanggal_jatuh_tempo);
         $tanggalJatuhTempo->locale('id');
-        
+
         $tanggalJatuhTempo = $tanggalJatuhTempo->translatedFormat('j F Y');
-        // dd($tanggalJadi);
+
+        // Cek Tagihan
+        $tagihanData = Tagihan::where('invoices_id', $request['id'])
+            ->orderBy('tanggal_input', 'desc')
+            ->first();
+
+        $semua_tagihan = Tagihan::where('invoices_id', $request['id'])
+            ->select(
+                'tagihan.*'
+            )
+            ->get();
+        $total_bayar = 0;
+        foreach ($semua_tagihan as $tagihan) {
+            $total_bayar += $tagihan->nominal;
+        }
+        // dd($tagihanData);
 
         // dd($subtotal_map);
         $data = [
@@ -322,6 +350,8 @@ class InvoiceController extends Controller
             'kategori_map' => $kategori_map,
             'subtotal_map' => $subtotal_map,
             'grandtotal' => $grandtotal,
+            'tagihan_data' => $tagihanData,
+            'total_bayar' => $total_bayar,
         ];
 
         $pdf = PDF::loadView('common.cetak_tagihan', ['data' => $data]);
@@ -448,6 +478,7 @@ class InvoiceController extends Controller
         return view('common.bayar', [
             'invoice_data' => $invoice,
             'sisa' => $total_kurang,
+            'harus_bayar' => $invoice[0]->total_harga,
         ]);
     }
 
