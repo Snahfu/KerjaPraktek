@@ -60,6 +60,7 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::post('/delete-event', [App\Http\Controllers\EventController::class, 'destroy'])->name('common.deleteevent');
   Route::post('/update-event', [App\Http\Controllers\EventController::class, 'update'])->name('common.updateevent');
   Route::post('/get-stock', [App\Http\Controllers\EventController::class, 'getstock'])->name('common.getstock');
+  Route::post('/get-stock2', [App\Http\Controllers\EventController::class, 'getstock2'])->name('common.getstock2');
 
   //   INVOICE CONTROLLER
   Route::get('/data-invoice', [App\Http\Controllers\InvoiceController::class, 'tabelPenawaran'])->name('invoice.list');
@@ -121,6 +122,7 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
 
 // KARYAWAN CONTROLLER
 Route::get('/dashboard-sales', [App\Http\Controllers\KaryawanController::class, 'index'])->name('sales.dashboard');
+Route::post('/dashboard-sales-param', [App\Http\Controllers\KaryawanController::class, 'indexParameter'])->name('sales.dashboard.param');
 // Route::get('/reminder', [App\Http\Controllers\KaryawanController::class, 'jadwalreminder'])->name('karyawan.reminder');
 // Route::get('/tagihan', [App\Http\Controllers\KaryawanController::class, 'getTagihan'])->name('karyawan.tagihan');
 // Route::post('/detail-agenda', [App\Http\Controllers\KaryawanController::class, 'getData'])->name('karyawan.detailagenda');

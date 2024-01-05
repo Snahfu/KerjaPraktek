@@ -232,7 +232,7 @@
             }
         });
         $.ajax({
-            url: "{{ route('admin.indexParameter') }}",
+            url: "{{ route('sales.dashboard.param') }}",
             type: 'POST',
             data: {
                 'date': dateValue,

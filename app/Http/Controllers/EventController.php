@@ -135,6 +135,58 @@ class EventController extends Controller
         ), 200);
     }
 
+    public function getstock2(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'tanggal_in' => 'required',
+            'tanggal_out' => 'required',
+            'nama_jenis_barang' => 'required',
+        ]);
+        
+        if ($validator->fails()) {
+            $status = "failed";
+            $msg = "Terdapat kesalahan pada sistem";
+            return response()->json([
+                'status' => $status,
+                'msg' => $msg,
+            ], 200);
+        }
+        // dd($request['tanggal_in']);
+        $tanggal_in = Carbon::parse($request['tanggal_in']);
+        $tanggal_out = Carbon::parse($request['tanggal_out']);
+        $id_jenis_barangs = JenisBarang::where('nama', $request['nama_jenis_barang'])
+            ->first();
+
+        // Query database untuk mengambil id_item_barangs yang sesuai dengan rentang tanggal_in dan tanggal_out
+        $shippings_data = ShippingBarang::join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
+            // ->join('item_barang','item_barang.id','=','item_barang_has_item_shipping.item_barang_id')
+            ->whereBetween('item_shipping.tglJalan', [$tanggal_in, $tanggal_out])
+            ->get();
+        // dd($shippings_data);
+
+        // Inisialisasi Variabel Total
+        $total_pakai = 0;
+
+        // Menghitung total pakai
+        foreach ($shippings_data as $shipping) {
+            $qty = $shipping->qty;
+            $total_pakai += $qty;
+        }
+
+        // Stock yg Dimiliki pada Jenis Barang $request
+        $total_stock = Barang::where('jenis_barang_id', $id_jenis_barangs['id'])
+            ->sum('qty');
+        
+        $sisa = $total_stock - $total_pakai;
+        $status = "success";
+        $msg = "Data berhasil diambil";
+        return response()->json(array(
+            'status' => $status,
+            'msg' => $msg,
+            'sisa' => $sisa,
+        ), 200);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
