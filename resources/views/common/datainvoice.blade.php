@@ -69,22 +69,21 @@
                                                                 <i class="ti ti-transform fs-6"></i>
                                                                 <p class="mb-0 fs-3">Tolak</p>
                                                             </a>
-                                                        @else
-                                                            <a id="set_deal" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
-                                                                ? ''
-                                                                : 'onclick="updateStatus(' . "'Deal'" . ', ' . $invoice->id . ')"' !!}
-                                                                class="d-flex align-items-center gap-2 dropdown-item {{ $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai' ? 'bg-light' : 'bg-success' }}">
-                                                                <i class="ti ti-transform fs-6"></i>
-                                                                <p class="mb-0 fs-3">Deal</p>
-                                                            </a>
-                                                            <a id="set_batal" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
-                                                                ? ''
-                                                                : 'onclick="updateStatus(' . "'Batal'" . ', ' . $invoice->id . ')"' !!}
-                                                                class="d-flex align-items-center gap-2 dropdown-item {{ $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai' ? 'bg-light' : 'bg-danger' }}">
-                                                                <i class="ti ti-transform fs-6"></i>
-                                                                <p class="mb-0 fs-3">Batal</p>
-                                                            </a>
                                                         @endif
+                                                        <a id="set_deal" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
+                                                            ? ''
+                                                            : 'onclick="updateStatus(' . "'Deal'" . ', ' . $invoice->id . ')"' !!}
+                                                            class="d-flex align-items-center gap-2 dropdown-item {{ $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai' ? 'bg-light' : 'bg-success' }}">
+                                                            <i class="ti ti-transform fs-6"></i>
+                                                            <p class="mb-0 fs-3">Deal</p>
+                                                        </a>
+                                                        <a id="set_batal" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
+                                                            ? ''
+                                                            : 'onclick="updateStatus(' . "'Batal'" . ', ' . $invoice->id . ')"' !!}
+                                                            class="d-flex align-items-center gap-2 dropdown-item {{ $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai' ? 'bg-light' : 'bg-danger' }}">
+                                                            <i class="ti ti-transform fs-6"></i>
+                                                            <p class="mb-0 fs-3">Batal</p>
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </li>

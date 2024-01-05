@@ -22,8 +22,8 @@
                             <div class="card-body">
                                 <a href="" class="text-nowrap logo-img text-center d-block py-3 w-100">
                                     {{-- LOGO --}}
-                                    <img src="{{ asset('template/assets/images/logos/logo-rental-alat.png') }}" width="180"
-                                        alt="">
+                                    <img src="{{ asset('template/assets/images/logos/logo-rental-alat.png') }}"
+                                        width="180" alt="">
                                 </a>
                                 <form action="{{ route('daftar') }}" method="post">
                                     @csrf
@@ -51,10 +51,16 @@
                                         <label for="passwordInput" class="form-label">Password</label>
                                         <input type="password" class="form-control" id="passwordInput" name="password">
                                     </div>
-                                    {{-- <div class="mb-1">
-                    <label for="divisiInput" class="form-label">Divisi</label>
-                    <input type="text" class="form-control" id="divisiInput" name="divisi" aria-describedby="divisiHelp">
-                  </div> --}}
+                                    <div class="mb-2">
+                                        <label for="divisi" class="form-label">Divisi</label>
+                                        <select type="text" class="form-select" id="divisi" name="divisi">
+                                            <option value="2">Kepala Gudang</option>
+                                            <option value="4">Sales</option>
+                                            <option value="1">Driver</option>
+                                            <option value="3">Teknisi</option>
+                                        </select>
+                                    </div>
+                                    <br>
                                     <button type="submit"
                                         class="btn btn-primary w-100 py-8 fs-4 mb-2 rounded-2">Daftar</button>
                                 </form>
@@ -70,7 +76,7 @@
 
                                 <div class="d-flex align-items-center justify-content-center">
                                     <p class="fs-4 mb-0 fw-bold">Sudah memiliki akun?</p>
-                                    <a class="text-primary fw-bold ms-2" href="{{ route('login') }}">Masuk</a>
+                                    <a class="text-primary fw-bold ms-2" href="{{ route('loginPage') }}">Masuk</a>
                                 </div>
 
                             </div>

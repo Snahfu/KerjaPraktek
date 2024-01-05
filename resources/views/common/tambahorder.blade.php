@@ -241,6 +241,13 @@
                         </div>
                         <div class="col-12">
                             <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label text-danger" id="stocksisa"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-1 row">
                                 <div class="">
                                     <label class="col-form-label">Harga barang per item adalah (Dalam Rupiah)</label>
                                     <input type="text" class="form-control-sm" id="harga_per_barang"
@@ -297,6 +304,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary me-1" onclick="insertDatabase()">Submit</button>
+    <button type="submit" class="btn btn-primary me-1" onclick="test()">Tes Stock</button>
     <button type="reset" class="btn btn-outline-secondary" onclick="resetAll()">Reset</button>
 
     {{-- Modal Alert Begin --}}
@@ -483,6 +491,28 @@
             document.getElementById('jumlah_barang').value = 1;
             document.getElementById('harga_per_barang').value = hargaSewa;
             document.getElementById('harga_total').value = hargaSewa * 1;
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('common.getstock') }}",
+                type: 'POST',
+                data: {
+                    'tanggal_out': document.getElementById('loading-out-date').value,
+                    'tanggal_in': document.getElementById('loading-in-date').value,
+                    'id_jenis_barangs': id,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    document.getElementById('stocksisa').innerHTML = "Stock yang tersedia: "+response.sisa
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
         }
 
         // Melakukan update harga maupun subtotal jika terjadi perubahan pada input jumlah/harga/subtotal

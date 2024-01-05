@@ -112,6 +112,7 @@ class InvoiceController extends Controller
             $tagihan->status = "Belum DP";
             $tagihan->save();
         }
+        
         $invoice->status = $request['status_baru'];
         $invoice->save();
 

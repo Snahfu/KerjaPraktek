@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Validator;
 
 class KaryawanController extends Controller
 {
+    public function index(){
+
+    }
+    
     public function jadwalreminder()
     {
         $colorEvent = [
