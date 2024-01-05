@@ -14,9 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('role:1,2,3,4,5')->group(function () {
-  Route::get('/', function () {
-    return view('admin.index');
-  });
+  Route::get('/', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('loginPage');
   Route::get('/dashboard', function () {
     return view('karyawan.index');
   });
@@ -120,6 +118,13 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
   Route::get('/surat-jalan', [App\Http\Controllers\ShippingController::class, 'cetakSuratjalan'])->name('suratjalan');
 });
 
+// AUTH CONTROLLER
+Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('loginPage');
+Route::post('/loginAkun', [App\Http\Controllers\AuthController::class, 'login'])->name('masuk');
+Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegistrationForm'])->name('registerPage');
+Route::post('/registerAkun', [App\Http\Controllers\AuthController::class, 'register'])->name('daftar');
+Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
 // KARYAWAN CONTROLLER
 Route::get('/dashboard-sales', [App\Http\Controllers\KaryawanController::class, 'index'])->name('sales.dashboard');
 Route::post('/dashboard-sales-param', [App\Http\Controllers\KaryawanController::class, 'indexParameter'])->name('sales.dashboard.param');
@@ -168,12 +173,7 @@ Route::post('/dashboard-sales-param', [App\Http\Controllers\KaryawanController::
 // Route::post('/delete-event', [App\Http\Controllers\EventController::class, 'destroy'])->name('common.deleteevent');
 // Route::post('/update-event', [App\Http\Controllers\EventController::class, 'update'])->name('common.updateevent');
 
-// AUTH CONTROLLER
-Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('loginPage');
-Route::post('/loginAkun', [App\Http\Controllers\AuthController::class, 'login'])->name('masuk');
-Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegistrationForm'])->name('registerPage');
-Route::post('/registerAkun', [App\Http\Controllers\AuthController::class, 'register'])->name('daftar');
-Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
 
 
 // Route::get('/data-gudang', [App\Http\Controllers\GudangController::class, 'index'])->name('gudang.datagudang');
