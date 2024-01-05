@@ -21,13 +21,17 @@
                                 <th>Tanggal Acara</th>
                                 <th>Nama Client</th>
                                 <th>PIC</th>
-                                <th>Nominal Pembayaran</th>
+                                <th>Nominal Sudah Bayar</th>
+                                <th>Nominal Sisa</th>
                                 <th>Status Tagihan</th>
                                 {{-- Draft, Menunggu Persetujuan, Diproses, Diterima, Event Berlangsung, Selesai, Tagihan --}}
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                                $counter = 0;
+                            @endphp
                             @foreach ($list_invoices as $invoice)
                                 <tr>
                                     <td>{{ $invoice->id }}</td>
@@ -35,7 +39,9 @@
                                     <td>{{ $invoice->tanggal }}</td>
                                     <td>{{ $invoice->sapaan }} {{ $invoice->nama_pelanggan }}</td>
                                     <td>{{ $invoice->namaPIC }}</td>
-                                    <td>{{ $invoice->pembayaran }}</td>
+                                    {{-- Rp{{ number_format($harus_bayar, 0, ',', ',') }} --}}
+                                    <td>Rp{{ number_format($arrayTotalBayar[$counter], 0, ',',',') }}</td>
+                                    <td>Rp{{ number_format($invoice->total_harga,0,',',',') }}</td>
                                     <td>{{ $invoice->status_tagihan }}</td>
                                     <td>
                                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
@@ -62,20 +68,11 @@
                                         </ul>
                                     </td>
                                 </tr>
+                                @php
+                                    $counter+=1;
+                                @endphp
                             @endforeach
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>No Invoice</th>
-                                <th>Nama Acara</th>
-                                <th>Tanggal Acara</th>
-                                <th>Nama Client</th>
-                                <th>PIC</th>
-                                <th>Nominal Pembayaran</th>
-                                <th>Status Tagihan</th>
-                                <th>Action</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>
