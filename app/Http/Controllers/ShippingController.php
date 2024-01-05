@@ -358,47 +358,28 @@ class ShippingController extends Controller
             if(!$found) {
                 $acara = Event::find($request['id']);
                 $tanggal = $acara->tanggal;
-                // $jam_mulai_acara = "2023-12-31 10:00:00";
-                // $jam_selesai_acara = "2023-12-31 22:00:00";
-                // $list_barang = Barang::where("jenis_barang_id", "=", $ri->jenis_barang_invoices);
-                // $list_barang = DB::table('item_barang')
-                // ->leftJoin('item_barang_has_invoices', 'item_barang.id', '=', 'item_barang_has_invoices.item_barang_id')
-                // ->leftJoin('invoices', 'item_barang_has_invoices.invoices_id', '=', 'invoices.id')
-                // ->leftJoin('events', 'invoices.events_id', '=', 'events.id')
-                // ->where("jenis_barang_id", "=", $ri->jenis_barang_invoices)
-                // ->whereNotBetween('jam_mulai_acara', [$acara->jam_mulai_acara, $acara->jam_selesai_acara])
+                $jam_mulai_acara = "2023-12-31 10:00:00";
+                $jam_selesai_acara = "2023-12-31 22:00:00";
+                $list_barang = Barang::where("jenis_barang_id", "=", $ri->jenis_barang_invoices);
+                $list_barang = DB::table('item_barang')
+                ->leftJoin('item_barang_has_invoices', 'item_barang.id', '=', 'item_barang_has_invoices.item_barang_id')
+                ->leftJoin('invoices', 'item_barang_has_invoices.invoices_id', '=', 'invoices.id')
+                ->leftJoin('events', 'invoices.events_id', '=', 'events.id')
+                ->where("jenis_barang_id", "=", $ri->jenis_barang_invoices)
+                ->whereNotIn('tanggal', [$acara->tanggal, $acara->jam_selesai_acara])
+                // ->whereNotBetween('tanggal', [$acara->jam_mulai_acara, $acara->jam_selesai_acara])
                 // ->whereNotBetween('jam_selesai_acara', [$acara->jam_mulai_acara, $acara->jam_selesai_acara])
-                // // ->whereDate('jam_mulai_acara', '<', $jam_mulai_acara)
-                // // ->orWhereDate('jam_mulai_acara', '>', $jam_selesai_acara)
-                // // ->whereDate('jam_selesai_acara', '<', $jam_mulai_acara)
-                // // ->orWhereDate('jam_selesai_acara', '>', $jam_selesai_acara)
-                // // ->select('*')
-                // ->select('item_barang.id as id', 'item_barang.nama as nama', 'item_barang.type as type', 'item_barang.satuan as satuan', 'item_barang.tanggalBeli as tanggalBeli', 'item_barang.hargaBeli as hargaBeli', 'item_barang.jenis_barang_id as jenis_barang_id', 'events.id as idevent')
-                // ->get();
-                // dd($list_barang);
+                // ->whereDate('jam_mulai_acara', '<', $jam_mulai_acara)
+                // ->orWhereDate('jam_mulai_acara', '>', $jam_selesai_acara)
+                // ->whereDate('jam_selesai_acara', '<', $jam_mulai_acara)
+                // ->orWhereDate('jam_selesai_acara', '>', $jam_selesai_acara)
+                // ->select('*')
+                ->select('item_barang.id as id', 'item_barang.nama as nama', 'item_barang.type as type', 'item_barang.satuan as satuan', 'item_barang.tanggalBeli as tanggalBeli', 'item_barang.hargaBeli as hargaBeli', 'item_barang.jenis_barang_id as jenis_barang_id', 'events.id as idevent')
+                ->get();
+                dd($list_barang);
 
                 // $item_barang = Barang::where('jenis_barang_id', $ri->jenis_barang_invoices)->get();
 
-                // $list_barang = Barang::select('item_barang.id', 'item_barang.nama', 'events.tanggal')
-                // ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
-                // ->join('detail_invoice', 'jenis_barang.id', '=', 'detail_invoice.jenis_barang_id')
-                // ->join('invoices', 'detail_invoice.invoices_id', '=', 'invoices.id')
-                // ->join('events', 'invoices.events_id', '=', 'events.id')
-                // ->where('jenis_barang.id', $ri->jenis_barang_invoices)
-                // ->whereNotIn('item_barang.id', function ($query) use ($tanggal) {
-                //     $query->select('item_barang.id')
-                //         ->from('item_barang')
-                //         ->join('item_barang_has_item_shipping', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
-                //         ->join('item_shipping', 'item_barang_has_item_shipping.item_shipping_id', '=', 'item_shipping.id')
-                //         ->where('item_shipping.jenis', 'Kirim')
-                //         ->where(function ($subquery) use ($tanggal) {
-                //             $subquery->where('item_shipping.tglJalan', '>=', DB::raw("$tanggal"))
-                //                 ->where('item_shipping.tglJalan', '<', DB::raw("TIMESTAMPADD(SECOND, 1, '$tanggal')"));
-                //         });
-                // })
-                // ->get();
-
-                $ri->jenis_barang_invoices = 14;
                 $list_barang = Barang::select('item_barang.id', 'item_barang.nama', 'events.tanggal')
                 ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
                 ->join('detail_invoice', 'jenis_barang.id', '=', 'detail_invoice.jenis_barang_id')
@@ -418,9 +399,8 @@ class ShippingController extends Controller
                 })
                 ->get();
 
-                dd($list_barang);
-
                 // dd($list_barang);
+
                 $kirim[] = ["qty"=> $ri->total_qty_invoices, "idjenis" => $ri->jenis_barang_invoices, "jenis" => $ri->nama_jenis, "list_barang" => $list_barang, "type_barang" => $ri->type_barang];
 
                 // SELECT * FROM item_barang 

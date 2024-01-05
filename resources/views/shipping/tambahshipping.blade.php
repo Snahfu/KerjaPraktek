@@ -527,10 +527,10 @@
             var stringQuantityBarang = ``;
             for (var i = 0; i < arraySpesifikasiJson.length; i++) {
               if (arraySpesifikasiJson[i].length > 0) {
-                console.log(arraySpesifikasiJson);
                     stringHTML += `<tr><td colspan="2">${jenis_map[i]}</td><td colspan="1">Quantity: ${arraySpesifikasiJson[i][0].quantity}</td></tr>`
                     for (var j = 0; j < arraySpesifikasiJson[i].length; j++) {
                         listBarang = arraySpesifikasiJson[i][j].list_barang;
+                        console.log(arraySpesifikasiJson);
                         listBarang.forEach(barang => {
                           stringCheckboxBarang = "";
                           stringQuantityBarang = "";
