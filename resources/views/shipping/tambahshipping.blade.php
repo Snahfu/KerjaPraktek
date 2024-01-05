@@ -530,7 +530,7 @@
                     stringHTML += `<tr><td colspan="2">${jenis_map[i]}</td><td colspan="1">Quantity: ${arraySpesifikasiJson[i][0].quantity}</td></tr>`
                     for (var j = 0; j < arraySpesifikasiJson[i].length; j++) {
                         listBarang = arraySpesifikasiJson[i][j].list_barang;
-                        console.log(arraySpesifikasiJson);
+                        var k = 0;
                         listBarang.forEach(barang => {
                           stringCheckboxBarang = "";
                           stringQuantityBarang = "";
@@ -547,7 +547,7 @@
                               `
                               stringHTML +=
                                 `
-                                <tr id='barang_${i}_${j}'>
+                                <tr id='barang_${i}_${k}'>
                                     <td></td>
                                     <td class="col-sm-6">
                                       ${stringCheckboxBarang}
@@ -562,6 +562,7 @@
                                     </td>
                                 </tr>
                                 `
+                              k += 1;
                           } else {
                               $('#spek').css('display','')
                               stringCheckboxBarang += 
@@ -670,25 +671,30 @@
 
         // Function untuk simpan ke database
         function insertDatabase() {
+          var listBarang = [];
+          console.log(arraySpesifikasiJson);
             for (var i = 0; i < arraySpesifikasiJson.length; i++) {
               if (arraySpesifikasiJson[i].length > 0) {
-                    for (var j = 0; j < arraySpesifikasiJson[i].length; j++) {
+                    for (var j = 0; j < arraySpesifikasiJson[i][0].list_barang.length; j++) {
                         var tdList = $('#barang_' + i + "_" + j).find('td');
-                        if (arraySpesifikasiJson[i][j].type == "serial") {
+                        // console.log(tdList);
+                        if (arraySpesifikasiJson[i][0].type_barang == "serial") {
                           var isChecked = tdList[1].children[0].checked;
                           var listIdBarangNotChecked = [];
-                          if (!isChecked) {
+                          
+                          if (isChecked) {
+                            // console.log(tdList[1].children[0].value);
                             var idBarang = tdList[1].children[0].value;
                             var quantity = tdList[2].children[0].value;
-                            arraySpesifikasiJson[i][j].idbarang = idBarang;
-                            arraySpesifikasiJson[i][j].quantity = quantity;
+                            listBarang.push({idbarang: idBarang, quantity: quantity});
+                            // listBarang[i][j] = {quantity: quantity};
 
-                            listIdBarangNotChecked.push(idbarang);
+                            // listIdBarangNotChecked.push(idbarang);
 
                           }
-                          arraySpesifikasiJson[i] = arraySpesifikasiJson[i].filter(function(obj) {
+                          // arraySpesifikasiJson[i] = arraySpesifikasiJson[i].filter(function(obj) {
                               // return arraySpesifikasiJson[i][j].idbarang != ;
-                          });
+                          // });
                         }
                         // var tdList = $('#barang_' + i + "_" + j).find('td');
                         // var idBarang = tdList[1].children[0].value;
@@ -698,6 +704,7 @@
                     }
                 }
             }
+            console.log(listBarang)
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -712,7 +719,7 @@
                     'driver': parseInt(document.getElementById('driver').value),
                     'tglJalan': document.getElementById('tgl-event').value,
                     'notes': document.getElementById('notes').value,
-                    'listbarang': arraySpesifikasiJson,
+                    'listbarang': listBarang,
                 },
                 dataType: 'json',
                 success: function(response) {

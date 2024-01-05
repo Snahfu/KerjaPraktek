@@ -298,16 +298,23 @@ class ShippingController extends Controller
         $resultInvoices = DB::table('detail_invoice')
             ->join('invoices', 'invoices.id', '=', 'detail_invoice.invoices_id')
             ->join('jenis_barang', 'jenis_barang.id', '=', 'detail_invoice.jenis_barang_id')
-            ->join('item_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
-            ->select(
-                'detail_invoice.jenis_barang_id as jenis_barang_invoices',
-                DB::raw('SUM(detail_invoice.qty) as total_qty_invoices'),
-                'jenis_barang.nama as nama_jenis',
-                'item_barang.type as type_barang'
-            )
+            // ->join('item_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
             ->where('invoices.events_id',  $request['id']) // Specify the desired events_id here
             ->groupBy('detail_invoice.jenis_barang_id', 'jenis_barang.nama')
+            ->select(
+                'detail_invoice.jenis_barang_id as jenis_barang_invoices',
+                DB::raw('detail_invoice.qty as total_qty_invoices'),
+                'jenis_barang.nama as nama_jenis',
+                // 'item_barang.type as type_barang'
+            )
             ->get();
+
+          foreach($resultInvoices as $key => $ri) {
+            $type_barang = Barang::select("type")
+            ->where('jenis_barang_id', '=', $ri->jenis_barang_invoices)
+            ->first();
+            $resultInvoices[$key]->type_barang = $type_barang->type;
+          }
         // $resultInvoices = DB::table('item_barang_has_invoices')
         //         ->join('invoices', 'invoices.id', '=', 'item_barang_has_invoices.invoices_id')
         //         ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_invoices.item_barang_id')
@@ -344,7 +351,7 @@ class ShippingController extends Controller
         $list_barang = [];
         foreach ($resultInvoices as $item_barang_pada_invoices) {
             $item_barang = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->get();
-            $array_itemBarang = [];
+            // $array_itemBarang = [];
             foreach ($item_barang as $item) {
                 $pernah_shipping = ShippingBarang::where('item_barang_id', $item->id)->first();
 
@@ -375,6 +382,7 @@ class ShippingController extends Controller
                 "list_barang" => $list_barang,
                 "type_barang" => $item_barang_pada_invoices->type_barang
             ];
+            $list_barang = [];
         }
         
 
@@ -385,7 +393,6 @@ class ShippingController extends Controller
             'status' => $status,
             'msg' => $msg,
             'datas' => $kirim,
-            'array_itemBarang' => $array_itemBarang,
         ), 200);
     }
 
@@ -452,15 +459,13 @@ class ShippingController extends Controller
                 'tglJalan' => $request->input('tglJalan'),
             ]);
             $dataId = $shipping->id;
-
-            foreach ($request['listbarang'] as $jenis) {
-                foreach ($jenis as $barang) {
+            
+            foreach ($request['listbarang'] as $barang) {
                     $shippingBarang = new ShippingBarang();
                     $shippingBarang->item_shipping_id = $dataId;
                     $shippingBarang->item_barang_id = $barang['idbarang'];
                     $shippingBarang->qty = $barang['quantity'];
                     $shippingBarang->save();
-                }
             }
 
             DB::commit();
