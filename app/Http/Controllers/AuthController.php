@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Karyawan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,14 +20,17 @@ class AuthController extends Controller
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
-            
+
             $userlevel = Auth::user()->divisi_id;
-            // if ($userlevel === 5) {
-            //     return redirect('/dashboard-admin');
-            // } elseif ($userlevel !== 5) {
-            //     return redirect('/dashboard');
-            // }
-            return redirect('/dashboard-admin');
+            if ($userlevel == 2) {
+                return redirect('/dashboard-gudang');
+            } else if ($userlevel == 4) {
+                return redirect('/dashboard-sales');
+            } else if ($userlevel == 5) {
+                return redirect('/dashboard-admin');
+            } else {
+                return redirect('/dashboard-sales');
+            }
         }
 
         return redirect()->route('loginPage')->with('error', 'Login gagal. Periksa kembali email dan password.');
@@ -45,27 +49,34 @@ class AuthController extends Controller
             'nomortelepon' => 'required|string|max:255',
             'email' => 'required|string|email|unique:karyawans',
             'password' => 'required|string|min:6',
+            'divisi' => 'required',
         ]);
-    
+
         if ($validator->fails()) {
             return redirect('register')
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
-
-        $karyawan = \App\Models\Karyawan::create([
-            'userlevel' => 'sales',
-            'divisi_id' => 4,
-            'nama' => $request->input('nama'),
-            'username' => $request->input('username'),
-            'email' => $request->input('email'),
-            'nomer_telepon' => $request->input('nomortelepon'),
-            'password' =>  Hash::make($request->input('password')),
-        ]);
+        $karyawan = new Karyawan;
+        $karyawan->username = $request->input('username');
+        $karyawan->email = $request->input('email');
+        $karyawan->nama = $request->input('nama');
+        $karyawan->nomer_telepon = $request->input('nomortelepon');
+        $karyawan->divisi_id = $request->input('divisi');
+        $karyawan->password = Hash::make($request->input('password'));
+        $karyawan->save();
 
         Auth::login($karyawan);
-
-        return redirect('/dashboard-admin');
+        $userlevel = $karyawan->divisi_id;
+        if ($userlevel == 2) {
+            return redirect('/data-gudang');
+        } else if ($userlevel == 4) {
+            return redirect('/dashbord-sales');
+        } else if ($userlevel == 5) {
+            return redirect('/dashboard-admin');
+        } else {
+            return redirect('/dashbord-sales');
+        }
     }
 
     public function logout()

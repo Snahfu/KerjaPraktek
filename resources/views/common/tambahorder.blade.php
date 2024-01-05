@@ -48,7 +48,7 @@
                                 <div class="col-sm-9">
                                     <select class="form-select" id="client-name">
                                         @foreach ($semua_customer as $customer)
-                                            <option value="{{$customer->id}}">{{$customer->nama_pelanggan}}</option>
+                                            <option value="{{ $customer->id }}">{{ $customer->nama_pelanggan }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -62,7 +62,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="text" id="penyelenggara" class="form-control" name="penyelenggara"
-                                    placeholder="Nama Lembaga" />
+                                        placeholder="Nama Lembaga" />
                                 </div>
                             </div>
                         </div>
@@ -171,8 +171,7 @@
                                     <label class="col-form-label" for="budget">Budget</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <input type="number" id="budget" class="form-control"
-                                        name="budget" />
+                                    <input type="number" id="budget" class="form-control" name="budget" />
                                 </div>
                             </div>
                         </div>
@@ -183,11 +182,12 @@
                                     <label class="col-form-label" for="catatan">Catatan</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <input type="text" id="catatan" class="form-control"
-                                        name="catatan" />
+                                    <input type="text" id="catatan" class="form-control" name="catatan" />
                                 </div>
                             </div>
                         </div>
+
+                        <button class="btn btn-primary me-1" onclick="siapTambahBarang()">Konfirmasi</button>
                     </div>
                 </div>
             </div>
@@ -206,7 +206,7 @@
                                     <label class="col-form-label" for="kategori_barang">Kategori</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <select class="form-select" id="kategori_barang" onchange="updateBarang()">
+                                    <select class="form-select" id="kategori_barang" disabled onchange="updateBarang()">
                                         <option value="none" disabled selected> -- Pilih Kategori -- </option>
                                         @foreach ($kategori_map as $key => $nama)
                                             <option value="{{ $key }}">{{ $nama }}</option>
@@ -235,7 +235,15 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="number" value="1" min="1" id="jumlah_barang"
-                                        class="form-control" onchange="updateHarga()" />
+                                        class="form-control" disabled onchange="updateHarga()" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label text-danger" id="stocksisa"></label><label
+                                        class="col-form-label text-danger" id="stock"></label>
                                 </div>
                             </div>
                         </div>
@@ -243,7 +251,7 @@
                             <div class="mb-1 row">
                                 <div class="">
                                     <label class="col-form-label">Harga barang per item adalah (Dalam Rupiah)</label>
-                                    <input type="text" class="form-control-sm" id="harga_per_barang"
+                                    <input type="text" disabled class="form-control-sm" id="harga_per_barang"
                                         onchange="updateHarga()" />
                                 </div>
                             </div>
@@ -253,12 +261,11 @@
                                 <div class="">
                                     <label class="col-form-label">Subtotal barang item diatas adalah (Dalam
                                         Rupiah)</label>
-                                    <input type="text" class="form-control-sm" id="harga_total"
+                                    <input type="text" disabled class="form-control-sm" id="harga_total"
                                         onchange="updateHarga()" />
                                 </div>
                             </div>
                         </div>
-
 
                         <button type="submit" class="btn btn-primary me-1" onclick="tambahSpesifikasi()">Add</button>
                     </div>
@@ -288,7 +295,7 @@
                             </tr>
                         </thead>
                         <tbody id="data_table">
-                            
+
                         </tbody>
                     </table>
                 </div>
@@ -350,6 +357,14 @@
                                 <div class="col-sm-9">
                                     <input type="number" value="1" min="1" id="edit_jumlah_barang"
                                         class="form-control" onchange="editUpdateHarga()" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label text-danger">Stock yang tersedia: </label><label
+                                        class="col-form-label text-danger" id="stockupdate"></label>
                                 </div>
                             </div>
                         </div>
@@ -422,6 +437,21 @@
             }
         }
 
+        function siapTambahBarang() {
+            var inputDateTime = document.getElementById('loading-out-date').value;
+            var inputDateTime2 = document.getElementById('loading-in-date').value;
+            if(inputDateTime && inputDateTime2){
+                namaBarangElement = document.getElementById("kategori_barang")
+                jumlahBarangElement = document.getElementById("jumlah_barang")
+                hargaBarangElement = document.getElementById("harga_per_barang")
+                hargaTotalElement = document.getElementById("harga_total")
+                namaBarangElement.disabled = false;
+                jumlahBarangElement.disabled = false;
+                hargaBarangElement.disabled = false;
+                hargaTotalElement.disabled = false;
+            }
+        }
+
         // Melakukan update barang pada comboBox nama-barang
         function updateBarang() {
             var selectElement = document.getElementById('kategori_barang');
@@ -483,6 +513,29 @@
             document.getElementById('jumlah_barang').value = 1;
             document.getElementById('harga_per_barang').value = hargaSewa;
             document.getElementById('harga_total').value = hargaSewa * 1;
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('common.getstock') }}",
+                type: 'POST',
+                data: {
+                    'tanggal_out': document.getElementById('loading-out-date').value,
+                    'tanggal_in': document.getElementById('loading-in-date').value,
+                    'id_jenis_barangs': id,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    document.getElementById('stocksisa').innerHTML = "Stock yang tersedia: "
+                    document.getElementById('stock').innerHTML = response.sisa
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
         }
 
         // Melakukan update harga maupun subtotal jika terjadi perubahan pada input jumlah/harga/subtotal
@@ -518,19 +571,24 @@
             var jumlah = parseFloat(document.getElementById('jumlah_barang').value);
             var harga = parseFloat(document.getElementById('harga_per_barang').value);
             var subtotal = parseFloat(document.getElementById('harga_total').value);
+            var stock = parseFloat(document.getElementById('stock').innerHTML);
 
-            var spesifikasiBarang = {
-                idbarang: id,
-                nama: nama_barang,
-                kategori: kategori,
-                jumlah: jumlah,
-                harga: harga,
-                subtotal: subtotal
+            if (jumlah < stock) {
+                var spesifikasiBarang = {
+                    idbarang: id,
+                    nama: nama_barang,
+                    kategori: kategori,
+                    jumlah: jumlah,
+                    harga: harga,
+                    subtotal: subtotal
+                }
+
+                arraySpesifikasiJson[kategori - 1].push(spesifikasiBarang);
+                console.log(arraySpesifikasiJson);
+                updateTabel();
+            } else {
+                alertUpdate("Stock Tidak Tersedia", "error")
             }
-
-            arraySpesifikasiJson[kategori-1].push(spesifikasiBarang);
-            console.log(arraySpesifikasiJson);
-            updateTabel();
         }
 
         // Melakukan update UI pada tabel agar sesuai dengan tampilannya
@@ -591,7 +649,30 @@
             document.getElementById('edit_harga_total').value = subtotal
             document.getElementById('edit_nama_barang').value = namaBarang
             $('#btnPerbaruhi').attr('onclick', 'perbaruhiDataTabel(' + id + ')');
-            $('#editModal').modal('show');
+
+            // Get Stock
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('common.getstock2') }}",
+                type: 'POST',
+                data: {
+                    'tanggal_out': document.getElementById('loading-out-date').value,
+                    'tanggal_in': document.getElementById('loading-in-date').value,
+                    'nama_jenis_barang': namaBarang,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    document.getElementById('stockupdate').innerHTML = response.sisa
+                    $('#editModal').modal('show');
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
         }
 
         // Melakukan update harga maupun subtotal jika terjadi perubahan pada input jumlah/harga/subtotal pada edit modal
@@ -633,9 +714,16 @@
             var quantity = parseFloat(document.getElementById('edit_jumlah_barang').value);
             var price = parseFloat(document.getElementById('edit_harga_per_barang').value);
             var subtotal = parseFloat(document.getElementById('edit_harga_total').value);
-            updateArraySpesifikasiBarang(id, quantity, price, subtotal);
-            updateTabel();
-            $('#editModal').modal('hide');
+            var stock = parseFloat(document.getElementById('stockupdate').innerHTML);
+            if (quantity < stock) {
+                updateArraySpesifikasiBarang(id, quantity, price, subtotal);
+                updateTabel();
+                $('#editModal').modal('hide');
+            } else {
+                $('#editModal').modal('hide');
+                alertUpdate("Stock Tidak Tersedia", "error")
+            }
+
         }
 
         // Function untuk simpan ke database
@@ -677,7 +765,7 @@
                 success: function(response) {
                     // Kalau success clear data
                     alertUpdate(response.msg, response.status)
-                    if(response.status == "success"){
+                    if (response.status == "success") {
                         resetAll();
                     }
                 },
@@ -688,7 +776,7 @@
         }
 
         // Function untuk reset semua input
-        function resetAll(){
+        function resetAll() {
             $(':input').val('');
             $('#kategori_barang option[disabled]').prop('selected', true)
             $('#nama_barang').empty();

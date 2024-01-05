@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Agenda;
 use App\Models\Barang;
+use App\Models\Event;
+use App\Models\ItemDamage;
 use App\Models\JenisBarang;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,22 +20,82 @@ class BarangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function dashboard()
+    {
+        $user_id = Auth::user()->id;
+        $events = Event::whereYear('tanggal', '=', now('Y'))
+            ->whereMonth('tanggal', '=', now('m'))
+            ->where('PIC','=',$user_id)
+            ->get();
+
+        $jumlah_event = count($events);
+
+        $item_damage = ItemDamage::whereYear('damage_date','=', now('Y'))
+            ->whereMonth('damage_date','=',now('m'))
+            ->where('repair_status','=',"Proses")
+            ->get();
+        
+        $jumlah_rusak = count($item_damage);
+
+        $data = [
+            'jumlah_event' => $jumlah_event,
+            'jumlah_rusak' => $jumlah_rusak,
+        ];
+        return view('gudang.dashboard', ['data' => $data]);
+    }
+
+    public function dashboardParameter(Request $request)
+    {
+        $user_id = Auth::user()->id;
+        $date = $request['date'];
+        $date = explode('-', $date);
+        $year = $date[0];
+        $month = $date[1];
+        $events = Event::whereYear('tanggal', '=', $year)
+        ->whereMonth('tanggal', '=', $month)
+        ->where('PIC','=',$user_id)
+        ->get();
+
+        $jumlah_event = count($events);
+
+        $item_damage = ItemDamage::whereYear('damage_date','=', $year)
+            ->whereMonth('damage_date','=',$month)
+            ->where('repair_status','=',"Proses")
+            ->get();
+        
+        $jumlah_rusak = count($item_damage);
+        
+        $data = [
+          'jumlah_event' => $jumlah_event,
+          'jumlah_rusak' => $jumlah_rusak,
+        ];
+        $status = "success";
+        $msg = "Berhasil mengubah tanggal data";
+        return response()->json(array(
+            'status' => $status,
+            'msg' => $msg,
+            'data' => $data,
+        ), 200);
+    }
+
     public function index()
     {
         $barang = Barang::all();
 
         return view('gudang.datagudang', ['all_barang' => $barang]);
-      }
+    }
 
     public function task()
     {
         $userId = Auth::user()->id;
         $tasks = Agenda::where('karyawans_id', '=', $userId)->whereNull("selesai")->get();
-        
+
         return view('gudang.index', ["tasks" => $tasks]);
     }
 
-    public function doneTask(Request $request) {
+    public function doneTask(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
@@ -97,11 +159,11 @@ class BarangController extends Controller
             ], 200);
         }
         $nama = JenisBarang::select('nama')
-        ->find($request['jenis_barang_id']);
+            ->find($request['jenis_barang_id']);
 
         $total = Barang::select(DB::raw('COUNT(*) AS total'))
-        ->where('jenis_barang_id', '=', $request['jenis_barang_id'])
-        ->first();
+            ->where('jenis_barang_id', '=', $request['jenis_barang_id'])
+            ->first();
 
         $nama = $nama->nama . " - " . $total->total + 1;
 
@@ -142,29 +204,28 @@ class BarangController extends Controller
         }
 
         $count_jumlah_data = Barang::select(DB::raw('jenis_barang.nama as nama, COUNT(*) AS total'))
-        ->where('jenis_barang_id', '=', $request['jenis_barang_id'])
-        ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
-        ->first();
+            ->where('jenis_barang_id', '=', $request['jenis_barang_id'])
+            ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
+            ->first();
 
         $dataId = "";
         if ($request->type == "serial") {
-          $qty = $request['qty'];
-          $request_copy = $request;
-          $request_copy['qty'] = 1;
-          $request_copy['hargaBeli'] = $request_copy['hargaBeli'] / $qty;
-          for ($i=1; $i<=$qty; $i++) {
-            $request_copy['nama'] = $count_jumlah_data->nama . " - " . $count_jumlah_data->total + $i;
-            $barang = Barang::create($request_copy->all());
-            $id = $barang->id;
-            if ($i != $qty)
-              $dataId .= $id . ", ";
-            else
-              $dataId .= $id;
-          }
-        }
-        else {
-          $barang = Barang::create($request->all());
-          $dataId = $barang->id;
+            $qty = $request['qty'];
+            $request_copy = $request;
+            $request_copy['qty'] = 1;
+            $request_copy['hargaBeli'] = $request_copy['hargaBeli'] / $qty;
+            for ($i = 1; $i <= $qty; $i++) {
+                $request_copy['nama'] = $count_jumlah_data->nama . " - " . $count_jumlah_data->total + $i;
+                $barang = Barang::create($request_copy->all());
+                $id = $barang->id;
+                if ($i != $qty)
+                    $dataId .= $id . ", ";
+                else
+                    $dataId .= $id;
+            }
+        } else {
+            $barang = Barang::create($request->all());
+            $dataId = $barang->id;
         }
 
         $status = "success";
@@ -268,7 +329,7 @@ class BarangController extends Controller
     public function destroy(Request $request)
     {
         $barang = Barang::find($request['id']);
-        
+
         if ($barang) {
             $deleted = $barang->delete();
 

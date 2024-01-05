@@ -74,6 +74,8 @@ Route::middleware('role:4,5')->group(function () {
 
 Route::middleware('role:2,3,5')->group(function () {
   // GUDANG CONTROLLER
+  Route::get('/dashboard-gudang', [App\Http\Controllers\BarangController::class, 'dashboard'])->name('gudang.dashboard');
+  Route::post('/dashboard-gudang-param', [App\Http\Controllers\BarangController::class, 'dashboardParameter'])->name('gudang.dashboard.parameter');
   Route::get('/data-gudang', [App\Http\Controllers\BarangController::class, 'index'])->name('gudang.datagudang');
   Route::get('/gudang', [App\Http\Controllers\BarangController::class, 'task'])->name('gudang');
   Route::get('/tambah-gudang', [App\Http\Controllers\BarangController::class, 'create'])->name('tambahgudang');
@@ -162,13 +164,6 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
 // Route::get('/detail', function () {
 //     return view('common.detailorder');
 // });
-// // KARYAWAN CONTROLLER
-// Route::get('/reminder', [App\Http\Controllers\KaryawanController::class, 'jadwalreminder'])->name('karyawan.reminder');
-// Route::get('/tagihan', [App\Http\Controllers\KaryawanController::class, 'getTagihan'])->name('karyawan.tagihan');
-// Route::post('/detail-agenda', [App\Http\Controllers\KaryawanController::class, 'getData'])->name('karyawan.detailagenda');
-// Route::post('/delete-agenda', [App\Http\Controllers\KaryawanController::class, 'destroy'])->name('karyawan.deleteagenda');
-// Route::post('/update-agenda', [App\Http\Controllers\KaryawanController::class, 'update'])->name('karyawan.updateagenda');
-// Route::post('/tambah-agenda', [App\Http\Controllers\KaryawanController::class, 'store'])->name('karyawan.tambahagenda');
 
 // // ADMIN CONTROLLER
 // Route::get('/data-pelanggan', [App\Http\Controllers\AdminController::class, 'index_datapelanggan'])->name('admin.datapelanggan');
@@ -187,12 +182,7 @@ Route::middleware('role:1,2,3,4,5')->group(function () {
 // Route::post('/delete-event', [App\Http\Controllers\EventController::class, 'destroy'])->name('common.deleteevent');
 // Route::post('/update-event', [App\Http\Controllers\EventController::class, 'update'])->name('common.updateevent');
 
-// AUTH CONTROLLER
-Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('loginPage');
-Route::post('/loginAkun', [App\Http\Controllers\AuthController::class, 'login'])->name('masuk');
-Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegistrationForm'])->name('registerPage');
-Route::post('/registerAkun', [App\Http\Controllers\AuthController::class, 'register'])->name('daftar');
-Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
 
 
 // Route::get('/data-gudang', [App\Http\Controllers\GudangController::class, 'index'])->name('gudang.datagudang');
