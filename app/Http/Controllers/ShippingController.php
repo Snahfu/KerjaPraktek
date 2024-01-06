@@ -552,13 +552,17 @@ class ShippingController extends Controller
      */
     public function edit(Request $request)
     {
+        $userRole = Auth::user()->divisi_id;
+        if (!$userRole) {
+            abort(403);
+        }
         $shipping = Shipping::find($request->input('id'));
         // $shipping = Shipping::find(6);
         $karyawan = Karyawan::select('karyawans.id', 'karyawans.nama')
             ->join('divisi', 'karyawans.divisi_id', '=', 'divisi.id')
             ->where('divisi.nama', '=', 'Driver')
             ->get();
-        $event = Event::select('events.id', 'events.nama')
+        $event = Event::select('events.id', 'events.nama', 'events.lokasi','events.tanggal')
             ->distinct()
             ->join('invoices', 'events.id', '=', 'invoices.events_id')
             ->get();
@@ -567,6 +571,8 @@ class ShippingController extends Controller
             $array_jenis[$j->id] = [];
             $jenis_map[$j->id] = $j->nama;
         }
+
+        // dd($event);
         return view('shipping.editshipping', ['shipping' => $shipping, 'karyawan' => $karyawan, 'event' => $event, 'jenis_map' => $jenis_map, 'array_jenis' => $array_jenis]);
     }
 
@@ -621,6 +627,7 @@ class ShippingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'events_id' => 'required',
+            'id' => 'required',
             'jenis' => 'required|string',
             'driver' => 'required',
             'tglJalan' => 'required|date',
@@ -660,14 +667,22 @@ class ShippingController extends Controller
 
             ShippingBarang::where('item_shipping_id', $request->input('id'))->delete();
 
-            foreach ($request['listbarang'] as $jenis) {
-                foreach ($jenis as $barang) {
+            // foreach ($request['listbarang'] as $jenis) {
+            //     foreach ($jenis as $barang) {
+            //         $shippingBarang = new ShippingBarang();
+            //         $shippingBarang->item_shipping_id = $request->input('id');
+            //         $shippingBarang->item_barang_id = $barang['idbarang'];
+            //         $shippingBarang->qty = $barang['quantity'];
+            //         $shippingBarang->save();
+            //     }
+            // }
+            $dataId = $shipping->id;
+            foreach ($request['listbarang'] as $barang) {
                     $shippingBarang = new ShippingBarang();
-                    $shippingBarang->item_shipping_id = $request->input('id');
+                    $shippingBarang->item_shipping_id = $dataId;
                     $shippingBarang->item_barang_id = $barang['idbarang'];
                     $shippingBarang->qty = $barang['quantity'];
                     $shippingBarang->save();
-                }
             }
 
             DB::commit();

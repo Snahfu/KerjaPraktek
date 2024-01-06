@@ -14,7 +14,7 @@
                 <div class="row">
                   <div class="col-sm-6">
                       <input type="date"  id="tanggal" class="form-control"
-                          name="tanggal" />
+                          name="tanggal" onchange="changeDatePicker()" />
                   </div>
                   <div class="col-sm-1">
                     <a id="tanggalKemarin" class="btn btn-primary mb-3">Kemarin</a>
