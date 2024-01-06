@@ -109,7 +109,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="tanggal-acara" class="form-control"
-                                        name="tanggal-acara" />
+                                        name="tanggal-acara" onchange="updateTanggal()" />
                                 </div>
                             </div>
                         </div>
@@ -147,7 +147,8 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="event-end-date" class="form-control"
-                                        name="event-end-date" />
+                                        name="event-end-date" onchange="updateTanggalSelesai()" />
+                                    <label class="col-form-label" id="durasi-label"></label>
                                 </div>
                             </div>
                         </div>
@@ -440,7 +441,7 @@
         function siapTambahBarang() {
             var inputDateTime = document.getElementById('loading-out-date').value;
             var inputDateTime2 = document.getElementById('loading-in-date').value;
-            if(inputDateTime && inputDateTime2){
+            if (inputDateTime && inputDateTime2) {
                 namaBarangElement = document.getElementById("kategori_barang")
                 jumlahBarangElement = document.getElementById("jumlah_barang")
                 hargaBarangElement = document.getElementById("harga_per_barang")
@@ -782,6 +783,67 @@
             $('#nama_barang').empty();
             arraySpesifikasiJson = Object.values(@json($array_kategori));
             updateTabel();
+        }
+
+        //function otomatis on change tanggal acara
+        function updateTanggal() {
+            // Ambil nilai tanggal acara
+            var tanggalAcara = new Date(document.getElementById('tanggal-acara').value);
+
+            // Hitung tanggal loading in (tanggal acara - 10 jam)
+            var tanggalLoadingIn = new Date(tanggalAcara);
+            tanggalLoadingIn.setHours(tanggalAcara.getHours() - 10 + 7);
+            document.getElementById('loading-in-date').value = tanggalLoadingIn.toISOString().slice(0, -8);
+
+            // Tanggal acara mulai (sama dengan tanggal acara)
+            document.getElementById('event-start-date').value = document.getElementById('tanggal-acara').value;
+
+            // Tanggal acara selesai (tanggal acara + 8 jam)
+            var tanggalAcaraSelesai = new Date(tanggalAcara);
+            tanggalAcaraSelesai.setHours(tanggalAcara.getHours() + 8 + 7);
+            document.getElementById('event-end-date').value = tanggalAcaraSelesai.toISOString().slice(0, -8);
+
+            // Tanggal loading out (tanggal acara + 12 jam)
+            var tanggalLoadingOut = new Date(tanggalAcara);
+            tanggalLoadingOut.setHours(tanggalAcara.getHours() + 12 + 7);
+            document.getElementById('loading-out-date').value = tanggalLoadingOut.toISOString().slice(0, -8);
+
+            updateTanggalSelesai();
+        }
+
+        function updateTanggalSelesai() {
+            // Ambil nilai tanggal acara selesai
+            var tanggalAcaraSelesai = new Date(document.getElementById('event-end-date').value);
+
+            // Tanggal loading out (tanggal acara selesai + 4 jam)
+            var tanggalLoadingOut = new Date(tanggalAcaraSelesai);
+            tanggalLoadingOut.setHours(tanggalAcaraSelesai.getHours() + 4 + 7);
+            document.getElementById('loading-out-date').value = tanggalLoadingOut.toISOString().slice(0, -8);
+        }
+
+        function updateDurasiAcara() {
+            // Ambil nilai tanggal acara mulai dan tanggal acara selesai
+            var tanggalMulai = new Date(document.getElementById('event-start-date').value);
+            var tanggalSelesai = new Date(document.getElementById('event-end-date').value);
+
+            // Hitung durasi acara (tanggal acara selesai - tanggal acara mulai)
+            var durasiAcara = (tanggalSelesai - tanggalMulai) / (1000 * 60 * 60); // hasil dalam jam
+
+            // Tampilkan durasi acara di label tanggal acara selesai
+            document.getElementById('event-end-date').nextElementSibling.innerHTML = 'Durasi Acara : ' + durasiAcara + ' jam';
+        }
+
+        function updateTanggalSelesai() {
+            // Ambil nilai tanggal acara selesai
+            var tanggalAcaraSelesai = new Date(document.getElementById('event-end-date').value);
+
+            // Tanggal loading out (tanggal acara selesai + 4 jam)
+            var tanggalLoadingOut = new Date(tanggalAcaraSelesai);
+            tanggalLoadingOut.setHours(tanggalAcaraSelesai.getHours() + 4);
+            document.getElementById('loading-out-date').value = tanggalLoadingOut.toISOString().slice(0, -8);
+
+            // Hitung dan update durasi acara
+            updateDurasiAcara();
         }
     </script>
 @endsection
