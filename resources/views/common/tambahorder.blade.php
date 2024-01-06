@@ -5,6 +5,11 @@
 @endsection
 
 @section('content')
+    <style>
+        .error-label {
+            display: none;
+        }
+    </style>
     <section id="basic-horizontal-layouts">
         <div class="row">
             <div class="card">
@@ -122,9 +127,11 @@
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="loading-in-date" class="form-control"
                                         name="loading-in-date" />
+                                    <label class="col-form-label text-danger error-label" id="loading-in-error"></label>
                                 </div>
                             </div>
                         </div>
+
 
                         <!-- Tanggal Acara Mulai -->
                         <div class="col-12">
@@ -162,6 +169,7 @@
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="loading-out-date" class="form-control"
                                         name="loading-out-date" />
+                                    <label class="col-form-label text-danger error-label" id="loading-out-error"></label>
                                 </div>
                             </div>
                         </div>
@@ -441,18 +449,48 @@
         function siapTambahBarang() {
             var inputDateTime = document.getElementById('loading-out-date').value;
             var inputDateTime2 = document.getElementById('loading-in-date').value;
+
             if (inputDateTime && inputDateTime2) {
+                // Jika inputDateTime dan inputDateTime2 sudah terisi
                 namaBarangElement = document.getElementById("kategori_barang")
                 jumlahBarangElement = document.getElementById("jumlah_barang")
                 hargaBarangElement = document.getElementById("harga_per_barang")
                 hargaTotalElement = document.getElementById("harga_total")
+
+                // Mengaktifkan elemen yang sebelumnya dinonaktifkan
                 namaBarangElement.disabled = false;
                 jumlahBarangElement.disabled = false;
                 hargaBarangElement.disabled = false;
                 hargaTotalElement.disabled = false;
+
+                // Menyembunyikan pesan error jika sebelumnya ditampilkan
+                hideErrorLabel('loading-out-error');
+                hideErrorLabel('loading-in-error');
+            } else {
+                // Jika inputDateTime atau inputDateTime2 belum terisi
+                if (!inputDateTime) {
+                    // Menampilkan pesan error untuk loading-out-date
+                    showErrorLabel('loading-out-error', 'Tanggal Loading Out harus diisi terlebih dahulu.');
+                }
+
+                if (!inputDateTime2) {
+                    // Menampilkan pesan error untuk loading-in-date
+                    showErrorLabel('loading-in-error', 'Tanggal Loading In harus diisi terlebih dahulu.');
+                }
             }
         }
 
+        function showErrorLabel(labelId, errorMessage) {
+            var errorLabel = document.getElementById(labelId);
+            errorLabel.innerHTML = errorMessage;
+            errorLabel.style.display = 'block'; // Menampilkan label
+        }
+
+        function hideErrorLabel(labelId) {
+            var errorLabel = document.getElementById(labelId);
+            errorLabel.innerHTML = ''; // Menghapus teks error
+            errorLabel.style.display = 'none'; // Menyembunyikan label
+        }
         // Melakukan update barang pada comboBox nama-barang
         function updateBarang() {
             var selectElement = document.getElementById('kategori_barang');
@@ -805,20 +843,10 @@
 
             // Tanggal loading out (tanggal acara + 12 jam)
             var tanggalLoadingOut = new Date(tanggalAcara);
-            tanggalLoadingOut.setHours(tanggalAcara.getHours() + 12 + 7);
+            tanggalLoadingOut.setHours(tanggalAcara.getHours() + 12 +7);
             document.getElementById('loading-out-date').value = tanggalLoadingOut.toISOString().slice(0, -8);
 
             updateTanggalSelesai();
-        }
-
-        function updateTanggalSelesai() {
-            // Ambil nilai tanggal acara selesai
-            var tanggalAcaraSelesai = new Date(document.getElementById('event-end-date').value);
-
-            // Tanggal loading out (tanggal acara selesai + 4 jam)
-            var tanggalLoadingOut = new Date(tanggalAcaraSelesai);
-            tanggalLoadingOut.setHours(tanggalAcaraSelesai.getHours() + 4 + 7);
-            document.getElementById('loading-out-date').value = tanggalLoadingOut.toISOString().slice(0, -8);
         }
 
         function updateDurasiAcara() {
@@ -830,7 +858,8 @@
             var durasiAcara = (tanggalSelesai - tanggalMulai) / (1000 * 60 * 60); // hasil dalam jam
 
             // Tampilkan durasi acara di label tanggal acara selesai
-            document.getElementById('event-end-date').nextElementSibling.innerHTML = 'Durasi Acara : ' + durasiAcara + ' jam';
+            document.getElementById('event-end-date').nextElementSibling.innerHTML = 'Durasi Acara : ' + durasiAcara +
+                ' jam';
         }
 
         function updateTanggalSelesai() {
@@ -839,7 +868,7 @@
 
             // Tanggal loading out (tanggal acara selesai + 4 jam)
             var tanggalLoadingOut = new Date(tanggalAcaraSelesai);
-            tanggalLoadingOut.setHours(tanggalAcaraSelesai.getHours() + 4);
+            tanggalLoadingOut.setHours(tanggalAcaraSelesai.getHours() + 4+7);
             document.getElementById('loading-out-date').value = tanggalLoadingOut.toISOString().slice(0, -8);
 
             // Hitung dan update durasi acara
