@@ -303,7 +303,7 @@ class ShippingController extends Controller
             ->groupBy('detail_invoice.jenis_barang_id', 'jenis_barang.nama')
             ->select(
                 'detail_invoice.jenis_barang_id as jenis_barang_invoices',
-                DB::raw('detail_invoice.qty as total_qty_invoices'),
+                DB::raw('SUM(detail_invoice.qty) as total_qty_invoices'),
                 'jenis_barang.nama as nama_jenis',
                 // 'item_barang.type as type_barang'
             )
@@ -348,41 +348,88 @@ class ShippingController extends Controller
         $tanggal = $acara->tanggal;
 
         // dd($resultInvoices);
-        $list_barang = [];
-        foreach ($resultInvoices as $item_barang_pada_invoices) {
-            $item_barang = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->get();
-            // $array_itemBarang = [];
-            foreach ($item_barang as $item) {
-                $pernah_shipping = ShippingBarang::where('item_barang_id', $item->id)->first();
 
-                // Kalau belum pernah shipping lgsg masukan database
-                if ($pernah_shipping) {
-                    // Cek semua item shipping yang pernah dilakukan dan mengandung item_barang ini
-                    $history_shipping = ShippingBarang::where('item_barang.id', $item->id)
-                        ->join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
-                        ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
-                        ->where('item_shipping.jenis', '!=', 'Jemput')
-                        ->where('item_shipping.tglJalan', '<', $tanggal)
-                        ->get();
-                    // dd($history_shipping);
-                    if (!$history_shipping) {
-                        array_push($list_barang, $item);
+        if ($request['jenis'] == "kirim") {
+          $list_barang = [];
+          foreach ($resultInvoices as $item_barang_pada_invoices) {
+              $item_barang = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->get();
+              // $array_itemBarang = [];
+              $history_shipping = ShippingBarang::where()
+                          ->join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
+                          ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
+                          ->where('item_shipping.jenis', '!=', 'Jemput')
+                          ->where('item_shipping.tglJalan', '<', $tanggal)
+                          ->get();
+              foreach ($item_barang as $item) {
+                  $pernah_shipping = ShippingBarang::where('item_barang_id', $item->id)->first();
 
-                        // Tambahkan ke array
-                    }
-                } else {
-                    array_push($list_barang, $item);
-                }
-            }
-            // dd($item_barang_pada_invoices);
-            $kirim[] = [
-                "qty" => $item_barang_pada_invoices->total_qty_invoices,
-                "idjenis" => $item_barang_pada_invoices->jenis_barang_invoices,
-                "jenis" => $item_barang_pada_invoices->nama_jenis,
-                "list_barang" => $list_barang,
-                "type_barang" => $item_barang_pada_invoices->type_barang
-            ];
-            $list_barang = [];
+                  // Kalau belum pernah shipping lgsg masukan database
+                  if ($pernah_shipping) {
+                      // Cek semua item shipping yang pernah dilakukan dan mengandung item_barang ini
+                      $history_shipping = ShippingBarang::where('item_barang.id', $item->id)
+                          ->join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
+                          ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
+                          ->where('item_shipping.jenis', '!=', 'Jemput')
+                          ->where('item_shipping.tglJalan', '<', $tanggal)
+                          ->get();
+                      // dd($history_shipping);
+                      if (!$history_shipping) {
+                          array_push($list_barang, $item);
+
+                          // Tambahkan ke array
+                      }
+                  } else {
+                      array_push($list_barang, $item);
+                  }
+              }
+              // dd($item_barang_pada_invoices);
+              $kirim[] = [
+                  "qty" => $item_barang_pada_invoices->total_qty_invoices,
+                  "idjenis" => $item_barang_pada_invoices->jenis_barang_invoices,
+                  "jenis" => $item_barang_pada_invoices->nama_jenis,
+                  "list_barang" => $list_barang,
+                  "type_barang" => $item_barang_pada_invoices->type_barang
+              ];
+              $list_barang = [];
+          }
+        }
+
+        else {
+          $list_barang = [];
+          foreach ($resultInvoices as $item_barang_pada_invoices) {
+              $item_barang = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->get();
+              // $array_itemBarang = [];
+              foreach ($item_barang as $item) {
+                  $pernah_shipping = ShippingBarang::where('item_barang_id', $item->id)->first();
+
+                  // Kalau belum pernah shipping lgsg masukan database
+                  if ($pernah_shipping) {
+                      // Cek semua item shipping yang pernah dilakukan dan mengandung item_barang ini
+                      $history_shipping = ShippingBarang::where('item_barang.id', $item->id)
+                          ->join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
+                          ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
+                          ->where('item_shipping.jenis', '=', 'Jemput')
+                          ->get();
+                      dd($history_shipping);
+                      if ($history_shipping) {
+                          array_push($list_barang, $item);
+
+                          // Tambahkan ke array
+                      }
+                  } else {
+                      array_push($list_barang, $item);
+                  }
+              }
+              // dd($item_barang_pada_invoices);
+              $kirim[] = [
+                  "qty" => $item_barang_pada_invoices->total_qty_invoices,
+                  "idjenis" => $item_barang_pada_invoices->jenis_barang_invoices,
+                  "jenis" => $item_barang_pada_invoices->nama_jenis,
+                  "list_barang" => $list_barang,
+                  "type_barang" => $item_barang_pada_invoices->type_barang
+              ];
+              $list_barang = [];
+          }
         }
         
 
