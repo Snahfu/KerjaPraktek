@@ -455,7 +455,7 @@
                 success: function(response) {
                     $('#deleteModal').modal('hide');
                     alertUpdate(response.msg, response.status);
-                    var table = $('#listbarang').DataTable();
+                    var table = $('#listbarangbelum').DataTable();
                     table.row('#tr_'+id).remove().draw();
                 },
                 error: function(error) {

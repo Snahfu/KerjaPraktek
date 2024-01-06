@@ -410,7 +410,6 @@ class ShippingController extends Controller
                           ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
                           ->where('item_shipping.jenis', '=', 'Jemput')
                           ->get();
-                      dd($history_shipping);
                       if ($history_shipping) {
                           array_push($list_barang, $item);
 

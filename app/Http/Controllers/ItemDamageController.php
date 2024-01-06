@@ -29,8 +29,11 @@ class ItemDamageController extends Controller
         $item_damage = ItemDamage::where('user_servicer', '=', $user_id)
         ->whereNull('repair_date')
         ->get();
+        $item_repaired = ItemDamage::where('user_servicer', '=', $user_id)
+        ->whereNotNull('repair_date')
+        ->get();
 
-        return view('item-damage.dataItemDamageServicer', ['datas' => $item_damage]);
+        return view('item-damage.dataItemDamageServicer', ['datas' => $item_damage, 'datas2' =>$item_repaired]);
     }
 
     /**

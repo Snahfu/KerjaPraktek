@@ -29,7 +29,7 @@ class AuthController extends Controller
             } else if ($userlevel == 5) {
                 return redirect('/dashboard-admin');
             } else {
-                return redirect('/dashboard-sales');
+                return redirect('/dashboard-gudang');
             }
         }
 

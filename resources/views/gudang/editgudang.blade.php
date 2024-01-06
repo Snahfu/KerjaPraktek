@@ -14,6 +14,8 @@
                 <div class="card-body">
                     <div class="row">
                         <input type="hidden" name="id" id="id" value="{{ $barang->id }}">
+                        <input type="hidden" name="jenis_id" id="jenis_id" value="{{ $barang->jenis_barang_id }}">
+                        <input type="hidden" name="nama_awal" id="nama_awal" value="{{ $barang->nama }}">
                         <!-- Jenis Barang -->
                         <div class="col-12">
                             <div class="mb-1 row">
@@ -21,7 +23,7 @@
                                     <label class="col-form-label" for="jenis-barang">Jenis Barang</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <select class="form-select" id="jenis-barang">
+                                    <select class="form-select" id="jenis-barang" onchange="updateNama()">>
                                         @foreach ($jenis as $j)
                                             @if ($barang->jenis_barang_id == $j->id)
                                                 <option value="{{ $j->id }}" selected>{{ $j->nama }}
@@ -30,6 +32,33 @@
                                                 <option value="{{ $j->id }}">{{ $j->nama }}</option>
                                             @endif
                                         @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nama Barang -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="nama-barang">Nama Barang</label>
+                                </div>
+                                <div class="col-sm-9">
+                                  <input type="text" id="nama-barang" class="form-control" disabled name="nama-barang" value="{{ $barang->nama }}" />
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- Type Barang -->
+                        <div class="col-12">
+                            <div class="mb-1 row">
+                                <div class="col-sm-3">
+                                    <label class="col-form-label" for="type-barang">Type Barang</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <select class="form-select" id="type-barang">
+                                        <option value="batch" {{ ($barang->type == "batch") ? "selected" : "" }}>Batch</option>
+                                        <option value="serial" {{ ($barang->type == "serial") ? "selected" : "" }} >Serial</option>
                                     </select>
                                 </div>
                             </div>
@@ -57,13 +86,8 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <select class="form-select" id="satuan">
-                                        @if ($barang->satuan == "unit")
-                                            <option value="unit" selected>Unit</option>
-                                            <option value="set">Set</option>
-                                        @else
-                                            <option value="unit">Unit</option>
-                                            <option value="set" selected>Set</option>
-                                        @endif   
+                                        <option value="set" {{ ($barang->satuan == "set") ? "selected" : "" }} >Set</option>
+                                        <option value="unit" {{ ($barang->satuan == "unit") ? "selected" : "" }} >Unit</option>
                                     </select>
                                 </div>
                             </div>
@@ -160,6 +184,38 @@
             }
         }
 
+        // Melakukan update nama barang sesuai jenis barang yang dipilih jika terjadi perubahan pada jenis barang
+        function updateNama() {
+            var jenis_id = parseInt(document.getElementById('jenis_id').value);
+            var selected_id = parseInt(document.getElementById('jenis-barang').value);
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('getnama') }}",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'jenis_barang_id': parseInt(document.getElementById('jenis-barang').value),
+                },
+                success: function(response) {
+                    if(response.status == "success"){
+                        if(jenis_id == selected_id){
+                            document.getElementById('nama-barang').value = document.getElementById('nama_awal').value;
+                        }
+                        else{
+                            document.getElementById('nama-barang').value = response.data;
+                        }
+                    }
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
         // Melakukan update harga maupun subtotal jika terjadi perubahan pada input jumlah/harga/subtotal
         function updateHarga() {
             var quantity = parseInt(document.getElementById('quantity').value);
@@ -198,6 +254,8 @@
                     'satuan': document.getElementById('satuan').value,
                     'tanggalBeli': document.getElementById('tanggal-beli').value,
                     'hargaBeli': parseFloat(document.getElementById('harga_total').value),
+                    'nama': document.getElementById('nama-barang').value,
+                    'type': document.getElementById('type-barang').value,
                 },
                 success: function(response) {
                     alertUpdate(response.msg, response.status);

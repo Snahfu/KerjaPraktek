@@ -93,6 +93,77 @@
                 </div>
             </div>
         </div>
+        <div class="col-12">
+            <div class="card card-custom">
+                <div class="card-header border-bottom custom-header-color">
+                    <h4 class="card-title">Data Barang Rusak Sudah Diperbaiki</h4>
+                </div>
+                <div class="card-body h5 text-dark">
+                    <table class="table caption-top table-bordered table-striped table-hover table-responsive"
+                        id="listbarangsudah">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Tanggal Damage</th>
+                                <th>Tipe Damage</th>
+                                <th>Detail Damage</th>
+                                <th>Repair Status</th>
+                                <th>Repair Date</th>
+                                <th>Catatan Repair</th>
+                                <th>Estimasi Selesai</th>
+                                <th>User Pelapor</th>
+                                <th>Barang</th>
+                                <th>User Teknisi</th>
+                                <th>Perbaruhi Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($datas2 as $data)
+                              @if ($data->repair_date != null)
+                                @csrf
+                                <tr id="tr_{{ $data->id }}">
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $data->damage_date }}</td>
+                                    <td>{{ $data->damage_type }}</td>
+                                    <td>{{ $data->damage_details }}</td>
+                                    <td>{{ $data->repair_status }}</td>
+                                    <td>{{ $data->repair_date }}</td>
+                                    <td>{{ $data->repair_notes }}</td>
+                                    <td>{{ $data->estimated_completion }}</td>
+                                    <td>{{ $data->userReporter->nama }}</td>
+                                    <td>{{ $data->item_barang_id }}</td>
+                                    <td>{{ $data->userServicer->nama }}</td>
+                                    <td>
+                                        <a href="{{ route('editservicedamage', ['id' => $data->id]) }}" 
+                                            class="btn btn-sm btn-success">
+                                            <i class="ti ti-edit fs-6"></i>
+                                            <p class="mb-0 fs-3">Perbaruhi</p>
+                                        </a>
+                                    </td>
+                                </tr>
+                              @endif
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th>Tanggal Damage</th>
+                                <th>Tipe Damage</th>
+                                <th>Detail Damage</th>
+                                <th>Repair Status</th>
+                                <th>Repair Date</th>
+                                <th>Catatan Repair</th>
+                                <th>Estimasi Selesai</th>
+                                <th>User Pelapor</th>
+                                <th>Barang</th>
+                                <th>User Teknisi</th>
+                                <th>Perbaruhi Data</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- Begin Edit Modal --}}

@@ -310,6 +310,8 @@ class BarangController extends Controller
             'satuan' => $request->input('satuan'),
             'tanggalBeli' => $request->input('tanggalBeli'),
             'hargaBeli' => $request->input('hargaBeli'),
+            'type' => $request->input('type'),
+            'nama' => $request->input('nama'),
         ]);
 
         $status = "success";
