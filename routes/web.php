@@ -34,9 +34,11 @@ Route::middleware('role:4,5')->group(function () {
   Route::post('/dashboard-sales-param', [App\Http\Controllers\KaryawanController::class, 'indexParameter'])->name('sales.dashboard.param');
   Route::get('/event-list', [App\Http\Controllers\EventController::class, 'index'])->name('common.listevent');
   Route::get('/tambah-event', [App\Http\Controllers\EventController::class, 'create'])->name('common.index.tambahevent');
+  Route::get('/tambah-event2', [App\Http\Controllers\EventController::class, 'create2'])->name('common.index.tambahevent2');
   Route::post('/detail-event', [App\Http\Controllers\EventController::class, 'show'])->name('common.detailevent');
   Route::post('/get-barang', [App\Http\Controllers\EventController::class, 'get_barang'])->name('common.getbarang');
   Route::post('/tambah-event', [App\Http\Controllers\EventController::class, 'store'])->name('common.tambahevent');
+  Route::post('/tambah-event2', [App\Http\Controllers\EventController::class, 'store2'])->name('common.tambahevent2');
   Route::post('/delete-event', [App\Http\Controllers\EventController::class, 'destroy'])->name('common.deleteevent');
   Route::post('/update-event', [App\Http\Controllers\EventController::class, 'update'])->name('common.updateevent');
   Route::post('/get-stock', [App\Http\Controllers\EventController::class, 'getstock'])->name('common.getstock');
@@ -135,6 +137,7 @@ Route::middleware('role:2,3,5')->group(function () {
 });
 
 Route::get('/', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('loginPage');
+Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('loginPage2');
 Route::post('/loginAkun', [App\Http\Controllers\AuthController::class, 'login'])->name('masuk');
 Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegistrationForm'])->name('registerPage');
 Route::post('/registerAkun', [App\Http\Controllers\AuthController::class, 'register'])->name('daftar');

@@ -49,20 +49,29 @@
                                                             <i class="ti ti-file-text fs-6"></i>
                                                             <p class="mb-0 fs-3">Cetak</p>
                                                         </a>
-                                                        <a href="{{ route('invoice.detail', ['id' => $invoice->id]) }}"
-                                                            class="d-flex align-items-center gap-2 dropdown-item">
-                                                            <i class="ti ti-edit fs-6"></i>
-                                                            <p class="mb-0 fs-3">Edit</p>
-                                                        </a>
+                                                        @if ($invoice->status != "Deal")
+                                                            <a href="{{ route('invoice.detail', ['id' => $invoice->id]) }}"
+                                                                class="d-flex align-items-center gap-2 dropdown-item" >
+                                                                <i class="ti ti-edit fs-6"></i>
+                                                                <p class="mb-0 fs-3">Edit</p>
+                                                            </a>
+                                                        @else
+                                                            
+                                                            <a href="{{ route('common.index.tambahevent2', ['id' => $invoice->id]) }}"
+                                                                class="d-flex align-items-center gap-2 dropdown-item" >
+                                                                <i class="ti ti-edit fs-6"></i>
+                                                                <p class="mb-0 fs-3">Tambah Baru</p>
+                                                            </a>
+                                                        @endif
                                                         @if (Auth::user()->divisi_id == 5)
-                                                            <a id="set_setujui" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
+                                                            <a id="set_setujui_{{ $invoice->id }}" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
                                                                 ? ''
                                                                 : 'onclick="updateStatus(' . "'Disetujui'" . ', ' . $invoice->id . ')"' !!}
                                                                 class="d-flex align-items-center gap-2 dropdown-item text-dark {{ $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai' ? 'bg-light' : 'bg-success' }}">
                                                                 <i class="ti ti-transform fs-6"></i>
                                                                 <p class="mb-0 fs-3">Setujui</p>
                                                             </a>
-                                                            <a id="set_tolak" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
+                                                            <a id="set_tolak_{{ $invoice->id }}" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
                                                                 ? ''
                                                                 : 'onclick="updateStatus(' . "'Ditolak'" . ', ' . $invoice->id . ')"' !!}
                                                                 class="d-flex align-items-center gap-2 dropdown-item text-dark {{ $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai' ? 'bg-light' : 'bg-danger' }}">
@@ -70,14 +79,14 @@
                                                                 <p class="mb-0 fs-3">Tolak</p>
                                                             </a>
                                                         @endif
-                                                        <a id="set_deal" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
+                                                        <a id="set_deal_{{ $invoice->id }}" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
                                                             ? ''
                                                             : 'onclick="updateStatus(' . "'Deal'" . ', ' . $invoice->id . ')"' !!}
                                                             class="d-flex align-items-center gap-2 dropdown-item text-dark {{ $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai' ? 'bg-light' : 'bg-primary' }}">
                                                             <i class="ti ti-transform fs-6"></i>
                                                             <p class="mb-0 fs-3">Deal</p>
                                                         </a>
-                                                        <a id="set_batal" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
+                                                        <a id="set_batal_{{ $invoice->id }}" {!! $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai'
                                                             ? ''
                                                             : 'onclick="updateStatus(' . "'Batal'" . ', ' . $invoice->id . ')"' !!}
                                                             class="d-flex align-items-center gap-2 dropdown-item text-dark {{ $invoice->status == 'Deal' || $invoice->status == 'Batal' || $invoice->status == 'Selesai' ? 'bg-light' : 'bg-info' }}">
@@ -194,10 +203,10 @@
                 success: function(response) {
                     $('#td_status_' + id).html(status_baru);
                     if (status_baru == "Deal" || status_baru == "Batal" || status_baru == "Selesai") {
-                        const tombol_tolak = document.getElementById('set_tolak')
-                        const tombol_setujui = document.getElementById('set_setujui')
-                        const tombol_deal = document.getElementById('set_deal')
-                        const tombol_batal = document.getElementById('set_batal')
+                        const tombol_tolak = document.getElementById('set_tolak_' + id)
+                        const tombol_setujui = document.getElementById('set_setujui_' + id)
+                        const tombol_deal = document.getElementById('set_deal_' + id)
+                        const tombol_batal = document.getElementById('set_batal_' + id)
                         tombol_tolak.removeAttribute('onclick');
                         tombol_setujui.removeAttribute('onclick');
                         tombol_deal.removeAttribute('onclick');

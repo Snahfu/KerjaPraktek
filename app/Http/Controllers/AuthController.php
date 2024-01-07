@@ -12,6 +12,19 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
+        $login = Auth::user();
+        if($login){
+            $userlevel = $login->divisi_id;
+            if ($userlevel == 2) {
+                return redirect('/dashboard-gudang');
+            } else if ($userlevel == 4) {
+                return redirect('/dashboard-sales');
+            } else if ($userlevel == 5) {
+                return redirect('/dashboard-admin');
+            } else {
+                return redirect('/dashboard-gudang');
+            }
+        }
         return view('auth.login');
     }
 

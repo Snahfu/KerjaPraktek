@@ -49,6 +49,56 @@ class EventController extends Controller
         ]);
     }
 
+    public function create2(Request $request)
+    {
+        $userRole = Auth::user()->divisi_id;
+        if (!$userRole) {
+            abort(403);
+        }
+
+        $detail_invoice = EventJenis::join('invoices', 'invoices.id', '=', 'detail_invoice.invoices_id')
+            ->join('jenis_barang', 'jenis_barang.id', '=', 'detail_invoice.jenis_barang_id')
+            ->join('events', 'events.id', '=', 'invoices.events_id')
+            ->join('customers', 'customers.id', '=', 'events.customers_id')
+            ->where('detail_invoice.invoices_id', $request['id'])
+            ->select(
+                'events.*',
+                'jenis_barang.kategori_barang_id',
+                'jenis_barang.nama as nama_barang',
+                'detail_invoice.*',
+            )
+            ->get();
+
+        // dd($detail_invoice);
+
+        $semua_customer = Customer::all();
+        $semua_kategori = Kategori::all();
+        foreach ($semua_kategori as $kategori) {
+            $kategori_array[$kategori->id] = [];
+            $kategori_map[$kategori->id] = $kategori->nama;
+        }
+
+        $array_jenisKegiatan = [
+            "Wisuda",
+            "Ulang Tahun",
+            "Wedding",
+            "Meeting",
+            "Galla Dinner",
+            "Konser",
+            "Bazzar",
+            "Drama",
+        ];
+        return view('common.tambahorder2', [
+            'detail_invoices' => $detail_invoice,
+            'array_kategori' => $kategori_array,
+            'kategori_map' => $kategori_map,
+            'semua_customer' => $semua_customer,
+            'array_jenisKegiatan' => $array_jenisKegiatan,
+            'invoices_id' => $detail_invoice[0]->invoices_id,
+            'events_id' => $detail_invoice[0]->id,
+        ]);
+    }
+
     public function get_barang(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -237,6 +287,74 @@ class EventController extends Controller
                 'catatan' => $request->input('catatan'),
             ]);
             $dataId = $event->id;
+            $invoice = Invoice::create([
+                'events_id' => $dataId,
+                'tanggal_jatuh_tempo' => $request->input('tanggal'),
+                'total_harga' => 0,
+                'status' => "Penawaran",
+                'catatan' => "",
+            ]);
+            $invoice_id = $invoice->id;
+            $total_harga = 0;
+            foreach ($request['listbarang'] as $kategori) {
+                foreach ($kategori as $barang) {
+                    // EventJenis ini adalah Detail Invoice
+                    $detailBarang = new EventJenis();
+                    $detailBarang->invoices_id = $invoice_id;
+                    $detailBarang->jenis_barang_id = $barang['idbarang'];
+                    $detailBarang->qty = $barang['jumlah'];
+                    $detailBarang->harga_barang = $barang['harga'];
+                    $detailBarang->subtotal = $barang['subtotal'];
+                    $detailBarang->save();
+                    $total_harga += $barang['subtotal'];
+                }
+            }
+
+            $invoice->total_harga = $total_harga;
+            $invoice->save();
+
+            DB::commit();
+            $status = "success";
+            $msg = "Berhasil menambahkan data";
+            return response()->json(array(
+                'status' => $status,
+                'msg' => $msg,
+                'data' => $dataId,
+            ), 200);
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            $status = "failed";
+            return response()->json(array(
+                'status' => $status,
+                'msg' => $e->getMessage(),
+                'data' => $dataId,
+            ), 200);
+        }
+    }
+
+    public function store2(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'listbarang' => 'required',
+            'id_event' => 'required',
+            'tanggal' => 'required|date',
+        ]);
+
+        if ($validator->fails()) {
+            $status = "failed";
+            $msg = $validator->errors()->first();
+            return response()->json([
+                'status' => $status,
+                'msg' => $msg,
+            ], 200);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $dataId = $request->input('id_event');
             $invoice = Invoice::create([
                 'events_id' => $dataId,
                 'tanggal_jatuh_tempo' => $request->input('tanggal'),
