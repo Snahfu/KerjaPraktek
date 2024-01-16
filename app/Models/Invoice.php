@@ -17,9 +17,6 @@ class Invoice extends Model
         return $this->belongsTo(Event::class, 'events_id');
     }
 
-    public function invoiceBarang(){
-        return $this->hasMany(InvoiceBarang::class,'invoices_id');
-    }
     public function invoiceDetail(){
         return $this->hasMany(EventJenis::class,'invoices_id');
     }

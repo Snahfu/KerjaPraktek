@@ -2,17 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 Route::middleware('role:2,3,4,5')->group(function () {
   Route::get('/', function () {
     return view('admin.index');
@@ -23,9 +12,6 @@ Route::middleware('role:2,3,4,5')->group(function () {
   Route::get('/myprofile', [App\Http\Controllers\DashboardController::class, 'myprofile']);
   Route::get('/dashboard-admin', [App\Http\Controllers\DashboardController::class, 'index']);
   Route::post('/dashboard-admin-param', [App\Http\Controllers\DashboardController::class, 'indexParameter'])->name('admin.indexParameter');
-  // Route::get('/dashboard-admin', function () {
-  //     return view('admin.index');
-  // });
 });
 
 Route::middleware('role:4,5')->group(function () {
@@ -44,16 +30,6 @@ Route::middleware('role:4,5')->group(function () {
   Route::post('/get-stock', [App\Http\Controllers\EventController::class, 'getstock'])->name('common.getstock');
   Route::post('/get-stock2', [App\Http\Controllers\EventController::class, 'getstock2'])->name('common.getstock2');
 });
-
-// Route::middleware('role:4,5')->group(function () {
-//   // KARYAWAN CONTROLLER
-//   Route::get('/reminder', [App\Http\Controllers\KaryawanController::class, 'jadwalreminder'])->name('karyawan.reminder');
-//   Route::get('/tagihan', [App\Http\Controllers\KaryawanController::class, 'getTagihan'])->name('karyawan.tagihan');
-//   Route::post('/detail-agenda', [App\Http\Controllers\KaryawanController::class, 'getData'])->name('karyawan.detailagenda');
-//   Route::post('/delete-agenda', [App\Http\Controllers\KaryawanController::class, 'destroy'])->name('karyawan.deleteagenda');
-//   Route::post('/update-agenda', [App\Http\Controllers\KaryawanController::class, 'update'])->name('karyawan.updateagenda');
-//   Route::post('/tambah-agenda', [App\Http\Controllers\KaryawanController::class, 'store'])->name('karyawan.tambahagenda');
-// });
 
 Route::middleware('role:4,5')->group(function () {
   // ADMIN CONTROLLER
@@ -104,36 +80,6 @@ Route::middleware('role:2,3,4,5')->group(function () {
 });
 
 Route::middleware('role:2,3,5')->group(function () {
-  // ITEM DAMAGE CONTROLLER
-  Route::get('/data-damage', [App\Http\Controllers\ItemDamageController::class, 'index'])->name('damage.datadamage');
-  Route::get('/data-damage-servicer', [App\Http\Controllers\ItemDamageController::class, 'indexServicer'])->name('damage.datadamage-servicer');
-  Route::get('/tambah-damage', [App\Http\Controllers\ItemDamageController::class, 'create'])->name('tambahdamage');
-  Route::post('/tambah-damage', [App\Http\Controllers\ItemDamageController::class, 'store'])->name('storedamage');
-  Route::get('/edit-damage', [App\Http\Controllers\ItemDamageController::class, 'edit'])->name('editdamage');
-  Route::post('/update-damage', [App\Http\Controllers\ItemDamageController::class, 'update'])->name('updatedamage');
-  Route::get('/edit-service-damage', [App\Http\Controllers\ItemDamageController::class, 'editService'])->name('editservicedamage');
-  Route::post('/service-damage', [App\Http\Controllers\ItemDamageController::class, 'service'])->name('servicedamage');
-  Route::post('/delete-damage', [App\Http\Controllers\ItemDamageController::class, 'destroy'])->name('deletedamage');
-});
-
-Route::middleware('role:2,4,5')->group(function () {
-  // SHIPPING CONTROLLER
-  Route::get('/data-shipping', [App\Http\Controllers\ShippingController::class, 'index'])->name('shipping.datashipping');
-  Route::get('/tambah-shipping', [App\Http\Controllers\ShippingController::class, 'create'])->name('tambahshipping');
-  Route::post('/check-driver', [App\Http\Controllers\ShippingController::class, 'checkDriver'])->name('checkdriver');
-  Route::post('/get-barang-shipping', [App\Http\Controllers\ShippingController::class, 'getBarang'])->name('getbarangshipping');
-  Route::post('/get-list-barang-shipping', [App\Http\Controllers\ShippingController::class, 'getListBarang'])->name('getlistbarangshipping');
-  Route::get('/get-barang-keluar-get', [App\Http\Controllers\ShippingController::class, 'getBarangOut'])->name('getbarangoutget');
-  Route::post('/get-barang-keluar-post', [App\Http\Controllers\ShippingController::class, 'getBarangOut'])->name('getbarangoutpost');
-  Route::post('/tambah-shipping', [App\Http\Controllers\ShippingController::class, 'store'])->name('storeshipping');
-  Route::get('/edit-shipping', [App\Http\Controllers\ShippingController::class, 'edit'])->name('editshipping');
-  Route::post('/get-barang-edit-shipping', [App\Http\Controllers\ShippingController::class, 'getBarangEdit'])->name('getbarangeditshipping');
-  Route::post('/update-shipping', [App\Http\Controllers\ShippingController::class, 'update'])->name('updateshipping');
-  Route::post('/delete-shipping', [App\Http\Controllers\ShippingController::class, 'destroy'])->name('deleteshipping');
-  Route::get('/surat-jalan', [App\Http\Controllers\ShippingController::class, 'cetakSuratjalan'])->name('suratjalan');
-});
-
-Route::middleware('role:2,3,5')->group(function () {
 });
 
 Route::get('/', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('loginPage');
@@ -145,56 +91,5 @@ Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->n
 
 Route::middleware('role:1,2,3,4,5')->group(function () {
 
-  // Route::get('/tambah', function () {
-  //   return view('common.tambahorder');
-  // });
-  // Route::get('/tambah', [App\Http\Controllers\EventController::class, 'create'])->name('common.tambahorder');
 
-  // Route::get('/detail', function () {
-  //   return view('common.detailorder');
-  // });
 });
-
-
-
-// Route::get('/', function () {
-//     return view('admin.index');
-// });
-// Route::get('/dashboard', function () {
-//     return view('karyawan.index');
-// });
-// Route::get('/dashboard-admin', function () {
-//     return view('admin.index');
-// });
-// // Route::get('/tambah', function () {
-// //     return view('common.tambahorder');
-// // });
-// Route::get('/tambah', [App\Http\Controllers\EventController::class, 'create'])->name('common.tambahorder');
-// Route::get('/data-transaksi', function () {
-//     return view('common.datatransaksi');
-// });
-// Route::get('/detail', function () {
-//     return view('common.detailorder');
-// });
-
-// // ADMIN CONTROLLER
-// Route::get('/data-pelanggan', [App\Http\Controllers\AdminController::class, 'index_datapelanggan'])->name('admin.datapelanggan');
-// Route::get('/tambah-pelanggan', [App\Http\Controllers\AdminController::class, 'index_tambahpelanggan'])->name('admin.index.tambahpelanggan');
-// Route::post('/detail-pelanggan', [App\Http\Controllers\AdminController::class, 'detail'])->name('admin.detailpelanggan');
-// Route::post('/tambah-pelanggan', [App\Http\Controllers\AdminController::class, 'store'])->name('admin.tambahpelanggan');
-// Route::post('/delete-pelanggan', [App\Http\Controllers\AdminController::class, 'destroy'])->name('admin.deletepelanggan');
-// Route::post('/update-pelanggan', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.updatepelanggan');
-
-// // EVENT CONTORLLER
-// Route::get('/event-list', [App\Http\Controllers\EventController::class, 'index'])->name('common.listevent');
-// Route::get('/tambah-event', [App\Http\Controllers\EventController::class, 'create'])->name('common.index.tambahevent');
-// Route::post('/detail-event', [App\Http\Controllers\EventController::class, 'show'])->name('common.detailevent');
-// Route::post('/get-barang', [App\Http\Controllers\EventController::class, 'get_barang'])->name('common.getbarang');
-// Route::post('/tambah-event', [App\Http\Controllers\EventController::class, 'store'])->name('common.tambahevent');
-// Route::post('/delete-event', [App\Http\Controllers\EventController::class, 'destroy'])->name('common.deleteevent');
-// Route::post('/update-event', [App\Http\Controllers\EventController::class, 'update'])->name('common.updateevent');
-
-
-
-
-// Route::get('/data-gudang', [App\Http\Controllers\GudangController::class, 'index'])->name('gudang.datagudang');
