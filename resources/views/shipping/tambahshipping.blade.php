@@ -114,7 +114,7 @@
         </div>
         <h2 id="forNothing"></h2>
 
-        <div class="row detail-barang" id="spek">
+        {{-- <div class="row detail-barang" id="spek">
             <div class="card">
                 <div class="card-header border-bottom custom-header-color">
                     <h4 class="card-title">Spesifikasi Barang Shipping</h4>
@@ -147,11 +147,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </section>
     <!-- Basic Horizontal form layout section end -->
 
-    <div class="row detail-barang">
+    <div class="row detail-barang" id="tabel-barang">
         <div class="col-12">
             <div class="card card-custom">
                 <div class="card-header border-bottom custom-header-color">
@@ -362,9 +362,12 @@
                         let elementShow = document.getElementsByClassName('detail-barang');
 
                         if(jenis === "Kirim") {
-                            spek.style.display = '';
+                            // spek.style.display = '';
+                            // console.log(Object.keys(response.datas).length);
+
 
                             if(Object.keys(response.datas).length === 0) {
+                              // console.log("masuk");
                                 for (var i = 0; i < elementShow.length; i ++) {
                                     elementShow[i].style.display = 'none';
                                 }
@@ -378,22 +381,24 @@
                                 for (var i = 0; i < elementShow.length; i ++) {
                                     elementShow[i].style.display = '';
                                 }
-                                namaBarangElement = document.getElementById("barang")
-                                namaBarangElement.disabled = false;
-                                hapusOptionPadaSelect(namaBarangElement);
+                                // namaBarangElement = document.getElementById("barang")
+                                // namaBarangElement.disabled = false;
+                                // hapusOptionPadaSelect(namaBarangElement);
         
-                                var optionSelected = document.createElement('option');
-                                optionSelected.value = 'x~~'+ 0;
-                                optionSelected.text = "-- Pilih ID Barang --";
-                                optionSelected.disabled = true;
-                                optionSelected.selected = true;
-                                namaBarangElement.add(optionSelected);
+                                // var optionSelected = document.createElement('option');
+                                // optionSelected.value = 'x~~'+ 0;
+                                // optionSelected.text = "-- Pilih ID Barang --";
+                                // optionSelected.disabled = true;
+                                // optionSelected.selected = true;
+                                // namaBarangElement.add(optionSelected);
         
                                 for (var data in response.datas) {
-                                    var option = document.createElement('option');
-                                    option.value = response.datas[data].qty + '~~' + response.datas[data].idjenis + '~~' + response.datas[data].jenis + '~~' +  response.datas[data].type_barang,
-                                    option.text = response.datas[data].jenis;
-                                    namaBarangElement.add(option);
+                                    // if (response.datas[data].type_barang == "batch") {
+                                    //   var option = document.createElement('option');
+                                    //   option.value = response.datas[data].qty + '~~' + response.datas[data].idjenis + '~~' + response.datas[data].jenis + '~~' +  response.datas[data].type_barang,
+                                    //   option.text = response.datas[data].jenis;
+                                    //   namaBarangElement.add(option);
+                                    // }
 
                                     // Isi tabel detail barang
                                     var spesifikasiBarang = {
@@ -410,8 +415,9 @@
                                 updateTabel();
                             }
                         } else {
-                            spek.style.display = 'none';
+                            // spek.style.display = 'none';
 
+                            console.log(Object.keys(response.datas).length);
                             if(Object.keys(response.datas).length === 0) {
                                 for (var i = 0; i < elementShow.length; i ++) {
                                     elementShow[i].style.display = 'none';
@@ -420,6 +426,7 @@
                                 var h2 = document.getElementById('forNothing');
                                 h2.textContent = "Tidak ada barang untuk dijemput";
                             } else {
+                                document.getElementById('tabel-barang').style.display = '';
                                 for (var i = 1; i < elementShow.length; i ++) {
                                     elementShow[i].style.display = '';
                                 }
@@ -535,7 +542,7 @@
                           stringCheckboxBarang = "";
                           stringQuantityBarang = "";
                           if (arraySpesifikasiJson[i][j].type_barang == "serial") {
-                              $('#spek').css('display','none')
+                              // $('#spek').css('display','none')
                               stringCheckboxBarang += 
                               `
                               <input type="checkbox" id="chckbx${barang.id}" name="chckbx${barang.id}" value="${barang.id}">
@@ -564,7 +571,7 @@
                                 `
                               k += 1;
                           } else {
-                              $('#spek').css('display','')
+                              // $('#spek').css('display','')
                               stringCheckboxBarang += 
                               `
                               ${barang.nama}

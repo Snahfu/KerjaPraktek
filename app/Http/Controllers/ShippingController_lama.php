@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\Event;
+use App\Models\Invoice;
 use App\Models\InvoiceBarang;
 use App\Models\JenisBarang;
 use App\Models\Karyawan;
@@ -305,17 +306,16 @@ class ShippingController extends Controller
                 'detail_invoice.jenis_barang_id as jenis_barang_invoices',
                 DB::raw('SUM(detail_invoice.qty) as total_qty_invoices'),
                 'jenis_barang.nama as nama_jenis',
-                'invoices.events_id as id',
                 // 'item_barang.type as type_barang'
             )
             ->get();
 
-        foreach ($resultInvoices as $key => $ri) {
+          foreach($resultInvoices as $key => $ri) {
             $type_barang = Barang::select("type")
-                ->where('jenis_barang_id', '=', $ri->jenis_barang_invoices)
-                ->first();
+            ->where('jenis_barang_id', '=', $ri->jenis_barang_invoices)
+            ->first();
             $resultInvoices[$key]->type_barang = $type_barang->type;
-        }
+          }
         // $resultInvoices = DB::table('item_barang_has_invoices')
         //         ->join('invoices', 'invoices.id', '=', 'item_barang_has_invoices.invoices_id')
         //         ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_invoices.item_barang_id')
@@ -349,147 +349,94 @@ class ShippingController extends Controller
         $tanggal = $acara->tanggal;
 
         // dd($resultInvoices);
-        
-        if ($request['jenis'] == "Kirim") {
-            $list_barang = [];
-            foreach ($resultInvoices as $item_barang_pada_invoices) {
-                
-                $item_barang = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->get();
-                // $item_lama = Barang::SELECT(DB::raw('item_barang.*'))
-                //     ->join('item_barang_has_item_shipping', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
-                //     ->join('item_shipping ON item_barang_has_item_shipping.item_shipping_id', '=', 'item_shipping.id')
-                //     ->join('events', 'item_shipping.events_id', '=', 'events.id')
-                //     ->where('events.id', '=', '11')
-                //     ->whereNotNull('item_barang_has_item_shipping.qty')
-                //     ->get();
-                // foreach($item_barang as $ib) {
-                //     foreach($item_lama as $il) {
-                //         if ($ib->id == $il->id) {
-                //             $ib->qty = $ib->qty - $ib->qty;
-                //         }
-                //     }
-                // }
-                // $array_itemBarang = [];
-                foreach ($item_barang as $item) {
+
+        if ($request['jenis'] == "kirim") {
+          $list_barang = [];
+          foreach ($resultInvoices as $item_barang_pada_invoices) {
+              $item_barang = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->get();
+              // $array_itemBarang = [];
+              $history_shipping = ShippingBarang::where()
+                          ->join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
+                          ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
+                          ->where('item_shipping.jenis', '!=', 'Jemput')
+                          ->where('item_shipping.tglJalan', '<', $tanggal)
+                          ->get();
+              foreach ($item_barang as $item) {
+                  $pernah_shipping = ShippingBarang::where('item_barang_id', $item->id)->first();
+
+                  // Kalau belum pernah shipping lgsg masukan database
+                  if ($pernah_shipping) {
+                      // Cek semua item shipping yang pernah dilakukan dan mengandung item_barang ini
+                      $history_shipping = ShippingBarang::where('item_barang.id', $item->id)
+                          ->join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
+                          ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
+                          ->where('item_shipping.jenis', '!=', 'Jemput')
+                          ->where('item_shipping.tglJalan', '<', $tanggal)
+                          ->get();
+                      // dd($history_shipping);
+                      if (!$history_shipping) {
+                          array_push($list_barang, $item);
+
+                          // Tambahkan ke array
+                      }
+                  } else {
+                      array_push($list_barang, $item);
+                  }
+              }
+              // dd($item_barang_pada_invoices);
+              $kirim[] = [
+                  "qty" => $item_barang_pada_invoices->total_qty_invoices,
+                  "idjenis" => $item_barang_pada_invoices->jenis_barang_invoices,
+                  "jenis" => $item_barang_pada_invoices->nama_jenis,
+                  "list_barang" => $list_barang,
+                  "type_barang" => $item_barang_pada_invoices->type_barang
+              ];
+              $list_barang = [];
+          }
+        }
+
+        else {
+          $list_barang = [];
+          foreach ($resultInvoices as $item_barang_pada_invoices) {
+              $item_barang = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->get();
+              // $array_itemBarang = [];
+              foreach ($item_barang as $item) {
+                  $invoice = Invoice::where('events_id',  $request['id'])
+                  ->select('id')
+                  ->get();
+                  $list_id_invoice = $invoice->id;
+                  foreach ($list_id_invoice as $key => $id_invoice) {
                     $pernah_shipping = ShippingBarang::where('item_barang_id', $item->id)->first();
-                    
+
                     // Kalau belum pernah shipping lgsg masukan database
                     if ($pernah_shipping) {
                         // Cek semua item shipping yang pernah dilakukan dan mengandung item_barang ini
                         $history_shipping = ShippingBarang::where('item_barang.id', $item->id)
                             ->join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
                             ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
-                            // ->join('events', 'events.id', '=', 'item_shipping.events_id')
-                            ->where('item_shipping.jenis', '!=', 'Jemput')
-                            // ->where('jam_mulai_acara', '<', $tanggal)
-                            // ->where('jam_selesai_acara', '>', $tanggal)
-                            ->where('tglJalan', '>', $tanggal)
+                            ->where('item_shipping.jenis', '=', 'Jemput')
                             ->get();
-                        // dd($history_shipping);
-                        if (!$history_shipping) {
+                        if ($history_shipping) {
                             array_push($list_barang, $item);
+
                             // Tambahkan ke array
                         }
-                    } else {
-                        array_push($list_barang, $item);
                     }
-                }
-                // dd($item_barang_pada_invoices);
-                $semua_shipping_pada_event_tertentu = Shipping::where('events_id', $request['id'])
-                // ->where('jenis', '=', "Kirim")
-                ->get();
-                $list_jenis = [];
-                foreach ($semua_shipping_pada_event_tertentu as $shipping_data) {
-                    $semua_item_barang_dari_shipping = ShippingBarang::where('item_shipping_id', $shipping_data->id)
-                        ->get();
-                    foreach ($semua_item_barang_dari_shipping as $item_barang) {
-                        $id_jenis = Barang::find($item_barang->item_barang_id)->jenis->id;
-                        if (isset($list_jenis[$id_jenis])) {
-                          $list_jenis[$id_jenis] += $item_barang->qty;
-                        } else {
-                          $list_jenis[$id_jenis] = $item_barang->qty;
-                        }
-                    }
-                }
-                if (isset($list_jenis[$item_barang_pada_invoices->jenis_barang_invoices])) {
-                  $quantity = $item_barang_pada_invoices->total_qty_invoices - $list_jenis[$item_barang_pada_invoices->jenis_barang_invoices];
-                  if ($quantity > 0) {
-                    $kirim[] = [
-                        "qty" => $quantity,
-                        "idjenis" => $item_barang_pada_invoices->jenis_barang_invoices,
-                        "jenis" => $item_barang_pada_invoices->nama_jenis,
-                        "list_barang" => $list_barang,
-                        "type_barang" => $item_barang_pada_invoices->type_barang
-                    ];
-                    $list_barang = [];
                   }
-                } else {
-                  $kirim[] = [
-                      "qty" => $item_barang_pada_invoices->total_qty_invoices,
-                      "idjenis" => $item_barang_pada_invoices->jenis_barang_invoices,
-                      "jenis" => $item_barang_pada_invoices->nama_jenis,
-                      "list_barang" => $list_barang,
-                      "type_barang" => $item_barang_pada_invoices->type_barang
-                  ];
-                  $list_barang = [];
-                }
-            }
-        } else {
-          $kirim_dummy = [];
-            $list_barang = [];
-            // dd($resultInvoices);
-            $semua_shipping_pada_event_tertentu = Shipping::where('events_id', $request['id'])
-                // ->where('jenis', '=', "Kirim")
-                ->get();
-            $list_jenis = [];
-            foreach ($semua_shipping_pada_event_tertentu as $shipping_data) {
-                $semua_item_barang_dari_shipping = ShippingBarang::where('item_shipping_id', $shipping_data->id)
-                    ->get();
-                foreach ($semua_item_barang_dari_shipping as $item_barang) {
-                    $id_jenis = Barang::find($item_barang->item_barang_id)->jenis->id;
-                    if (isset($list_jenis[$id_jenis])) {
-                      $list_jenis[$id_jenis] += $item_barang->qty;
-                    } else {
-                      $list_jenis[$id_jenis] = $item_barang->qty;
-                    }
-                }
-            }
-            $arrayItemBarangPadaEventTertentu = [];
-            foreach ($semua_shipping_pada_event_tertentu as $shipping_data) {
-                $semua_item_barang_dari_shipping = ShippingBarang::where('item_shipping_id', $shipping_data->id)
-                    ->get();
-                foreach ($semua_item_barang_dari_shipping as $item_barang) {
-                    array_push($arrayItemBarangPadaEventTertentu, $item_barang);
-                }
-            }
-
-            foreach ($resultInvoices as $item_barang_pada_invoices) {
-                $kirim_dummy[] = [
-                    "qty" => $item_barang_pada_invoices->total_qty_invoices,
-                    "idjenis" => $item_barang_pada_invoices->jenis_barang_invoices,
-                    "jenis" => $item_barang_pada_invoices->nama_jenis,
-                    "list_barang" => [],
-                    "type_barang" => $item_barang_pada_invoices->type_barang
-                ];
-            }
-
-            foreach ($arrayItemBarangPadaEventTertentu as $spesifik_item_barang) {
-                $data_item_barang = Barang::where('id', $spesifik_item_barang->item_barang_id)->first();
-                foreach ($kirim_dummy as $key => $jenis) {
-                    if ($data_item_barang->jenis_barang_id == $jenis["idjenis"]) {
-                        $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
-                        // $kirim[$key]["quantity"][] = ;
-                    }
-                }
-            }
-
-            foreach ($kirim_dummy as $key => $dummy) {
-              if (count($dummy['list_barang']) != 0) {
-                $kirim[] = $kirim_dummy[$key];
+                  
               }
-            }
+              // dd($item_barang_pada_invoices);
+              $kirim[] = [
+                  "qty" => $item_barang_pada_invoices->total_qty_invoices,
+                  "idjenis" => $item_barang_pada_invoices->jenis_barang_invoices,
+                  "jenis" => $item_barang_pada_invoices->nama_jenis,
+                  "list_barang" => $list_barang,
+                  "type_barang" => $item_barang_pada_invoices->type_barang
+              ];
+              $list_barang = [];
+          }
         }
-
+        
 
         // dd($kirim);
         $status = "success";
@@ -564,13 +511,13 @@ class ShippingController extends Controller
                 'tglJalan' => $request->input('tglJalan'),
             ]);
             $dataId = $shipping->id;
-
+            
             foreach ($request['listbarang'] as $barang) {
-                $shippingBarang = new ShippingBarang();
-                $shippingBarang->item_shipping_id = $dataId;
-                $shippingBarang->item_barang_id = $barang['idbarang'];
-                $shippingBarang->qty = $barang['quantity'];
-                $shippingBarang->save();
+                    $shippingBarang = new ShippingBarang();
+                    $shippingBarang->item_shipping_id = $dataId;
+                    $shippingBarang->item_barang_id = $barang['idbarang'];
+                    $shippingBarang->qty = $barang['quantity'];
+                    $shippingBarang->save();
             }
 
             DB::commit();
@@ -621,7 +568,7 @@ class ShippingController extends Controller
             ->join('divisi', 'karyawans.divisi_id', '=', 'divisi.id')
             ->where('divisi.nama', '=', 'Driver')
             ->get();
-        $event = Event::select('events.id', 'events.nama', 'events.lokasi', 'events.tanggal')
+        $event = Event::select('events.id', 'events.nama', 'events.lokasi','events.tanggal')
             ->distinct()
             ->join('invoices', 'events.id', '=', 'invoices.events_id')
             ->get();
@@ -737,11 +684,11 @@ class ShippingController extends Controller
             // }
             $dataId = $shipping->id;
             foreach ($request['listbarang'] as $barang) {
-                $shippingBarang = new ShippingBarang();
-                $shippingBarang->item_shipping_id = $dataId;
-                $shippingBarang->item_barang_id = $barang['idbarang'];
-                $shippingBarang->qty = $barang['quantity'];
-                $shippingBarang->save();
+                    $shippingBarang = new ShippingBarang();
+                    $shippingBarang->item_shipping_id = $dataId;
+                    $shippingBarang->item_barang_id = $barang['idbarang'];
+                    $shippingBarang->qty = $barang['quantity'];
+                    $shippingBarang->save();
             }
 
             DB::commit();
