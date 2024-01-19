@@ -154,8 +154,8 @@
     <div class="row detail-barang" id="tabel-barang">
         <div class="col-12">
             <div class="card card-custom">
-                <div class="card-header border-bottom custom-header-color">
-                    <h4 class="card-title">Table Detail Barang</h4>
+                <div class="card-header border-bottom custom-header-color" id="headerCheckBox">
+                  <h4 class="card-title" style="float: left;">Table Detail Barang</h4>
                 </div>
                 <div class="card-body h5 text-dark">
                     <table class="table caption-top table-bordered table-hover table-responsive">
@@ -279,6 +279,15 @@
                 $('#responseController').html(msg);
                 $('#alertModal').modal('show');
             }
+        }
+
+        function toggleAllCheckboxes() {
+          var checkboxes = document.querySelectorAll('[id^="chckbx"]');
+          var selectAllCheckbox = document.getElementById('selectAll');
+
+          checkboxes.forEach(function (checkbox) {
+              checkbox.checked = selectAllCheckbox.checked;
+          });
         }
 
         // Menghapus semua option pada selectElement
@@ -448,6 +457,13 @@
                                         arraySpesifikasiJson[response.datas[data].idjenis].push(spesifikasiBarang);
                                 }
                                 updateTabel();
+                                // $('#barang_' + i + "_" + j).find('td');
+                                $("#headerCheckBox").append(`
+                                  <div class="text-end" style="float: right">
+                                    <input type="checkbox" id="selectAll" onclick="toggleAllCheckboxes()">
+                                    <label class="text-white card-title" for="selectAll">&nbspSelect All
+                                    </label>
+                                  </div>`)
                             }
                         }
                     }
@@ -579,6 +595,7 @@
                               stringQuantityBarang +=
                               `
                               <input type="number" value="1" max="${arraySpesifikasiJson[i][j].quantity}" min="1" id="edit_quantity_barang_${arraySpesifikasiJson[i][j].idjenis}" class="form-control"/>
+                              <input type="hidden" value="${barang.id}" >
                               `
                               stringHTML +=
                                 `
@@ -681,10 +698,13 @@
           var listBarang = [];
           console.log(arraySpesifikasiJson);
             for (var i = 0; i < arraySpesifikasiJson.length; i++) {
+              var totalQuantity = 0;
               if (arraySpesifikasiJson[i].length > 0) {
+                    var requiredQuantity = arraySpesifikasiJson[i][0].quantity;
                     for (var j = 0; j < arraySpesifikasiJson[i][0].list_barang.length; j++) {
                         var tdList = $('#barang_' + i + "_" + j).find('td');
                         // console.log(tdList);
+                        console.log(tdList);
                         if (arraySpesifikasiJson[i][0].type_barang == "serial") {
                           var isChecked = tdList[1].children[0].checked;
                           var listIdBarangNotChecked = [];
@@ -693,7 +713,12 @@
                             // console.log(tdList[1].children[0].value);
                             var idBarang = tdList[1].children[0].value;
                             var quantity = tdList[2].children[0].value;
+                            
                             listBarang.push({idbarang: idBarang, quantity: quantity});
+
+                            
+                            totalQuantity += parseInt(quantity);
+
                             // listBarang[i][j] = {quantity: quantity};
 
                             // listIdBarangNotChecked.push(idbarang);
@@ -702,6 +727,27 @@
                           // arraySpesifikasiJson[i] = arraySpesifikasiJson[i].filter(function(obj) {
                               // return arraySpesifikasiJson[i][j].idbarang != ;
                           // });
+                        } else if (arraySpesifikasiJson[i][0].type_barang == "batch"){
+                          var idBarang = tdList[2].children[1].value;
+                          var quantity = tdList[2].children[0].value;
+                          if (quantity > 0) {
+                            // listBarang.push({idbarang: idBarang, quantity: quantity});
+                            if (parseInt(quantity) <= arraySpesifikasiJson[i][0].quantity) {
+                              listBarang.push({
+                                  idbarang: idBarang,
+                                  quantity: quantity
+                              });
+                            } else {
+                              alertUpdate('Total kuantitas untuk ' + jenis_map[i] + ' melebihi dari kuantitas yang dibutuhkan ('+ parseInt(quantity) + '/' + arraySpesifikasiJson[i][0].quantity + ') (Terpilih/Kebutuhan).', 'Failed');
+                              jenis_map[i]
+                              return;
+                            }
+                          }
+                        }
+
+                        if (totalQuantity > requiredQuantity) {
+                          alertUpdate('Total kuantitas untuk ' + jenis_map[i] + ' melebihi dari kuantitas yang dibutuhkan ('+ totalQuantity + '/' + requiredQuantity + ') (Terpilih/Kebutuhan).', 'Failed');
+                          return; // Stop further processing
                         }
                         // var tdList = $('#barang_' + i + "_" + j).find('td');
                         // var idBarang = tdList[1].children[0].value;

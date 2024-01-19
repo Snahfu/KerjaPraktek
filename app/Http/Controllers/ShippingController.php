@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use App\Models\Event;
 use App\Models\InvoiceBarang;
+use App\Models\ItemBarangHasEvent;
 use App\Models\JenisBarang;
 use App\Models\Karyawan;
 use App\Models\Shipping;
@@ -259,7 +260,7 @@ class ShippingController extends Controller
         $date = date("Y-m-d", strtotime($originalDate));
         if (isset($request->date)) {
             $date = $request->date;
-            $barang_out = InvoiceBarang::with(['invoice.event', 'barang.jenis'])
+            $barang_out = ItemBarangHasEvent::with(['invoice.event', 'barang.jenis'])
                 ->whereDate('status_out', $date)
                 ->get();
 
@@ -271,7 +272,7 @@ class ShippingController extends Controller
                 'datas' => $barang_out,
             ), 200);
         } else {
-            $barang_out = InvoiceBarang::whereDate('status_in', $date)
+            $barang_out = ItemBarangHasEvent::whereDate('status_in', $date)
                 ->get();
 
             return view('shipping.databarangkeluar', ['datas' => $barang_out]);
@@ -347,6 +348,9 @@ class ShippingController extends Controller
 
         $acara = Event::find($request['id']);
         $tanggal = $acara->tanggal;
+        $tanggal_in = $acara->waktu_loading;
+        $tanggal_out = $acara->waktu_loading_out;
+
 
         // dd($resultInvoices);
         
@@ -354,7 +358,7 @@ class ShippingController extends Controller
             $list_barang = [];
             foreach ($resultInvoices as $item_barang_pada_invoices) {
                 
-                $item_barang = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->get();
+                // $item_barang = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->get();
                 // $item_lama = Barang::SELECT(DB::raw('item_barang.*'))
                 //     ->join('item_barang_has_item_shipping', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
                 //     ->join('item_shipping ON item_barang_has_item_shipping.item_shipping_id', '=', 'item_shipping.id')
@@ -370,30 +374,53 @@ class ShippingController extends Controller
                 //     }
                 // }
                 // $array_itemBarang = [];
-                foreach ($item_barang as $item) {
-                    $pernah_shipping = ShippingBarang::where('item_barang_id', $item->id)->first();
+                // foreach ($item_barang as $item) {
+                  // $results = DB::table('item_barang as ib')
+                  // ->select('ib.*')
+                  // ->leftJoin('item_barang_has_events as ibhi', 'ib.id', '=', 'ibhi.item_barang_id')
+                  // ->leftJoin('invoices as i', 'ibhi.invoices_id', '=', 'i.id')
+                  // ->leftJoin('events as e', 'i.events_id', '=', 'e.id')
+                  // ->where('ib.jenis_barang_id', '=', $item)
+                  // ->where(function($query, $tanggal) {
+                  // $query->where($tanggal, '<', 'ibhi.status_in')
+                  //               ->where($tanggal, '>', 'ibhi.status_out');
+                  // })
+                  // ->get();
+                // $list_barang = DB::table('item_barang as ib')
+                // ->select('ib.*', 'ibhi.status_out', 'ibhi.status_in', 'ibhi.item_barang_id')
+                // ->leftJoin('item_barang_has_events as ibhi', 'ib.id', '=', 'ibhi.item_barang_id')
+                // ->where('ib.jenis_barang_id', '=', $item_barang_pada_invoices->jenis_barang_invoices)
+                // ->whereRaw ("('$tanggal_in' < ibhi.status_in AND '$tanggal_out' > ibhi.status_out) OR ibhi.item_barang_id IS NULL")
+                // ->orWhereNull('ibhi.item_barang_id')
+                // ->get();
+
+                $list_barang = DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $item_barang_pada_invoices->jenis_barang_invoices AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL"));
+                // }
+                // dd('');
+                // foreach ($item_barang as $item) {
+                //     $pernah_shipping = ShippingBarang::where('item_barang_id', $item->id)->first();
                     
-                    // Kalau belum pernah shipping lgsg masukan database
-                    if ($pernah_shipping) {
-                        // Cek semua item shipping yang pernah dilakukan dan mengandung item_barang ini
-                        $history_shipping = ShippingBarang::where('item_barang.id', $item->id)
-                            ->join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
-                            ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
-                            // ->join('events', 'events.id', '=', 'item_shipping.events_id')
-                            ->where('item_shipping.jenis', '!=', 'Jemput')
-                            // ->where('jam_mulai_acara', '<', $tanggal)
-                            // ->where('jam_selesai_acara', '>', $tanggal)
-                            ->where('tglJalan', '>', $tanggal)
-                            ->get();
-                        // dd($history_shipping);
-                        if (!$history_shipping) {
-                            array_push($list_barang, $item);
-                            // Tambahkan ke array
-                        }
-                    } else {
-                        array_push($list_barang, $item);
-                    }
-                }
+                //     // Kalau belum pernah shipping lgsg masukan database
+                //     if ($pernah_shipping) {
+                //         // Cek semua item shipping yang pernah dilakukan dan mengandung item_barang ini
+                //         $history_shipping = ShippingBarang::where('item_barang.id', $item->id)
+                //             ->join('item_shipping', 'item_shipping.id', '=', 'item_barang_has_item_shipping.item_shipping_id')
+                //             ->join('item_barang', 'item_barang.id', '=', 'item_barang_has_item_shipping.item_barang_id')
+                //             // ->join('events', 'events.id', '=', 'item_shipping.events_id')
+                //             ->where('item_shipping.jenis', '!=', 'Jemput')
+                //             // ->where('jam_mulai_acara', '<', $tanggal)
+                //             // ->where('jam_selesai_acara', '>', $tanggal)
+                //             ->where('tglJalan', '>', $tanggal)
+                //             ->get();
+                //         // dd($history_shipping);
+                //         if (!$history_shipping) {
+                //             array_push($list_barang, $item);
+                //             // Tambahkan ke array
+                //         }
+                //     } else {
+                //         array_push($list_barang, $item);
+                //     }
+                // }
                 // dd($item_barang_pada_invoices);
                 $semua_shipping_pada_event_tertentu = Shipping::where('events_id', $request['id'])
                 // ->where('jenis', '=', "Kirim")

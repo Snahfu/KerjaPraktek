@@ -5,19 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class InvoiceBarang extends Model
+class ItemBarangHasEvent extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    protected $table = "item_barang_has_invoices";
+    protected $table = "item_barang_has_events";
     protected $guarded = [];
 
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'item_barang_id');
     }
-    public function invoice()
+
+    public function event()
     {
-        return $this->belongsTo(Invoice::class, 'invoices_id');
+        return $this->belongsTo(Event::class, 'events_id');
     }
+
 }

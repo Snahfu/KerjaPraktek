@@ -41,8 +41,8 @@ class DashboardController extends Controller
 
           $list_kategori = Event::select(DB::raw('DISTINCT kategori_barang.nama'))
           ->join('invoices', 'events.id', '=', 'invoices.events_id')
-          ->join('item_barang_has_invoices', 'invoices.id', '=', 'item_barang_has_invoices.invoices_id')
-          ->join('item_barang', 'item_barang_has_invoices.item_barang_id', '=', 'item_barang.id')
+          ->join('item_barang_has_events', 'events.id', '=', 'item_barang_has_events.events_id')
+          ->join('item_barang', 'item_barang_has_events.item_barang_id', '=', 'item_barang.id')
           ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
           ->join('kategori_barang', 'jenis_barang.kategori_barang_id', '=', 'kategori_barang.id')
           ->get();
@@ -107,8 +107,8 @@ class DashboardController extends Controller
 
           $list_kategori = Event::select(DB::raw('DISTINCT kategori_barang.nama'))
           ->join('invoices', 'events.id', '=', 'invoices.events_id')
-          ->join('item_barang_has_invoices', 'invoices.id', '=', 'item_barang_has_invoices.invoices_id')
-          ->join('item_barang', 'item_barang_has_invoices.item_barang_id', '=', 'item_barang.id')
+          ->join('item_barang_has_events', 'events.id', '=', 'item_barang_has_events.events_id')
+          ->join('item_barang', 'item_barang_has_events.item_barang_id', '=', 'item_barang.id')
           ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
           ->join('kategori_barang', 'jenis_barang.kategori_barang_id', '=', 'kategori_barang.id')
           ->get();
