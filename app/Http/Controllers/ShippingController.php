@@ -437,6 +437,18 @@ class ShippingController extends Controller
                           $list_jenis[$id_jenis] = $item_barang->qty;
                         }
                     }
+                    // foreach ($semua_item_barang_dari_shipping as $item_barang) {
+                    //     $barang = Barang::where("id", $item_barang->item_barang_id)->get();
+                    //     $id_jenis = Barang::find($item_barang->item_barang_id)->jenis->id;
+                    //     if ($barang[0]->type == "batch") {
+                    //       $list_barang = $barang;
+                    //     }
+                    //     if (isset($list_jenis[$id_jenis])) {
+                    //       $list_jenis[$id_jenis] += $item_barang->qty;
+                    //     } else {
+                    //       $list_jenis[$id_jenis] = $item_barang->qty;
+                    //     }
+                    // }
                 }
                 if (isset($list_jenis[$item_barang_pada_invoices->jenis_barang_invoices])) {
                   $quantity = $item_barang_pada_invoices->total_qty_invoices - $list_jenis[$item_barang_pada_invoices->jenis_barang_invoices];
@@ -504,8 +516,16 @@ class ShippingController extends Controller
                 $data_item_barang = Barang::where('id', $spesifik_item_barang->item_barang_id)->first();
                 foreach ($kirim_dummy as $key => $jenis) {
                     if ($data_item_barang->jenis_barang_id == $jenis["idjenis"]) {
+                      if (count($jenis["list_barang"]) > 0) {
+                        foreach ($jenis["list_barang"] as $list_barang) {
+                          if ($data_item_barang->id != $list_barang->id) {
+                            $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
+                            // $kirim[$key]["quantity"][] = ;
+                          }
+                        }
+                      } else {
                         $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
-                        // $kirim[$key]["quantity"][] = ;
+                      }
                     }
                 }
             }
@@ -599,14 +619,15 @@ class ShippingController extends Controller
                 $shippingBarang->qty = $barang['quantity'];
                 $shippingBarang->save();
 
-                if ($request->input('jenis') == 'kirim') {
+                if ($request->input('jenis') == 'Kirim') {
                   $itemHasEvent = new ItemBarangHasEvent();
-                  $itemHasEvent->item_barang_id = $dataId;
+                  $itemHasEvent->item_barang_id = $barang['idbarang'];
                   $itemHasEvent->events_id = $request->input('events_id');
-                  $itemHasEvent->quantity = $barang['quantity'];
+                  $itemHasEvent->qty = $barang['quantity'];
                   $itemHasEvent->status_out = $request->input('tglJalan');
+                  $itemHasEvent->save();
                 }
-                else if ($request->input('jenis') == 'jemput') {
+                else if ($request->input('jenis') == 'Jemput') {
                   $itemHasEvent = ItemBarangHasEvent::where('events_id', ' =', $request->input('events_id'))
                                 ->where('driver', '=', $request->input('driver'))
                                 ->get(1);
@@ -821,11 +842,14 @@ class ShippingController extends Controller
             if ($shipping) {
                 $event_id = $shipping->events_id;
                 $item_barang_has_item_shipping = ShippingBarang::where('item_shipping_id', $request->input('id'));
-                $item_barang_id = $item_barang_has_item_shipping->item_barang_id;
+                // $item_barang_id = $item_barang_has_item_shipping[0]->item_barang_id;
+                foreach ($item_barang_has_item_shipping->get() as $item) {
+                
+                  $deleteIBHE = ItemBarangHasEvent::where('item_barang_id', $item->item_barang_id)
+                                          ->where('events_id', $event_id)
+                                          ->delete();
+                }
                 $deletedSB = $item_barang_has_item_shipping->delete();
-                $deleteIBHE = $shipping->where('item_barang_id', $item_barang_id
-                                        ->where('events_id', $event_id)
-                                        ->delete());
                 $deleted = $shipping->delete();
 
                 if ($deleted && $deletedSB && $deleteIBHE) {
