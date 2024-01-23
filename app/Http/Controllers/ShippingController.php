@@ -598,6 +598,22 @@ class ShippingController extends Controller
                 $shippingBarang->item_barang_id = $barang['idbarang'];
                 $shippingBarang->qty = $barang['quantity'];
                 $shippingBarang->save();
+
+                if ($request->input('jenis') == 'kirim') {
+                  $itemHasEvent = new ItemBarangHasEvent();
+                  $itemHasEvent->item_barang_id = $dataId;
+                  $itemHasEvent->events_id = $request->input('events_id');
+                  $itemHasEvent->quantity = $barang['quantity'];
+                  $itemHasEvent->status_out = $request->input('tglJalan');
+                }
+                else if ($request->input('jenis') == 'jemput') {
+                  $itemHasEvent = ItemBarangHasEvent::where('events_id', ' =', $request->input('events_id'))
+                                ->where('driver', '=', $request->input('driver'))
+                                ->get(1);
+                  $itemHasEvent->update([
+                      'status_in' => $request->input('tglJalan')
+                  ]);
+                }
             }
 
             DB::commit();
@@ -803,10 +819,16 @@ class ShippingController extends Controller
 
         try {
             if ($shipping) {
-                $deletedSB = ShippingBarang::where('item_shipping_id', $request->input('id'))->delete();
+                $event_id = $shipping->events_id;
+                $item_barang_has_item_shipping = ShippingBarang::where('item_shipping_id', $request->input('id'));
+                $item_barang_id = $item_barang_has_item_shipping->item_barang_id;
+                $deletedSB = $item_barang_has_item_shipping->delete();
+                $deleteIBHE = $shipping->where('item_barang_id', $item_barang_id
+                                        ->where('events_id', $event_id)
+                                        ->delete());
                 $deleted = $shipping->delete();
 
-                if ($deleted && $deletedSB) {
+                if ($deleted && $deletedSB && $deleteIBHE) {
                     $status = "success";
                     $msg = "Berhasil menghapus data";
                 } else {
