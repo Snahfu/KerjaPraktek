@@ -548,6 +548,7 @@
             var stringHTML = ``;
             var stringCheckboxBarang = ``;
             var stringQuantityBarang = ``;
+            console.log(arraySpesifikasiJson);
             for (var i = 0; i < arraySpesifikasiJson.length; i++) {
               if (arraySpesifikasiJson[i].length > 0) {
                     stringHTML += `<tr><td colspan="2">${jenis_map[i]}</td><td colspan="1">Quantity: ${arraySpesifikasiJson[i][0].quantity}</td></tr>`
@@ -599,7 +600,7 @@
                               `
                               stringHTML +=
                                 `
-                                <tr id='barang_${i}_${j}'>
+                                <tr id='barang_${i}_${k}'>
                                     <td></td>
                                     <td class="col-sm-6">
                                       ${stringCheckboxBarang}
@@ -614,6 +615,7 @@
                                     </td>
                                 </tr>
                                 `
+                              k += 1;
                             }
                             
                                 // console.log(arraySpesifikasiJson[i][j].idbarang);
