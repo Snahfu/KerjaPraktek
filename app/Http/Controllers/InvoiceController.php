@@ -271,9 +271,11 @@ class InvoiceController extends Controller
             'subtotal_map' => $subtotal_map,
             'grandtotal' => $grandtotal,
         ];
-
+        $namaAcara = $detail_invoice[0]->nama;
+        $tanggalAcara = Carbon::parse($detail_invoice[0]->tanggal)->format('d F Y');
+        $filename = "Invoice $namaAcara $tanggalAcara.pdf";
         $pdf = PDF::loadView('common.cetak_invoice', ['data' => $data]);
-        return $pdf->download('surat_penawaran.pdf');
+        return $pdf->download($filename);
         // return view('common.cetak_invoice', compact('data'));
     }
 
