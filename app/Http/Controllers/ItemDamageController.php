@@ -104,9 +104,7 @@ class ItemDamageController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'repair_status' => 'required',
-            'repair_date' => 'required|date',
             'repair_notes' => 'required',
-            'estimated_completion' => 'required|date',
         ]);
 
         if ($validator->fails()) {
