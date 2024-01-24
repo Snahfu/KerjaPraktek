@@ -394,34 +394,25 @@ class ShippingController extends Controller
                 // ->whereRaw ("('$tanggal_in' < ibhi.status_in AND '$tanggal_out' > ibhi.status_out) OR ibhi.item_barang_id IS NULL")
                 // ->orWhereNull('ibhi.item_barang_id')
                 // ->get();
-
-                $list_barang = $list_barang_utuh = DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $item_barang_pada_invoices->jenis_barang_invoices AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL"));
-                $list_barangRusak = ItemDamage::join('item_barang', 'item_damage.item_barang_id', '=', 'item_barang.id')
-                ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
-                ->select('item_barang.*')
-                ->where('jenis_barang.id', $item_barang_pada_invoices->jenis_barang_invoices)
-                ->whereNull('item_damage.repair_date')
-                ->get();
-                // $list_barang = DB::select(DB::raw("
-                //     SELECT ib.*
-                //     FROM item_barang ib
-                //     LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id
-                //     LEFT JOIN item_damage id ON ib.id = id.item_barang_id
-                //     WHERE ib.jenis_barang_id = $item_barang_pada_invoices->jenis_barang_invoices
-                //     AND (
-                //         ('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out)
-                //         OR ibhe.item_barang_id IS NULL
-                //     )
-                //     AND (id.repair_date IS NULL OR id.repair_date IS NOT NULL AND '$tanggal_out' < id.repair_date)
-                //     AND ibhe.item_barang_id IS NULL
-                // "));
-                // dd($list_barangRusak);
-                foreach ($list_barang_utuh as $key => $barang){
-                    foreach ($list_barangRusak as $rusak){
-                        if($barang->id == $rusak->id){
-                            unset($list_barang[$key]);
+                $jenis_barang_type = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->first();
+                if($jenis_barang_type->type == "serial"){
+                    $list_barang = $list_barang_utuh = DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $item_barang_pada_invoices->jenis_barang_invoices AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL"));
+                    $list_barangRusak = ItemDamage::join('item_barang', 'item_damage.item_barang_id', '=', 'item_barang.id')
+                    ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
+                    ->select('item_barang.*')
+                    ->where('jenis_barang.id', $item_barang_pada_invoices->jenis_barang_invoices)
+                    ->whereNull('item_damage.repair_date')
+                    ->get();
+                    foreach ($list_barang_utuh as $key => $barang){
+                        foreach ($list_barangRusak as $rusak){
+                            if($barang->id == $rusak->id){
+                                unset($list_barang[$key]);
+                            }
                         }
                     }
+                }
+                else{
+                    $list_barang = Barang::where('jenis_barang_id', $item_barang_pada_invoices->jenis_barang_invoices)->get();
                 }
                 // dd($list_barang);
                 // }

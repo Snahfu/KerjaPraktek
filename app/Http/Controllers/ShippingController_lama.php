@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-class ShippingController extends Controller
+class ShippingController2 extends Controller
 {
     /**
      * Display a listing of the resource.

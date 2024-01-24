@@ -603,6 +603,8 @@
                 }
 
                 arraySpesifikasiJson[kategori - 1].push(spesifikasiBarang);
+                var stockUpdateElement = document.getElementById('stock');
+                stockUpdateElement.innerHTML = (stock - jumlah);
                 console.log(arraySpesifikasiJson);
                 updateTabel();
             } else {

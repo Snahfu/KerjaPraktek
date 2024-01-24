@@ -216,7 +216,7 @@ class EventController extends Controller
         $id_jenis_barangs = JenisBarang::where('nama', $request['nama_jenis_barang'])
             ->first();
 
-        $jumlahBarangYangStockReady = count(DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $id_jenis_barangs AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL")));
+        $jumlahBarangYangStockReady = count(DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $id_jenis_barangs->id AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL")));
 
         $jumlahBarangRusakPadaJenisX = count(ItemDamage::join('item_barang', 'item_damage.item_barang_id', '=', 'item_barang.id')
             ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
@@ -299,7 +299,8 @@ class EventController extends Controller
             ]);
             $invoice_id = $invoice->id;
             $total_harga = 0;
-           
+            
+            // DETAIL INVOICE
             foreach ($request['listbarang'] as $kategori) {
                 foreach ($kategori as $barang) {
                     // EventJenis ini adalah Detail Invoice

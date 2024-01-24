@@ -446,6 +446,7 @@
             }
         }
 
+        // Function untuk Mengecek apakah user sudah input loading in dan loading out
         function siapTambahBarang() {
             var inputDateTime = document.getElementById('loading-out-date').value;
             var inputDateTime2 = document.getElementById('loading-in-date').value;
@@ -480,6 +481,7 @@
             }
         }
 
+        
         function showErrorLabel(labelId, errorMessage) {
             var errorLabel = document.getElementById(labelId);
             errorLabel.innerHTML = errorMessage;
@@ -491,7 +493,8 @@
             errorLabel.innerHTML = ''; // Menghapus teks error
             errorLabel.style.display = 'none'; // Menyembunyikan label
         }
-        // Melakukan update barang pada comboBox nama-barang
+
+        // Menampilkan nama barang pada comboBox input nama-barang
         function updateBarang() {
             var selectElement = document.getElementById('kategori_barang');
             var selectedIndex = selectElement.selectedIndex;
@@ -700,6 +703,7 @@
             $.ajax({
                 url: "{{ route('common.getstock2') }}",
                 type: 'POST',
+                // Data yang dikirim ke Controller
                 data: {
                     'tanggal_out': document.getElementById('loading-out-date').value,
                     'tanggal_in': document.getElementById('loading-in-date').value,
