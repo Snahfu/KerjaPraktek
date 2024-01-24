@@ -7,9 +7,11 @@ use App\Models\Customer;
 use App\Models\Event;
 use App\Models\EventJenis;
 use App\Models\Invoice;
+use App\Models\ItemBarangHasEvent;
 use App\Models\ItemDamage;
 use App\Models\JenisBarang;
 use App\Models\Kategori;
+use App\Models\Shipping;
 use App\Models\ShippingBarang;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -158,30 +160,44 @@ class EventController extends Controller
 
         $jenis_barang_type = Barang::where('jenis_barang_id', $id_jenis_barangs)->first();
 
-        if($jenis_barang_type->type == "serial"){
+        if ($jenis_barang_type->type == "serial") {
 
             $jumlahBarangYangStockReady = count(DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $id_jenis_barangs AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL")));
-    
+
             $jumlahBarangRusakPadaJenisX = count(ItemDamage::join('item_barang', 'item_damage.item_barang_id', '=', 'item_barang.id')
                 ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
                 ->select('item_barang.*')
                 ->where('jenis_barang.id', $id_jenis_barangs)
                 ->whereNull('item_damage.repair_date')
                 ->get());
-    
+
             // Stock itu barang yang ready pada tanggal itu dan sudah dikurangi dengan data item_barang yg rusak
             $sisa = $jumlahBarangYangStockReady - $jumlahBarangRusakPadaJenisX;
             if ($sisa < 0) {
                 $sisa = 0;
             }
-        }
-        else{
-            $jumlahBarangYangStockReady = DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $id_jenis_barangs AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL"));
+        } else {
+            $jumlahBarangYangStockReady = Barang::where('jenis_barang_id', $id_jenis_barangs)->get();
             $stock = 0;
-            foreach($jumlahBarangYangStockReady as $barang){
+            foreach ($jumlahBarangYangStockReady as $barang) {
                 $stock += $barang->qty;
             }
-            $sisa = $stock;
+
+            $jumlahBarangYangTerpakai = ItemBarangHasEvent::join('item_barang', 'item_barang.id', '=', 'item_barang_has_events.item_barang_id')
+                ->where('item_barang.jenis_barang_id', $id_jenis_barangs)
+                ->where(function($query) use ($tanggal_in, $tanggal_out) {
+                    $query->where('item_barang_has_events.status_out', '>=', $tanggal_in)
+                        ->where('item_barang_has_events.status_out', '<=', $tanggal_out);
+                })
+                ->select('item_barang_has_events.qty')
+                ->get();
+            
+            $pakai = 0;
+            foreach($jumlahBarangYangTerpakai as $barang){
+                $pakai += $barang->qty;
+            }
+
+            $sisa = $stock-$pakai;
         }
 
 
@@ -214,21 +230,47 @@ class EventController extends Controller
         $tanggal_in = Carbon::parse($request['tanggal_in']);
         $tanggal_out = Carbon::parse($request['tanggal_out']);
         $id_jenis_barangs = JenisBarang::where('nama', $request['nama_jenis_barang'])
-            ->first();
+            ->first()->id;
 
-        $jumlahBarangYangStockReady = count(DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $id_jenis_barangs->id AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL")));
+        $jenis_barang_type = Barang::where('jenis_barang_id', $id_jenis_barangs)->first();
+        if ($jenis_barang_type->type == "serial") {
 
-        $jumlahBarangRusakPadaJenisX = count(ItemDamage::join('item_barang', 'item_damage.item_barang_id', '=', 'item_barang.id')
-            ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
-            ->select('item_barang.*')
-            ->where('jenis_barang.id', $id_jenis_barangs)
-            ->whereNull('item_damage.repair_date')
-            ->get());
-        // Stock itu barang yang ready pada tanggal itu dan sudah dikurangi dengan data item_barang yg rusak
-        $sisa = $jumlahBarangYangStockReady - $jumlahBarangRusakPadaJenisX;
+            $jumlahBarangYangStockReady = count(DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $id_jenis_barangs AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL")));
 
-        if ($sisa < 0) {
-            $sisa = 0;
+            $jumlahBarangRusakPadaJenisX = count(ItemDamage::join('item_barang', 'item_damage.item_barang_id', '=', 'item_barang.id')
+                ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
+                ->select('item_barang.*')
+                ->where('jenis_barang.id', $id_jenis_barangs)
+                ->whereNull('item_damage.repair_date')
+                ->get());
+
+            // Stock itu barang yang ready pada tanggal itu dan sudah dikurangi dengan data item_barang yg rusak
+            $sisa = $jumlahBarangYangStockReady - $jumlahBarangRusakPadaJenisX;
+            if ($sisa < 0) {
+                $sisa = 0;
+            }
+        } else {
+            $jumlahBarangYangStockReady = Barang::where('jenis_barang_id', $id_jenis_barangs)->get();
+            $stock = 0;
+            foreach ($jumlahBarangYangStockReady as $barang) {
+                $stock += $barang->qty;
+            }
+
+            $jumlahBarangYangTerpakai = ItemBarangHasEvent::join('item_barang', 'item_barang.id', '=', 'item_barang_has_events.item_barang_id')
+                ->where('item_barang.jenis_barang_id', $id_jenis_barangs)
+                ->where(function($query) use ($tanggal_in, $tanggal_out) {
+                    $query->where('item_barang_has_events.status_out', '>=', $tanggal_in)
+                        ->where('item_barang_has_events.status_out', '<=', $tanggal_out);
+                })
+                ->select('item_barang_has_events.qty')
+                ->get();
+            
+            $pakai = 0;
+            foreach($jumlahBarangYangTerpakai as $barang){
+                $pakai += $barang->qty;
+            }
+            
+            $sisa = $stock-$pakai;
         }
 
         $status = "success";
@@ -299,7 +341,7 @@ class EventController extends Controller
             ]);
             $invoice_id = $invoice->id;
             $total_harga = 0;
-            
+
             // DETAIL INVOICE
             foreach ($request['listbarang'] as $kategori) {
                 foreach ($kategori as $barang) {
@@ -316,7 +358,7 @@ class EventController extends Controller
                 }
                 DB::insert('INSERT INTO events_has_divisi (events_id, divisi_id) VALUES (?, ?)', [$dataId, $kategori_dummy]);
             }
-            
+
             $invoice->total_harga = $total_harga;
             $invoice->save();
 
