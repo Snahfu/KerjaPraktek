@@ -592,7 +592,7 @@
             var subtotal = parseFloat(document.getElementById('harga_total').value);
             var stock = parseFloat(document.getElementById('stock').innerHTML);
 
-            if (jumlah < stock) {
+            if (jumlah <= stock) {
                 var spesifikasiBarang = {
                     idbarang: id,
                     nama: nama_barang,
@@ -735,7 +735,7 @@
             var subtotal = parseFloat(document.getElementById('edit_harga_total').value);
             var stock = parseFloat(document.getElementById('stockupdate').innerHTML);
 
-            if (quantity < stock) {
+            if (quantity <= stock) {
                 updateArraySpesifikasiBarang(id, quantity, price, subtotal);
                 updateTabel();
                 $('#editModal').modal('hide');
