@@ -261,7 +261,8 @@ class ShippingController extends Controller
         $date = date("Y-m-d", strtotime($originalDate));
         if (isset($request->date)) {
             $date = $request->date;
-            $barang_out = ItemBarangHasEvent::with(['invoice.event', 'barang.jenis'])
+            // dd($date);
+            $barang_out = ItemBarangHasEvent::with(['event', 'barang.jenis'])
                 ->whereDate('status_out', $date)
                 ->get();
 
@@ -532,11 +533,30 @@ class ShippingController extends Controller
                 ];
             }
 
+            $list_jenis_jemput = [];
+            $semua_jemput = Shipping::where('events_id', $request['id'])
+                                    ->where('jenis', '=', "Jemput")
+                                    ->get();
+            foreach ($semua_jemput as $jemput) {
+                $semua_item_barang_dari_jemput = ShippingBarang::where('item_shipping_id', $jemput->id)
+                    ->get();
+                // dd($semua_item_barang_dari_jemput);
+                foreach ($semua_item_barang_dari_jemput as $item_barang_jemput) {
+                    if (isset($list_jenis_jemput[$item_barang_jemput->item_barang_id])) {
+                      $list_jenis_jemput[$item_barang_jemput->item_barang_id] -= $item_barang_jemput->qty;
+                    } else {
+                      $list_jenis_jemput[$item_barang_jemput->item_barang_id] = $item_barang_jemput->qty;
+                    }
+                }
+            }
+
             foreach ($arrayItemBarangPadaEventTertentu as $spesifik_item_barang) {
                 $data_item_barang = Barang::where('id', $spesifik_item_barang->item_barang_id)->first();
+                // dd($kirim_dummy);
                 foreach ($kirim_dummy as $key => $jenis) {
-                    if ($data_item_barang->jenis_barang_id == $jenis["idjenis"]) {
+                    if ($data_item_barang->jenis_barang_id == $kirim_dummy[$key]["idjenis"]) {
                       if (count($jenis["list_barang"]) > 0) {
+                        
                         // foreach ($jenis["list_barang"] as $list_barang) {
                         //   if ($data_item_barang->id != $list_barang->id) {
                         //     $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
@@ -548,8 +568,14 @@ class ShippingController extends Controller
                           array_push($list_jenis_barang, $list_barang->id);
                         }
                         if (!in_array($data_item_barang->id, $list_jenis_barang)) {
-                          $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
-                          // $kirim[$key]["quantity"][] = ;
+                          // $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
+                          $list_id_barang_jemput = [];
+                          foreach ($list_jenis_jemput as $key => $list_jemput) {
+                            array_push($list_id_barang_jemput, $key);
+                          }
+                          if (!in_array($data_item_barang->id, $list_id_barang_jemput)) {
+                            $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
+                          }
                         }
                       } else {
                         $kirim_dummy[$key]["list_barang"][] = $data_item_barang;

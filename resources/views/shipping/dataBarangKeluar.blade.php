@@ -248,8 +248,8 @@
                       response.datas.forEach(data => {
                         table.row.add([
                           i,
-                          data.invoice.event.nama,
-                          data.barang.jenis.nama,
+                          data.event.nama,
+                          data.barang.nama,
                           data.qty
                         ]).draw();
                         i += 1;
@@ -367,5 +367,6 @@
             $('#deleteModal').modal('show');
             $('#buttonHapus').attr('onclick', 'deleteBarang(' + id + ')');
         }
+        changeDatePicker();
     </script>
 @endsection
