@@ -251,8 +251,8 @@
                         <div class="col-12">
                             <div class="mb-1 row">
                                 <div class="col-sm-3">
-                                    <label class="col-form-label text-danger" id="stocksisa"></label><label
-                                        class="col-form-label text-danger" id="stock"></label>
+                                    <label class="col-form-label text-danger" id="stocksisa"></label>
+                                    <label class="col-form-label text-danger" id="stock"></label>
                                 </div>
                             </div>
                         </div>
@@ -623,6 +623,8 @@
                 }
 
                 arraySpesifikasiJson[kategori - 1].push(spesifikasiBarang);
+                var stockUpdateElement = document.getElementById('stock');
+                stockUpdateElement.innerHTML = (stock - jumlah);
                 console.log(arraySpesifikasiJson);
                 updateTabel();
             } else {
@@ -843,7 +845,7 @@
 
             // Tanggal loading out (tanggal acara + 12 jam)
             var tanggalLoadingOut = new Date(tanggalAcara);
-            tanggalLoadingOut.setHours(tanggalAcara.getHours() + 12 +7);
+            tanggalLoadingOut.setHours(tanggalAcara.getHours() + 12 + 7);
             document.getElementById('loading-out-date').value = tanggalLoadingOut.toISOString().slice(0, -8);
 
             updateTanggalSelesai();
@@ -868,7 +870,7 @@
 
             // Tanggal loading out (tanggal acara selesai + 4 jam)
             var tanggalLoadingOut = new Date(tanggalAcaraSelesai);
-            tanggalLoadingOut.setHours(tanggalAcaraSelesai.getHours() + 4+7);
+            tanggalLoadingOut.setHours(tanggalAcaraSelesai.getHours() + 4 + 7);
             document.getElementById('loading-out-date').value = tanggalLoadingOut.toISOString().slice(0, -8);
 
             // Hitung dan update durasi acara
