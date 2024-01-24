@@ -543,6 +543,14 @@ class ShippingController extends Controller
                             // $kirim[$key]["quantity"][] = ;
                           }
                         }
+                        // $list_jenis_barang = [];
+                        // foreach ($jenis["list_barang"] as $list_barang) {
+                        //   array_push($list_jenis_barang, $list_barang->id);
+                        // }
+                        // if (!in_array($data_item_barang->id, $list_jenis_barang)) {
+                        //   $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
+                        //   // $kirim[$key]["quantity"][] = ;
+                        // }
                       } else {
                         $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
                       }
@@ -649,8 +657,8 @@ class ShippingController extends Controller
                 }
                 else if ($request->input('jenis') == 'Jemput') {
                   $itemHasEvent = ItemBarangHasEvent::where('events_id', ' =', $request->input('events_id'))
-                                ->where('driver', '=', $request->input('driver'))
-                                ->get(1);
+                                ->where('item_barang_id', '=', $barang['idbarang'])
+                                ;
                   $itemHasEvent->update([
                       'status_in' => $request->input('tglJalan')
                   ]);
