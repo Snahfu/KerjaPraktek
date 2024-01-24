@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Event;
 use App\Models\EventJenis;
 use App\Models\Invoice;
 use App\Models\Kategori;
@@ -117,6 +118,7 @@ class InvoiceController extends Controller
             ], 200);
         }
 
+        // Kalau jumlah invoice lebih dari 2 yang artinya event sudah pasti statusnya diproses, tidak perlu ubah status event
         if ($request['status_baru'] == "Deal") {
             // Bikin Tagihan Berdasarkan Invoice Id
             $tagihan = new Tagihan();
@@ -125,6 +127,40 @@ class InvoiceController extends Controller
             $tagihan->nominal = 0;
             $tagihan->status = "Belum DP";
             $tagihan->save();
+
+            $event = Event::find($invoice->events_id);
+            $jumlah_invoice = count(Invoice::where('events_id', $event->id)->get());
+            if ($jumlah_invoice < 2) {
+                $event->status = "Diproses";
+                $event->save();
+            }
+        }
+
+        if ($request['status_baru'] == "Disetujui") {
+            $event = Event::find($invoice->events_id);
+            $jumlah_invoice = count(Invoice::where('events_id', $event->id)->get());
+            if ($jumlah_invoice < 2) {
+                $event->status = "Penawaran";
+                $event->save();
+            }
+        }
+
+        if ($request['status_baru'] == "Ditolak") {
+            $event = Event::find($invoice->events_id);
+            $jumlah_invoice = count(Invoice::where('events_id', $event->id)->get());
+            if ($jumlah_invoice < 2) {
+                $event->status = "Draft";
+                $event->save();
+            }
+        }
+
+        if ($request['status_baru'] == "Batal") {
+            $event = Event::find($invoice->events_id);
+            $jumlah_invoice = count(Invoice::where('events_id', $event->id)->get());
+            if ($jumlah_invoice < 2) {
+                $event->status = "Batal";
+                $event->save();
+            }
         }
 
         $invoice->status = $request['status_baru'];
@@ -528,6 +564,11 @@ class InvoiceController extends Controller
             $tagihanBaru->status = "Lunas";
             $tagihanBaru->bukti_pembayaran = $savedPath;
             $tagihanBaru->save();
+
+            // Buat status Invoice yg sesuai dengan id_invoices dari tagihan menjadi Lunas
+            $invoice = Invoice::find($invoice[0]->id);
+            $invoice->status = "Lunas";
+            $invoice->save();
         } else {
             // Buat tagihan yang baru
             $tagihanBaru = new Tagihan();

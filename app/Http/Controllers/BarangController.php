@@ -23,25 +23,38 @@ class BarangController extends Controller
 
     public function dashboard()
     {
+        // Merubah semua event dengan status diproses menjadi selesai ketika tanggal hari ini sudah melewati tanggal loading out
+        $tanggalSekarang = Carbon::now();
+        $semua_event = Event::where('waktu_loading_out', '<=', $tanggalSekarang)
+            ->where('status', 'Diproses')
+            ->get();
+        foreach ($semua_event as $event) {
+            $event->status = "Selesai";
+            $event->save();
+        }
+        
         $user_id = Auth::user()->id;
         $events = Event::whereYear('tanggal', '=', now('Y'))
             ->whereMonth('tanggal', '=', now('m'))
-            ->where('PIC','=',$user_id)
+            ->where('PIC', '=', $user_id)
             ->get();
 
         $jumlah_event = count($events);
 
-        $item_damage = ItemDamage::whereYear('damage_date','=', now('Y'))
-            ->whereMonth('damage_date','=',now('m'))
-            ->where('repair_status','=',"Proses")
+        $item_damage = ItemDamage::whereYear('damage_date', '=', now('Y'))
+            ->whereMonth('damage_date', '=', now('m'))
+            ->where('repair_status', '=', "Proses")
             ->get();
-        
+
         $jumlah_rusak = count($item_damage);
 
         $data = [
             'jumlah_event' => $jumlah_event,
             'jumlah_rusak' => $jumlah_rusak,
         ];
+
+
+
         return view('gudang.dashboard', ['data' => $data]);
     }
 
@@ -53,22 +66,22 @@ class BarangController extends Controller
         $year = $date[0];
         $month = $date[1];
         $events = Event::whereYear('tanggal', '=', $year)
-        ->whereMonth('tanggal', '=', $month)
-        ->where('PIC','=',$user_id)
-        ->get();
+            ->whereMonth('tanggal', '=', $month)
+            ->where('PIC', '=', $user_id)
+            ->get();
 
         $jumlah_event = count($events);
 
-        $item_damage = ItemDamage::whereYear('damage_date','=', $year)
-            ->whereMonth('damage_date','=',$month)
-            ->where('repair_status','=',"Proses")
+        $item_damage = ItemDamage::whereYear('damage_date', '=', $year)
+            ->whereMonth('damage_date', '=', $month)
+            ->where('repair_status', '=', "Proses")
             ->get();
-        
+
         $jumlah_rusak = count($item_damage);
-        
+
         $data = [
-          'jumlah_event' => $jumlah_event,
-          'jumlah_rusak' => $jumlah_rusak,
+            'jumlah_event' => $jumlah_event,
+            'jumlah_rusak' => $jumlah_rusak,
         ];
         $status = "success";
         $msg = "Berhasil mengubah tanggal data";

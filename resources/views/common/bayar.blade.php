@@ -62,7 +62,7 @@
                                     </div>
                                     <div class="col-sm-9">
                                         <div class="form-check ">
-                                            <input class="form-check-input" type="checkbox" value="Bayar Semua"
+                                            <input class="form-check-input" type="checkbox" onchange="ubahNominal()" value="Bayar Semua"
                                                 id="lunaskan" name="lunaskan">
                                             <label class="form-check-label" for="lunaskan">
                                                 Bayar Semua / Lunas
@@ -144,8 +144,22 @@
 
 @section('javascript')
     <script>
+
+        var harusBayar = @json($harus_bayar);
+
         $(document).ready(function() {
 
         });
+
+        function ubahNominal(){
+            var textboxNominal = document.getElementById('nominal');
+            var checkbox = document.getElementById("lunaskan");
+            if(checkbox.checked){
+                textboxNominal.value = harusBayar;
+            }
+            else{
+                textboxNominal.value = 0;
+            }
+        }
     </script>
 @endsection

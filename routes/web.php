@@ -23,9 +23,6 @@ Route::middleware('role:2,3,4,5')->group(function () {
   Route::get('/myprofile', [App\Http\Controllers\DashboardController::class, 'myprofile']);
   Route::get('/dashboard-admin', [App\Http\Controllers\DashboardController::class, 'index']);
   Route::post('/dashboard-admin-param', [App\Http\Controllers\DashboardController::class, 'indexParameter'])->name('admin.indexParameter');
-  // Route::get('/dashboard-admin', function () {
-  //     return view('admin.index');
-  // });
 });
 
 Route::middleware('role:4,5')->group(function () {
@@ -145,56 +142,5 @@ Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->n
 
 Route::middleware('role:1,2,3,4,5')->group(function () {
 
-  // Route::get('/tambah', function () {
-  //   return view('common.tambahorder');
-  // });
-  // Route::get('/tambah', [App\Http\Controllers\EventController::class, 'create'])->name('common.tambahorder');
 
-  // Route::get('/detail', function () {
-  //   return view('common.detailorder');
-  // });
 });
-
-
-
-// Route::get('/', function () {
-//     return view('admin.index');
-// });
-// Route::get('/dashboard', function () {
-//     return view('karyawan.index');
-// });
-// Route::get('/dashboard-admin', function () {
-//     return view('admin.index');
-// });
-// // Route::get('/tambah', function () {
-// //     return view('common.tambahorder');
-// // });
-// Route::get('/tambah', [App\Http\Controllers\EventController::class, 'create'])->name('common.tambahorder');
-// Route::get('/data-transaksi', function () {
-//     return view('common.datatransaksi');
-// });
-// Route::get('/detail', function () {
-//     return view('common.detailorder');
-// });
-
-// // ADMIN CONTROLLER
-// Route::get('/data-pelanggan', [App\Http\Controllers\AdminController::class, 'index_datapelanggan'])->name('admin.datapelanggan');
-// Route::get('/tambah-pelanggan', [App\Http\Controllers\AdminController::class, 'index_tambahpelanggan'])->name('admin.index.tambahpelanggan');
-// Route::post('/detail-pelanggan', [App\Http\Controllers\AdminController::class, 'detail'])->name('admin.detailpelanggan');
-// Route::post('/tambah-pelanggan', [App\Http\Controllers\AdminController::class, 'store'])->name('admin.tambahpelanggan');
-// Route::post('/delete-pelanggan', [App\Http\Controllers\AdminController::class, 'destroy'])->name('admin.deletepelanggan');
-// Route::post('/update-pelanggan', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.updatepelanggan');
-
-// // EVENT CONTORLLER
-// Route::get('/event-list', [App\Http\Controllers\EventController::class, 'index'])->name('common.listevent');
-// Route::get('/tambah-event', [App\Http\Controllers\EventController::class, 'create'])->name('common.index.tambahevent');
-// Route::post('/detail-event', [App\Http\Controllers\EventController::class, 'show'])->name('common.detailevent');
-// Route::post('/get-barang', [App\Http\Controllers\EventController::class, 'get_barang'])->name('common.getbarang');
-// Route::post('/tambah-event', [App\Http\Controllers\EventController::class, 'store'])->name('common.tambahevent');
-// Route::post('/delete-event', [App\Http\Controllers\EventController::class, 'destroy'])->name('common.deleteevent');
-// Route::post('/update-event', [App\Http\Controllers\EventController::class, 'update'])->name('common.updateevent');
-
-
-
-
-// Route::get('/data-gudang', [App\Http\Controllers\GudangController::class, 'index'])->name('gudang.datagudang');

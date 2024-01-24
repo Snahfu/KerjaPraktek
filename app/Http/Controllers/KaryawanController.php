@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Agenda;
 use App\Models\Event;
 use App\Models\Tagihan;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,16 @@ class KaryawanController extends Controller
 {
     public function index()
     {
+        // Merubah semua event dengan status diproses menjadi selesai ketika tanggal hari ini sudah melewati tanggal loading out
+        $tanggalSekarang = Carbon::now();
+        $semua_event = Event::where('waktu_loading_out', '<=', $tanggalSekarang)
+          ->where('status', 'Diproses')
+          ->get();
+        foreach ($semua_event as $event){
+          $event->status = "Selesai";
+          $event->save();
+        }
+
         $user_id = Auth::user()->id;
         $events = Event::whereYear('tanggal', '=', now('Y'))
         ->whereMonth('tanggal', '=', now('m'))
@@ -77,6 +88,9 @@ class KaryawanController extends Controller
           'status_events' => $status_events,
           'list_events' => $list_event
         ];
+
+
+        
         return view('karyawan.index', ['data' => $data]);
     }
 

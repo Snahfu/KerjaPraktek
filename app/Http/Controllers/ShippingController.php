@@ -6,6 +6,7 @@ use App\Models\Barang;
 use App\Models\Event;
 use App\Models\InvoiceBarang;
 use App\Models\ItemBarangHasEvent;
+use App\Models\ItemDamage;
 use App\Models\JenisBarang;
 use App\Models\Karyawan;
 use App\Models\Shipping;
@@ -394,7 +395,35 @@ class ShippingController extends Controller
                 // ->orWhereNull('ibhi.item_barang_id')
                 // ->get();
 
-                $list_barang = DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $item_barang_pada_invoices->jenis_barang_invoices AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL"));
+                $list_barang = $list_barang_utuh = DB::select(DB::raw("SELECT ib.* FROM item_barang ib LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id WHERE ib.jenis_barang_id = $item_barang_pada_invoices->jenis_barang_invoices AND (('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out) OR ibhe.item_barang_id IS NULL ) AND ibhe.item_barang_id IS NULL"));
+                $list_barangRusak = ItemDamage::join('item_barang', 'item_damage.item_barang_id', '=', 'item_barang.id')
+                ->join('jenis_barang', 'item_barang.jenis_barang_id', '=', 'jenis_barang.id')
+                ->select('item_barang.*')
+                ->where('jenis_barang.id', $item_barang_pada_invoices->jenis_barang_invoices)
+                ->whereNull('item_damage.repair_date')
+                ->get();
+                // $list_barang = DB::select(DB::raw("
+                //     SELECT ib.*
+                //     FROM item_barang ib
+                //     LEFT JOIN item_barang_has_events ibhe ON ib.id = ibhe.item_barang_id
+                //     LEFT JOIN item_damage id ON ib.id = id.item_barang_id
+                //     WHERE ib.jenis_barang_id = $item_barang_pada_invoices->jenis_barang_invoices
+                //     AND (
+                //         ('$tanggal_in' < ibhe.status_in AND '$tanggal_out' > ibhe.status_out)
+                //         OR ibhe.item_barang_id IS NULL
+                //     )
+                //     AND (id.repair_date IS NULL OR id.repair_date IS NOT NULL AND '$tanggal_out' < id.repair_date)
+                //     AND ibhe.item_barang_id IS NULL
+                // "));
+                // dd($list_barangRusak);
+                foreach ($list_barang_utuh as $key => $barang){
+                    foreach ($list_barangRusak as $rusak){
+                        if($barang->id == $rusak->id){
+                            unset($list_barang[$key]);
+                        }
+                    }
+                }
+                // dd($list_barang);
                 // }
                 // dd('');
                 // foreach ($item_barang as $item) {

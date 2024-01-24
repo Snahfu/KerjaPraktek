@@ -788,7 +788,7 @@
                     'PIC': userData.id,
                     'customers_id': id_client,
                     'nama': document.getElementById('event-name').value,
-                    'status': "Penawaran",
+                    'status': "Menunggu Persetujuan",
                     'lokasi': document.getElementById('event-location').value,
                     'jabatan_client': document.getElementById('client-position').value,
                     'waktu_loading_out': document.getElementById('loading-out-date').value,
