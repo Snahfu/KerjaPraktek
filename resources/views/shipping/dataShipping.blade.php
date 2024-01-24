@@ -52,11 +52,11 @@
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Surat Jalan</p>
                                                         </a>
-                                                        <a href="{{ route('editshipping', ['id' => $data->id]) }}"
+                                                        {{-- <a href="{{ route('editshipping', ['id' => $data->id]) }}"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-edit fs-6"></i>
                                                             <p class="mb-0 fs-3">Perbaruhi</p>
-                                                        </a>
+                                                        </a> --}}
                                                         <a href="javascript:void(0)" onclick="hapus({{ $data->id }})"
                                                             class="d-flex align-items-center gap-2 dropdown-item">
                                                             <i class="ti ti-trash fs-6"></i>
