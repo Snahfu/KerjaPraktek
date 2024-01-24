@@ -537,20 +537,20 @@ class ShippingController extends Controller
                 foreach ($kirim_dummy as $key => $jenis) {
                     if ($data_item_barang->jenis_barang_id == $jenis["idjenis"]) {
                       if (count($jenis["list_barang"]) > 0) {
-                        foreach ($jenis["list_barang"] as $list_barang) {
-                          if ($data_item_barang->id != $list_barang->id) {
-                            $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
-                            // $kirim[$key]["quantity"][] = ;
-                          }
-                        }
-                        // $list_jenis_barang = [];
                         // foreach ($jenis["list_barang"] as $list_barang) {
-                        //   array_push($list_jenis_barang, $list_barang->id);
+                        //   if ($data_item_barang->id != $list_barang->id) {
+                        //     $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
+                        //     // $kirim[$key]["quantity"][] = ;
+                        //   }
                         // }
-                        // if (!in_array($data_item_barang->id, $list_jenis_barang)) {
-                        //   $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
-                        //   // $kirim[$key]["quantity"][] = ;
-                        // }
+                        $list_jenis_barang = [];
+                        foreach ($jenis["list_barang"] as $list_barang) {
+                          array_push($list_jenis_barang, $list_barang->id);
+                        }
+                        if (!in_array($data_item_barang->id, $list_jenis_barang)) {
+                          $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
+                          // $kirim[$key]["quantity"][] = ;
+                        }
                       } else {
                         $kirim_dummy[$key]["list_barang"][] = $data_item_barang;
                       }
