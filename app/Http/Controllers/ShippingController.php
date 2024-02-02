@@ -219,6 +219,7 @@ class ShippingController extends Controller
         $validator = Validator::make($request->all(), [
             'driver' => 'required',
             'tglJalan' => 'required',
+            'tglEvent' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -246,6 +247,29 @@ class ShippingController extends Controller
                 'msg' => $msg,
             ], 200);
         }
+
+        $tglJalan = date_create($request['tglJalan']);
+        $tglAcara = date_create($request['tglEvent']);
+        if ($tglJalan > $tglAcara) {
+          $status = "failed";
+          $msg = "Tanggal jalan tidak boleh melebihi tanggal acara";
+          return response()->json([
+              'status' => $status,
+              'msg' => $msg,
+          ], 200);
+        }
+
+        $tglMaxJalan = $tglAcara;
+        date_sub($tglMaxJalan,date_interval_create_from_date_string("1 days"));
+        if ($tglJalan < $tglMaxJalan) {
+          $status = "failed";
+          $msg = "Tanggal jalan maksimal 1 hari sebelum acara";
+          return response()->json([
+              'status' => $status,
+              'msg' => $msg,
+          ], 200);
+        }
+
         $status = "success";
         $msg = "Berhasil menambahkan data";
         return response()->json(array(

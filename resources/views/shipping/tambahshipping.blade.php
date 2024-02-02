@@ -71,11 +71,11 @@
                         <div class="col-12">
                             <div class="mb-1 row">
                                 <div class="col-sm-3">
-                                    <label class="col-form-label" for="tgl-event">Waktu Pengiriman</label>
+                                    <label class="col-form-label" for="tgl-jalan">Waktu Pengiriman</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <input type="datetime-local" id="tgl-event" class="form-control"
-                                        name="tgl-event" onchange="checkDriver()" />
+                                    <input type="datetime-local" id="tgl-jalan" class="form-control"
+                                        name="tgl-jalan" onchange="checkDriver()" />
                                 </div>
                             </div>
                         </div>
@@ -309,7 +309,8 @@
                 type: 'POST',
                 data: {
                     'driver': parseInt(document.getElementById('driver').value),
-                    'tglJalan': document.getElementById('tgl-event').value,
+                    'tglJalan': document.getElementById('tgl-jalan').value,
+                    'tglEvent': document.getElementById('tanggalEvent').value,
                 },
                 dataType: 'json',
                 success: function(response) {
@@ -366,7 +367,7 @@
                         const second = String(tanggalKirim.getSeconds()).padStart(2, '0');
 
                         tanggalKirimDateTime = year + "-" + month + "-" + date + "T" + hour + ":" + minute + ":" + second;
-                        document.getElementById('tgl-event').value = tanggalKirimDateTime;
+                        document.getElementById('tgl-jalan').value = tanggalKirimDateTime;
                         let spek = document.getElementById('spek');
                         let elementShow = document.getElementsByClassName('detail-barang');
 
@@ -772,7 +773,7 @@
                     'events_id': parseInt(document.getElementById('event').value),
                     'jenis': document.getElementById('jenis').value,
                     'driver': parseInt(document.getElementById('driver').value),
-                    'tglJalan': document.getElementById('tgl-event').value,
+                    'tglJalan': document.getElementById('tgl-jalan').value,
                     'notes': document.getElementById('notes').value,
                     'listbarang': listBarang,
                 },
