@@ -220,7 +220,7 @@ class InvoiceController extends Controller
         if ($tanggalMulai->isSameDay($tanggalSelesai) && $perbedaanJam < 24) {
             $nilaiPerbedaan = 1;
         } else {
-            $nilaiPerbedaan = $tanggalSelesai->diffInDays($tanggalMulai);
+            $nilaiPerbedaan = $tanggalSelesai->diffInDays($tanggalMulai) + 1;
         }
         $tanggalMulai->locale('id');
         $tanggalMulaiDiformat = $tanggalMulai->translatedFormat('l, d F Y');
