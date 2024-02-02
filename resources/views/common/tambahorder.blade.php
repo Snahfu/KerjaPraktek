@@ -141,7 +141,7 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <input type="datetime-local" id="event-start-date" class="form-control"
-                                        name="event-start-date" />
+                                        name="event-start-date" onchange="setDurasiPeminjaman()" />
                                 </div>
                             </div>
                         </div>
@@ -418,6 +418,8 @@
         var kategori_map = @json($kategori_map);
         // Maping untuk menyimpan harga dari setiap barang
         var harga_sewa_map = [];
+        // variable untuk menyimpan lama sewa
+        var lamaSewa = 1;
 
         $(document).ready(function() {
 
@@ -554,7 +556,7 @@
             var hargaSewa = harga_sewa_map[id];
             document.getElementById('jumlah_barang').value = 1;
             document.getElementById('harga_per_barang').value = hargaSewa;
-            document.getElementById('harga_total').value = hargaSewa * 1;
+            document.getElementById('harga_total').value = hargaSewa * 1 * lamaSewa;
 
             $.ajaxSetup({
                 headers: {
@@ -587,15 +589,15 @@
             var subtotal = parseFloat(document.getElementById('harga_total').value);
 
             if (event.target.id === 'jumlah_barang') {
-                document.getElementById('harga_total').value = quantity * price;
+                document.getElementById('harga_total').value = quantity * price * lamaSewa;
             }
 
             if (event.target.id === 'harga_per_barang') {
-                document.getElementById('harga_total').value = quantity * price;
+                document.getElementById('harga_total').value = quantity * price * lamaSewa;
             }
 
             if (event.target.id === 'harga_total') {
-                document.getElementById('harga_per_barang').value = price !== 0 ? subtotal / quantity : 0;
+                document.getElementById('harga_per_barang').value = price !== 0 ? subtotal / (quantity * lamaSewa) : 0;
             }
         }
 
@@ -727,15 +729,15 @@
             var subtotal = parseFloat(document.getElementById('edit_harga_total').value);
 
             if (event.target.id === 'edit_jumlah_barang') {
-                document.getElementById('edit_harga_total').value = quantity * price;
+                document.getElementById('edit_harga_total').value = quantity * price * lamaSewa;
             }
 
             if (event.target.id === 'edit_harga_per_barang') {
-                document.getElementById('edit_harga_total').value = quantity * price;
+                document.getElementById('edit_harga_total').value = quantity * price * lamaSewa;
             }
 
             if (event.target.id === 'edit_harga_total') {
-                document.getElementById('edit_harga_per_barang').value = price !== 0 ? subtotal / quantity : 0;
+                document.getElementById('edit_harga_per_barang').value = price !== 0 ? subtotal / (quantity * lamaSewa) : 0;
             }
         }
 
@@ -758,7 +760,7 @@
         function perbaruhiDataTabel(id) {
             var quantity = parseFloat(document.getElementById('edit_jumlah_barang').value);
             var price = parseFloat(document.getElementById('edit_harga_per_barang').value);
-            var subtotal = parseFloat(document.getElementById('edit_harga_total').value);
+            var subtotal = parseFloat(document.getElementById('edit_harga_total').value) * lamaSewa;
             var stock = parseFloat(document.getElementById('stockupdate').innerHTML);
             if (quantity <= stock) {
                 updateArraySpesifikasiBarang(id, quantity, price, subtotal);
@@ -853,6 +855,23 @@
             document.getElementById('loading-out-date').value = tanggalLoadingOut.toISOString().slice(0, -8);
 
             updateTanggalSelesai();
+            setDurasiPeminjaman();
+        }
+
+        function setDurasiPeminjaman(){
+            var tanggalMulai = new Date(document.getElementById('event-start-date').value);
+            var tanggalSelesai = new Date(document.getElementById('event-end-date').value);
+            // Mengambil komponen tanggal (tanpa jam) dari objek Date
+            var tanggalMulaiTanpaJam = new Date(tanggalMulai.getFullYear(), tanggalMulai.getMonth(), tanggalMulai.getDate());
+            var tanggalSelesaiTanpaJam = new Date(tanggalSelesai.getFullYear(), tanggalSelesai.getMonth(), tanggalSelesai.getDate());
+
+            // Menghitung selisih hari
+            var selisihHari = (tanggalSelesaiTanpaJam - tanggalMulaiTanpaJam) / (24 * 60 * 60 * 1000);
+
+            // Menambahkan 1 karena perhitungan selisih hari dimulai dari 0
+            selisihHari += 1;
+            lamaSewa = selisihHari;
+            console.log(selisihHari);
         }
 
         function updateDurasiAcara() {
@@ -879,6 +898,7 @@
 
             // Hitung dan update durasi acara
             updateDurasiAcara();
+            setDurasiPeminjaman();
         }
     </script>
 @endsection
