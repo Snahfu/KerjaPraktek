@@ -706,12 +706,10 @@ class ShippingController extends Controller
                   $itemHasEvent->save();
                 }
                 else if ($request->input('jenis') == 'Jemput') {
-                  $itemHasEvent = ItemBarangHasEvent::where('events_id', ' =', $request->input('events_id'))
-                                ->where('item_barang_id', '=', $barang['idbarang'])
-                                ;
-                  $itemHasEvent->update([
-                      'status_in' => $request->input('tglJalan')
-                  ]);
+                    $itemHasEvent = ItemBarangHasEvent::where('events_id', '=', $request->input('events_id'))
+                    ->where('item_barang_id', '=', $barang['idbarang'])->first();
+                    $itemHasEvent->status_in = $request->input('tglJalan');
+                    $itemHasEvent->save();
                 }
             }
 

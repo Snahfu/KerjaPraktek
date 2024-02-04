@@ -22,4 +22,12 @@ class ItemBarangHasEvent extends Model
         return $this->belongsTo(Event::class, 'events_id');
     }
 
+    protected $fillable = [
+        'id',
+        'events_id',
+        'item_barang_id',
+        'qty',
+        'status_in',
+        'status_out',
+    ];
 }
