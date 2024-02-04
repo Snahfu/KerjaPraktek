@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Event;
 use App\Models\EventJenis;
 use App\Models\Invoice;
+use App\Models\ItemBarangHasEvent;
 use App\Models\Kategori;
 use App\Models\Tagihan;
 use Barryvdh\DomPDF\Facade\PDF;
@@ -161,6 +162,10 @@ class InvoiceController extends Controller
                 $event->status = "Batal";
                 $event->save();
             }
+            // Hapus Tagihan
+            $semua_tagihan = Tagihan::where('invoices_id', $invoice->id)->delete();
+            // Hapus item_shipping_has_events
+            $semua_shipping = ItemBarangHasEvent::where('events_id', $event->id)->delete();
         }
 
         $invoice->status = $request['status_baru'];
