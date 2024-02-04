@@ -200,7 +200,7 @@ class ShippingController extends Controller
             ->join('divisi', 'karyawans.divisi_id', '=', 'divisi.id')
             ->where('divisi.nama', '=', 'Driver')
             ->get();
-        $event = Event::select('events.id', 'events.nama', 'events.tanggal', 'events.lokasi')
+        $event = Event::select('events.id', 'events.nama', 'events.tanggal', 'events.lokasi', 'events.waktu_loading_out')
             ->distinct()
             ->join('invoices', 'events.id', '=', 'invoices.events_id')
             ->get();

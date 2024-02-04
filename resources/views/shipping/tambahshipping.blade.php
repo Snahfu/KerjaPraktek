@@ -356,8 +356,15 @@
                         let tanggalEvent = hasilFilterEvent[0].tanggal;
                         document.getElementById('tanggalEvent').value = tanggalEvent;
                         document.getElementById('venueEvent').value = hasilFilterEvent[0].lokasi;
-                        let tanggalEventMili = new Date(tanggalEvent);
-                        tanggalKirim = new Date(tanggalEventMili - (10*60*60*1000));
+
+                        if (jenis == "Kirim") {
+                          let tanggalEventMili = new Date(tanggalEvent);
+                          tanggalKirim = new Date(tanggalEventMili - (10*60*60*1000));
+                        } else if (jenis == "Jemput") {
+                          tanggalEvent = hasilFilterEvent[0].waktu_loading_out;
+                          let tanggalEventMili = new Date(tanggalEvent);
+                          tanggalKirim = tanggalEventMili;
+                        }
 
                         const year = tanggalKirim.getFullYear();
                         const month = String(tanggalKirim.getMonth()+1).padStart(2, '0');
