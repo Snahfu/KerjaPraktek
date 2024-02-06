@@ -347,6 +347,14 @@ class InvoiceController extends Controller
         $tanggalJadi = "";
         // dd($tanggalMulai);
 
+        $perbedaanJam = $tanggalSelesai->diffInHours($tanggalMulai);
+        $nilaiPerbedaan = 1;
+        if ($tanggalMulai->isSameDay($tanggalSelesai) && $perbedaanJam < 24) {
+            $nilaiPerbedaan = 1;
+        } else {
+            $nilaiPerbedaan = $tanggalSelesai->diffInDays($tanggalMulai) + 1;
+        }
+
         if ($hariMulai == $hariSelesai && $bulanMulai == $bulanSelesai) {
             $tanggalMulaiFormat = $tanggalMulai->translatedFormat('j');
             $tanggalSelesaiFormat = $tanggalSelesai->translatedFormat('j F Y');
@@ -395,6 +403,7 @@ class InvoiceController extends Controller
             'grandtotal' => $grandtotal,
             'tagihan_data' => $tagihanData,
             'total_bayar' => $total_bayar,
+            'lamaEvent' => $nilaiPerbedaan,
         ];
 
         $pdf = PDF::loadView('common.cetak_tagihan', ['data' => $data]);

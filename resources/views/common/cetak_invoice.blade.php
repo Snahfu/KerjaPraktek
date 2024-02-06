@@ -43,6 +43,15 @@
             font-weight: bold;
         }
 
+        .khusus{
+            background: #9abcff;
+            text-align: center;
+        }
+
+        .tengah{
+            text-align: center;
+        }
+
         .signature-container {
             display: flex;
             justify-content: space-between;
@@ -50,8 +59,9 @@
             margin: auto;
         }
 
-        p, pre {
-            font-family: 'Times New Roman'; 
+        p,
+        pre {
+            font-family: 'Times New Roman';
             font-size: 16px;
         }
     </style>
@@ -84,18 +94,18 @@ Ditempat.</pre>
             @foreach ($data['array_kategori'] as $key => $barang)
                 @if (!empty($barang))
                     <tr>
-                        <td class="bold">{{ $key }}</td>
+                        <td class="bold tengah">{{ $key }}</td>
                         <td colspan="3" class="bold">{{ $data['kategori_map'][$key] }}</td>
-                        <td class="bold">Rp{{ number_format($data['subtotal_map'][$key], 0, ',', ',') }}
+                        <td class="bold tengah">Rp{{ number_format($data['subtotal_map'][$key] / $data['lamaEvent'], 0, ',', ',') }}
                         </td>
                     </tr>
                     @for ($j = 0; $j < count($data['array_kategori'][$key]); $j++)
                         <tr>
                             <td></td>
                             <td class="bold">{{ $data['array_kategori'][$key][$j]->nama }}</td>
-                            <td>{{ $data['array_kategori'][$key][$j]->jumlah }}</td>
-                            <td>Rp{{ number_format($data['array_kategori'][$key][$j]->harga, 0, ',', ',') }}</td>
-                            <td>Rp{{ number_format($data['array_kategori'][$key][$j]->subtotal, 0, ',', ',') }}</td>
+                            <td class="tengah">{{ $data['array_kategori'][$key][$j]->jumlah }}</td>
+                            <td class="tengah">Rp{{ number_format($data['array_kategori'][$key][$j]->harga, 0, ',', ',') }}</td>
+                            <td class="tengah">Rp{{ number_format($data['array_kategori'][$key][$j]->subtotal / $data['lamaEvent'], 0, ',', ',') }}</td>
                         </tr>
                     @endfor
                 @endif
@@ -107,10 +117,18 @@ Ditempat.</pre>
                 <td></td>
                 <td></td>
             </tr>
+            @if ($data['lamaEvent'] > 1)
+                <tr>
+                    <td class="khusus"></td>
+                    <td class="khusus" colspan="3"> Harga Sewa / Hari </td>
+                    <td class="khusus">Rp{{ number_format($data['grandtotal'] / $data['lamaEvent'], 0, ',', ',') }}
+                    </td>
+                </tr>
+            @endif
             <tr>
-                <td></td>
-                <td class="header" colspan="3"> Total Sewa </td>
-                <td class="header">Rp{{ number_format($data['grandtotal'], 0, ',', ',') }}</td>
+                <td class="khusus"></td>
+                <td class="header khusus" colspan="3"> Total Sewa {{ ($data['lamaEvent'] > 1) ? ($data['lamaEvent']." Hari" ) : "" }} </td>
+                <td class="header khusus">Rp{{ number_format($data['grandtotal'], 0, ',', ',') }}</td>
             </tr>
         </tbody>
     </table>

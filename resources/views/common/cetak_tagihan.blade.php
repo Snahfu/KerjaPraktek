@@ -54,6 +54,10 @@
             text-align: center;
         }
 
+        .backgroundonly{
+            background: #9abcff;
+        }
+
         p, pre {
             font-family: 'Times New Roman'; 
             font-size: 16px;
@@ -92,7 +96,7 @@ Tanggal Jatuh Tempo  : {{ $data['jatuhtempo'] }}
                     <tr>
                         <td class="bold">{{ $key }}</td>
                         <td class="bold">{{ $data['kategori_map'][$key] }}</td>
-                        <td class="bold centered">Rp{{ number_format($data['subtotal_map'][$key], 0, ',', ',') }}
+                        <td class="bold centered">Rp{{ number_format($data['subtotal_map'][$key] / $data['lamaEvent'], 0, ',', ',') }}
                         </td>
                     </tr>
                     @for ($j = 0; $j < count($data['array_kategori'][$key]); $j++)
@@ -109,28 +113,36 @@ Tanggal Jatuh Tempo  : {{ $data['jatuhtempo'] }}
                 <td></td>
                 <td></td>
             </tr>
+            @if ($data['lamaEvent'] > 1)
+                <tr>
+                    <td class="backgroundonly"></td>
+                    <td class="backgroundonly centered"> Harga Sewa / Hari </td>
+                    <td class="backgroundonly centered">Rp{{ number_format($data['grandtotal'] / $data['lamaEvent'], 0, ',', ',') }}
+                    </td>
+                </tr>
+            @endif
             <tr>
-                <td></td>
-                <td class="header"> Grand Total Sewa </td>
+                <td class="header"></td>
+                <td class="header centered"> Total Sewa {{ ($data['lamaEvent'] > 1) ? ($data['lamaEvent']." Hari" ) : "" }} </td>
                 <td class="header centered">Rp{{ number_format($data['grandtotal'], 0, ',', ',') }}</td>
             </tr>
             @if ( $data['tagihan_data']->status == "Belum DP" )
                 {{-- BELUM BAYAR SAMA SEKALI --}}
                 <tr>
-                    <td></td>
-                    <td class="header"> Pembayaran DP 50% </td>
+                    <td class="header"></td>
+                    <td class="header centered"> Pembayaran DP 50% </td>
                     <td class="header centered">Rp{{ number_format(($data['grandtotal']/2), 0, ',', ',') }}</td>
                 </tr>
             @else
                 {{-- SUDAH BAYAR --}}
                 <tr>
-                    <td></td>
-                    <td class="header"> Nominal sudah terbayarkan </td>
+                    <td class="header"></td>
+                    <td class="header centered"> Nominal sudah terbayarkan </td>
                     <td class="header centered">Rp{{ number_format($data['total_bayar'], 0, ',', ',') }}</td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td class="header"> Nominal tertagih </td>
+                    <td class="header"></td>
+                    <td class="header centered"> Nominal tertagih </td>
                     <td class="header centered">Rp{{ number_format(($data['grandtotal']-$data['total_bayar']) , 0, ',', ',') }}</td>
                 </tr>
             @endif
